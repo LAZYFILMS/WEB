@@ -30,28 +30,25 @@
             text-align: center;
         }
 
-        .logo {
+        .logo, .book, .contact {
             position: absolute;
-            top: 30px;
-            left: 30px;
             font-size: 40px;
             font-weight: 900; /* Use the Stratos Black weight */
+        }
+
+        .logo {
+            top: 30px;
+            left: 30px;
         }
 
         .book {
-            position: absolute;
             top: 30px;
             right: 30px;
-            font-size: 40px;
-            font-weight: 900; /* Use the Stratos Black weight */
         }
 
         .contact {
-            position: absolute;
             bottom: 30px;
             left: 30px;
-            font-size: 40px;
-            font-weight: 900; /* Use the Stratos Black weight */
         }
 
         a {
@@ -63,41 +60,57 @@
             text-decoration: none; /* Prevent underline on hover */
         }
 
-        /* Media Queries for Mobile */
+        /* Mobile optimization */
         @media (max-width: 768px) {
+            .logo, .book, .contact {
+                font-size: 30px; /* Reduce font size on smaller screens */
+            }
+
             .logo {
-                font-size: 30px; /* Smaller logo for mobile */
                 top: 20px;
                 left: 20px;
             }
 
             .book {
-                font-size: 30px; /* Smaller font for "The Book" */
                 top: 20px;
                 right: 20px;
             }
 
             .contact {
-                font-size: 30px; /* Smaller font for "Contact" */
                 bottom: 20px;
                 left: 20px;
             }
 
+            /* Adjust background size for better fit on mobile */
             .container {
-                background-size: contain; /* Ensure the entire background image fits */
+                background-size: contain;
                 background-position: center;
             }
         }
 
         @media (max-width: 480px) {
-            .logo {
-                font-size: 24px; /* Further reduce font size for very small screens */
-            }
-
-            .book, .contact {
+            .logo, .book, .contact {
                 font-size: 24px; /* Further reduce font size for very small screens */
             }
         }
     </style>
 </head>
-<body
+<body>
+    <div class="container">
+        <!-- Logo (Lazy Film) -->
+        <div class="logo">
+            <a href="#">LAZY FILMS</a>
+        </div>
+
+        <!-- Book link -->
+        <div class="book">
+            <a href="lazy.pdf" download="lazy.pdf" target="_blank">THE BOOK</a>
+        </div>
+
+        <!-- Contact link -->
+        <div class="contact">
+            <a href="mailto:enquiries@lazyfilms.in">CONTACT</a>
+        </div>
+    </div>
+</body>
+</html>
