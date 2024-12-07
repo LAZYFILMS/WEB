@@ -1,185 +1,1170 @@
 <!DOCTYPE html>
 <html lang="en" class="is-loading">
-<head>
-    <title>[ PNEUMATEK ]</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="techno mysticism + new media art">
-    <base href="/">
-    <link rel="icon" type="image/svg+xml" href="/pneumatek/p-favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans&text=%E2%80%9C%E2%80%98ABCDEFGHIJKLMNOPQRSTUVWXYZ%E2%80%99%E2%80%9D-%E2%80%94%3F%40%C2%A9%26.%2C%E2%80%99%3A%3B1234567890" rel="stylesheet">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3YNDH9SM6E"></script>
-    <style>
-        /* General Styles */
-        .f-primary {
-            font-family: Work Sans, sans-serif;
-            font-size: 16px;
-            letter-spacing: -0.04em;
-        }
-        html {
-            background: #121414;
-            color: #eee;
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: Work Sans, sans-serif;
-            font-size: 16px;
-            letter-spacing: -0.04em;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            -webkit-tap-highlight-color: transparent;
-            cursor: default;
-            margin: 0;
-        }
-        .is-loading body {
-            overflow: hidden;
-        }
-        main {
-            margin: 3vw 4vw;
-        }
-        @media (max-width: 720px) {
+    <head>
+        <title>[ PNEUMATEK ]</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="description" content="techno mysticism + new media art">
+        <base href="/">
+        <link rel="icon" type="image/svg+xml" href="/pneumatek/p-favicon.svg">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans&text=%E2%80%9C%E2%80%98ABCDEFGHIJKLMNOPQRSTUVWXYZ%E2%80%99%E2%80%9D-%E2%80%94%3F%40%C2%A9%26.%2C%E2%80%99%3A%3B1234567890" rel="stylesheet">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-3YNDH9SM6E"></script>
+        <style>
+            .f-primary {
+                font-family: Work Sans,sans-serif;
+                font-size: 16px;
+                letter-spacing: -.04em
+            }
+
+            html {
+                background: #121414;
+                color: #eee;
+                scroll-behavior: smooth
+            }
+
+            body {
+                font-family: Work Sans,sans-serif;
+                font-size: 16px;
+                letter-spacing: -.04em;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-rendering: optimizeLegibility;
+                -webkit-tap-highlight-color: transparent;
+                cursor: default;
+                margin: 0
+            }
+
+            .is-loading body {
+                overflow: hidden
+            }
+
             main {
-                margin: 1rem;
+                margin: 3vw 4vw
             }
-        }
-        *, :before, :after {
-            box-sizing: border-box;
-        }
-        svg {
-            fill: #eee;
-        }
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-        h1, h2, h3, h4, h5, h6, p {
-            margin: 0;
-            padding: 0;
-            font-weight: 400;
-        }
-        ul, li {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-        .debug {
-            outline: 1px solid red;
-        }
-        
-        /* Cursor */
-        #cursor {
-            position: fixed;
-            z-index: 9999;
-            pointer-events: none;
-            top: -20vw;
-            left: -20vh;
-        }
-        .is-mobile #cursor {
-            display: none;
-        }
-        #cursor-circle {
-            width: 4vw;
-            height: 4vw;
-            margin-top: -2vw;
-            margin-left: -2vw;
-            border-radius: 50%;
-            border: 1px solid #eee;
-            border-width: max(1px, 0.2vw);
-            opacity: 0.42;
-            mix-blend-mode: difference;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .is-hovering #cursor-circle {
-            width: 1.6vw;
-            height: 1.6vw;
-            margin-top: -0.8vw;
-            margin-left: -0.8vw;
-            opacity: 1;
-        }
-        #cursor.cursor--disabled {
-            display: none;
-        }
-        
-        /* Additional Styles */
-        /* (Include remaining CSS from original code here in a similar organized structure) */
-    </style>
-    <script type="module">
-        /* Initialization */
-        const n = {
-            scrollX: 0,
-            scrollY: 0,
-            viewWidth: 0,
-            viewHeight: 0,
-            isMobile: true
-        };
-        class m {
-            mix(e, t, i) {
-                return e + (t - e) * i;
+
+            @media (max-width: 720px) {
+                main {
+                    margin:1rem
+                }
             }
-            clamp(e, t, i) {
-                return e < t ? t : e > i ? i : e;
+
+            *,:before,:after {
+                box-sizing: border-box
             }
-            fit(e, t, i, o, r) {
-                return e = this.clamp((e - t) / (i - t), 0, 1), o + e * (r - o);
+
+            svg {
+                fill: #eee
             }
-            $(e, t = false) {
-                return t ? Array.from(document.querySelectorAll(e)) : document.querySelector(e);
+
+            a {
+                color: inherit;
+                text-decoration: none
             }
-        }
-        const a = new m, g = 0.16;
-        
-        /* Cursor Class */
-        class v {
-            x = 0;
-            y = 0;
-            mouseX = 0;
-            mouseY = 0;
-            hoveringX = 0;
-            hoveringY = 0;
-            heightOffset = 0;
-            isHovering = false;
-            init() {
-                this.$el = document.getElementById("cursor");
-                window.addEventListener("mousemove", e => this._handleMouseMove(e));
+
+            #svg-defs {
+                display: none
             }
-            onLoad() {
-                this.$el.style.left = 0;
-                this.$el.style.top = 0;
+
+            h1,h2,h3,h4,h5,h6,p {
+                margin: 0;
+                padding: 0;
+                font-weight: 400
             }
-            _handleMouseMove(e) {
-                this.mouseX = e.clientX;
-                this.mouseY = e.clientY;
+
+            ul,li {
+                margin: 0;
+                padding: 0;
+                list-style: none
             }
-            updateHovering(e, t, i, o, r) {
-                e && !isNaN(t) && !isNaN(i) && (
-                    this.hoveringX = t, this.hoveringY = i,
-                    this.heightOffset = o || 0
-                );
-                this.$el.classList[e ? "add" : "remove"]("is-hovering");
-                this.isHovering = e;
+
+            .debug {
+                outline: 1px solid red
             }
-            update(e) {
-                if (n.isMobile) return;
-                let t = g * e * 60, i = this.mouseX, o = this.mouseY;
-                this.isHovering && (i = this.hoveringX, o = this.hoveringY - n.scrollY, o += this.heightOffset);
-                this.x = a.mix(this.x, i, t);
-                this.y = a.mix(this.y, o, t);
-                this._setTransform(this.x, this.y);
+
+            .o-mobile {
+                visibility: hidden
             }
-            _setTransform(e, t) {
-                this.$el.style.transform = `translate(${e}px, ${t}px)`;
+
+            @media (max-width: 720px) {
+                .o-mobile {
+                    visibility:visible
+                }
             }
-        }
-        const l = new v;
-        
-        /* Event Handlers */
-        /* (Continue with the remaining script code in an organized format here) */
-    </script>
-</head>
-<body>
-    <!-- Add structured body content here -->
-</body>
+
+            .o-desktop {
+                visibility: visible
+            }
+
+            @media (max-width: 720px) {
+                .o-desktop {
+                    visibility:hidden
+                }
+            }
+
+            #cursor {
+                position: fixed;
+                z-index: 9999;
+                pointer-events: none;
+                top: -20vw;
+                left: -20vh
+            }
+
+            .is-mobile #cursor {
+                display: none
+            }
+
+            #cursor-circle {
+                width: 4vw;
+                height: 4vw;
+                margin-top: -2vw;
+                margin-left: -2vw;
+                border-radius: 50%;
+                border: 1px solid #eee;
+                border-width: max(1px,.2vw);
+                opacity: .42;
+                mix-blend-mode: difference;
+                transition: all .4s cubic-bezier(.165,.84,.44,1)
+            }
+
+            .is-hovering #cursor-circle {
+                width: 1.6vw;
+                height: 1.6vw;
+                margin-top: -.8vw;
+                margin-left: -.8vw;
+                opacity: 1
+            }
+
+            #cursor.cursor--disabled {
+                display: none
+            }
+
+            .js-link {
+                display: block
+            }
+
+            .js-link>span {
+                display: inline-block;
+                transition: transform .8s cubic-bezier(.165,.84,.44,1)
+            }
+
+            .js-link:hover>span {
+                transform: translate(.6vw)
+            }
+
+            .ta .ta_word {
+                display: inline-block
+            }
+
+            .ta .ta_word--space {
+                display: inline
+            }
+
+            .ta .ta_word_inner {
+                display: inline-block
+            }
+
+            .ta_cut {
+                opacity: 0
+            }
+
+            .ta_cut .ta_word {
+                overflow: hidden
+            }
+
+            .ta_cut .ta_word:nth-child(40) .ta_word_inner {
+                transition-delay: .8s
+            }
+
+            .ta_cut .ta_word:nth-child(39) .ta_word_inner {
+                transition-delay: .78s
+            }
+
+            .ta_cut .ta_word:nth-child(38) .ta_word_inner {
+                transition-delay: .76s
+            }
+
+            .ta_cut .ta_word:nth-child(37) .ta_word_inner {
+                transition-delay: .74s
+            }
+
+            .ta_cut .ta_word:nth-child(36) .ta_word_inner {
+                transition-delay: .72s
+            }
+
+            .ta_cut .ta_word:nth-child(35) .ta_word_inner {
+                transition-delay: .7s
+            }
+
+            .ta_cut .ta_word:nth-child(34) .ta_word_inner {
+                transition-delay: .68s
+            }
+
+            .ta_cut .ta_word:nth-child(33) .ta_word_inner {
+                transition-delay: .66s
+            }
+
+            .ta_cut .ta_word:nth-child(32) .ta_word_inner {
+                transition-delay: .64s
+            }
+
+            .ta_cut .ta_word:nth-child(31) .ta_word_inner {
+                transition-delay: .62s
+            }
+
+            .ta_cut .ta_word:nth-child(30) .ta_word_inner {
+                transition-delay: .6s
+            }
+
+            .ta_cut .ta_word:nth-child(29) .ta_word_inner {
+                transition-delay: .58s
+            }
+
+            .ta_cut .ta_word:nth-child(28) .ta_word_inner {
+                transition-delay: .56s
+            }
+
+            .ta_cut .ta_word:nth-child(27) .ta_word_inner {
+                transition-delay: .54s
+            }
+
+            .ta_cut .ta_word:nth-child(26) .ta_word_inner {
+                transition-delay: .52s
+            }
+
+            .ta_cut .ta_word:nth-child(25) .ta_word_inner {
+                transition-delay: .5s
+            }
+
+            .ta_cut .ta_word:nth-child(24) .ta_word_inner {
+                transition-delay: .48s
+            }
+
+            .ta_cut .ta_word:nth-child(23) .ta_word_inner {
+                transition-delay: .46s
+            }
+
+            .ta_cut .ta_word:nth-child(22) .ta_word_inner {
+                transition-delay: .44s
+            }
+
+            .ta_cut .ta_word:nth-child(21) .ta_word_inner {
+                transition-delay: .42s
+            }
+
+            .ta_cut .ta_word:nth-child(20) .ta_word_inner {
+                transition-delay: .4s
+            }
+
+            .ta_cut .ta_word:nth-child(19) .ta_word_inner {
+                transition-delay: .38s
+            }
+
+            .ta_cut .ta_word:nth-child(18) .ta_word_inner {
+                transition-delay: .36s
+            }
+
+            .ta_cut .ta_word:nth-child(17) .ta_word_inner {
+                transition-delay: .34s
+            }
+
+            .ta_cut .ta_word:nth-child(16) .ta_word_inner {
+                transition-delay: .32s
+            }
+
+            .ta_cut .ta_word:nth-child(15) .ta_word_inner {
+                transition-delay: .3s
+            }
+
+            .ta_cut .ta_word:nth-child(14) .ta_word_inner {
+                transition-delay: .28s
+            }
+
+            .ta_cut .ta_word:nth-child(13) .ta_word_inner {
+                transition-delay: .26s
+            }
+
+            .ta_cut .ta_word:nth-child(12) .ta_word_inner {
+                transition-delay: .24s
+            }
+
+            .ta_cut .ta_word:nth-child(11) .ta_word_inner {
+                transition-delay: .22s
+            }
+
+            .ta_cut .ta_word:nth-child(10) .ta_word_inner {
+                transition-delay: .2s
+            }
+
+            .ta_cut .ta_word:nth-child(9) .ta_word_inner {
+                transition-delay: .18s
+            }
+
+            .ta_cut .ta_word:nth-child(8) .ta_word_inner {
+                transition-delay: .16s
+            }
+
+            .ta_cut .ta_word:nth-child(7) .ta_word_inner {
+                transition-delay: .14s
+            }
+
+            .ta_cut .ta_word:nth-child(6) .ta_word_inner {
+                transition-delay: .12s
+            }
+
+            .ta_cut .ta_word:nth-child(5) .ta_word_inner {
+                transition-delay: .1s
+            }
+
+            .ta_cut .ta_word:nth-child(4) .ta_word_inner {
+                transition-delay: .08s
+            }
+
+            .ta_cut .ta_word:nth-child(3) .ta_word_inner {
+                transition-delay: .06s
+            }
+
+            .ta_cut .ta_word:nth-child(2) .ta_word_inner {
+                transition-delay: .04s
+            }
+
+            .ta_cut .ta_word:nth-child(1) .ta_word_inner {
+                transition-delay: .02s
+            }
+
+            .ta_cut .ta_word_inner {
+                transform: translateY(200%) rotate(15deg);
+                transition: transform .666s cubic-bezier(.645,.045,.355,1)
+            }
+
+            .ta_cut.ta_play {
+                opacity: 1
+            }
+
+            .ta_cut.ta_play .ta_word_inner {
+                transform: translate(0) rotate(0)
+            }
+
+            .sigil {
+                position: fixed;
+                top: -28vw;
+                min-width: 108vh;
+                width: 108vw;
+                pointer-events: none;
+                z-index: -1;
+                left: 21vw
+            }
+
+            @media (max-width: 720px) {
+                .sigil {
+                    left:0
+                }
+            }
+
+            .sigil path {
+                fill: none;
+                opacity: .0444;
+                stroke: #fff;
+                stroke-width: .0222vw
+            }
+
+            @media (max-width: 720px) {
+                .sigil path {
+                    stroke-width:.04rem
+                }
+            }
+
+            .sigil path {
+                --length: 10;
+                stroke-dasharray: var(--length);
+                stroke-dashoffset: var(--length);
+                animation: anim-sigil;
+                animation-duration: 4.44s;
+                animation-timing-function: cubic-bezier(.645,.045,.355,1);
+                animation-direction: alternate;
+                animation-iteration-count: infinite
+            }
+
+            .sigil .sigil_outer-circle {
+                --length: 684.96343994;
+                animation-delay: 1.2s
+            }
+
+            .sigil .sigil_inner-circle {
+                --length: 320.48773193;
+                animation-delay: 2.4s
+            }
+
+            .sigil .sigil_triangle {
+                --length: 550.90441895
+            }
+
+            @keyframes anim-sigil {
+                to {
+                    stroke-dashoffset: 0
+                }
+            }
+
+            header {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center
+            }
+
+            header .header_text {
+                position: relative;
+                user-select: all;
+                font-size: 1.12vw
+            }
+
+            @media (max-width: 720px) {
+                header .header_text {
+                    font-size:1rem
+                }
+
+                header .header_text:nth-child(1) {
+                    display: none
+                }
+            }
+
+            header .header_text a {
+                padding: .2vw;
+                top: -.9vw;
+                position: absolute;
+                right: 0;
+                white-space: nowrap
+            }
+
+            @media (max-width: 720px) {
+                header .header_text a {
+                    position:relative;
+                    padding: 0
+                }
+            }
+
+            header .header_text:nth-child(1) a {
+                left: 0;
+                right: auto
+            }
+
+            footer .footer_links {
+                margin: 16vw 12vw 4vw;
+                display: flex
+            }
+
+            @media (max-width: 720px) {
+                footer .footer_links {
+                    flex-direction:column;
+                    margin: 0;
+                    gap: 2rem
+                }
+            }
+
+            footer .footer_links-column {
+                display: flex;
+                gap: 4vw
+            }
+
+            @media (max-width: 720px) {
+                footer .footer_links-column {
+                    flex-direction:column
+                }
+            }
+
+            footer .footer_links-column:first-child {
+                width: 19.6vw;
+                justify-content: end;
+                margin-right: 16vw
+            }
+
+            footer .footer_links-column .footer_title {
+                font-size: 1.12vw;
+                margin-top: .25vw
+            }
+
+            @media (max-width: 720px) {
+                footer .footer_links-column .footer_title {
+                    font-size:1rem;
+                    margin-top: 0
+                }
+            }
+
+            footer .footer_links-column a {
+                font-size: 1.75vw;
+                display: block;
+                padding-bottom: 1vw
+            }
+
+            @media (max-width: 720px) {
+                footer .footer_links-column a {
+                    font-size:1.5rem;
+                    padding-bottom: 1rem;
+                    padding-left: 2rem
+                }
+            }
+
+            footer .footer_text-container {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 12vw;
+                font-size: 1.12vw
+            }
+
+            @media (max-width: 720px) {
+                footer .footer_text-container {
+                    font-size:1rem;
+                    margin-top: 6rem
+                }
+            }
+
+            header {
+                text-transform: uppercase
+            }
+
+            @media (max-width: 720px) {
+                header .header_text:nth-child(1) {
+                    display:block
+                }
+            }
+
+            section,.section {
+                margin: 8vw 0
+            }
+
+            @media (max-width: 720px) {
+                section,.section {
+                    margin:8rem 0
+                }
+            }
+
+            .hero {
+                margin-top: 16vw
+            }
+
+            @media (max-width: 720px) {
+                .hero {
+                    margin-top:8rem
+                }
+            }
+
+            .hero .hero_subtitle {
+                font-size: 1.75vw;
+                width: 40%;
+                float: right
+            }
+
+            @media (max-width: 720px) {
+                .hero .hero_subtitle {
+                    width:100%;
+                    font-size: max(1.2rem,1.75vw)
+                }
+            }
+
+            .hero .hero_title {
+                letter-spacing: -.08em;
+                font-size: 18vw;
+                margin-top: -2vw;
+                padding-left: 12vw;
+                margin-left: -1vw
+            }
+
+            @media (max-width: 720px) {
+                .hero .hero_title {
+                    margin-left:0;
+                    font-size: 18vw
+                }
+            }
+
+            .gallery {
+                margin-left: 12vw;
+                display: flex;
+                flex-direction: column;
+                text-shadow: 4px 4px 4px rgba(0,0,0,.4)
+            }
+
+            @media (max-width: 720px) {
+                .gallery {
+                    margin-left:0
+                }
+            }
+
+            .gallery>a {
+                width: 100%;
+                padding-bottom: 1vw
+            }
+
+            .gallery>a>span {
+                display: block
+            }
+
+            .gallery .gallery_item {
+                width: 100%;
+                aspect-ratio: 2.5;
+                padding: 2vw;
+                display: flex;
+                align-items: end;
+                position: relative
+            }
+
+            @media (max-width: 720px) {
+                .gallery .gallery_item {
+                    aspect-ratio:1;
+                    padding: 1rem
+                }
+            }
+
+            .gallery .gallery_item:after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(180deg,#0000 50%,#000);
+                z-index: 2;
+                transition: opacity .5s ease-out
+            }
+
+            .gallery .gallery_item:hover:after {
+                opacity: .5
+            }
+
+            .gallery .gallery_item_img {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                object-fit: cover
+            }
+
+            .gallery .gallery_item_content * {
+                position: relative;
+                z-index: 10
+            }
+
+            .gallery .gallery_item_title {
+                font-size: 2.5vw
+            }
+
+            @media (max-width: 720px) {
+                .gallery .gallery_item_title {
+                    font-size:1.5rem;
+                    display: none
+                }
+            }
+
+            .gallery .gallery_item_title--m {
+                display: none
+            }
+
+            @media (max-width: 720px) {
+                .gallery .gallery_item_title--m {
+                    display:inline
+                }
+            }
+
+            .gallery .gallery_item_subtitle {
+                margin-top: .4rem
+            }
+
+            @media (max-width: 720px) {
+                .gallery .gallery_item_subtitle {
+                    font-size:1rem
+                }
+            }
+
+            .bio {
+                margin-top: 15vw;
+                margin-bottom: 18vw;
+                padding-top: 2rem
+            }
+
+            @media (max-width: 720px) {
+                .bio {
+                    margin-top:10rem;
+                    margin-bottom: 12rem
+                }
+            }
+
+            .bio h2 {
+                text-transform: uppercase;
+                font-size: 2.5vw
+            }
+
+            @media (max-width: 720px) {
+                .bio h2 {
+                    font-size:1.5rem;
+                    margin-bottom: 2rem
+                }
+            }
+
+            .bio p {
+                margin: 4vw 19.6vw 4vw 12vw;
+                font-size: 1.75vw
+            }
+
+            @media (max-width: 720px) {
+                .bio p {
+                    font-size:1.5rem;
+                    margin: 0
+                }
+            }
+
+            footer {
+                text-transform: uppercase
+            }
+
+            footer .footer_links {
+                white-space: nowrap
+            }
+
+            footer .footer_text-container {
+                justify-content: end
+            }
+
+            @media (max-width: 720px) {
+                .header--project .header_text:nth-child(1) {
+                    display:block
+                }
+            }
+
+            .project {
+                margin: 4vw 0
+            }
+
+            .project_title {
+                font-size: 4vw;
+                margin-bottom: 1vw
+            }
+
+            @media (max-width: 720px) {
+                .project_title {
+                    margin-top:3rem;
+                    margin-bottom: 1rem;
+                    font-size: 2rem
+                }
+            }
+
+            .project_subtitle {
+                font-size: 1.75vw;
+                font-style: italic
+            }
+
+            @media (max-width: 720px) {
+                .project_subtitle {
+                    font-size:1rem
+                }
+            }
+
+            .project_desc {
+                font-size: 1.75vw
+            }
+
+            @media (max-width: 720px) {
+                .project_desc {
+                    font-size:1rem
+                }
+            }
+
+            .project_embed {
+                display: flex;
+                gap: 2vw;
+                margin: 4vw 0
+            }
+
+            @media (max-width: 720px) {
+                .project_embed {
+                    flex-direction:column;
+                    gap: 2rem;
+                    margin: 4rem 0
+                }
+            }
+
+            .project_embed>* {
+                flex: 1;
+                aspect-ratio: 16 / 9;
+                min-height: 20rem;
+                max-width: 50%
+            }
+
+            @media (max-width: 720px) {
+                .project_embed>* {
+                    min-height:15rem;
+                    max-width: 100%
+                }
+            }
+
+            .project_insta-embed {
+                display: flex;
+                gap: 2vw;
+                margin: 4vw 0
+            }
+
+            @media (max-width: 720px) {
+                .project_insta-embed {
+                    flex-direction:column;
+                    gap: 0;
+                    margin: 4rem 0
+                }
+            }
+
+            .project_links {
+                margin: 4vw 0
+            }
+
+            @media (max-width: 720px) {
+                .project_links {
+                    margin:4rem 0
+                }
+            }
+
+            .project_links a {
+                display: block;
+                margin: 1vw 0 1vw 1vw;
+                font-size: 1.75vw
+            }
+
+            @media (max-width: 720px) {
+                .project_links a {
+                    font-size:1rem;
+                    margin: 1rem 0 1rem 1rem
+                }
+            }
+
+            .project_links_title {
+                font-size: 2.5vw;
+                margin-bottom: 1vw
+            }
+
+            @media (max-width: 720px) {
+                .project_links_title {
+                    font-size:1.5rem;
+                    margin-bottom: 1rem
+                }
+            }
+        </style>
+        <script type="module">
+            const n = {
+                scrollX: 0,
+                scrollY: 0,
+                viewWidth: 0,
+                viewHeight: 0,
+                isMobile: !0
+            };
+            class m {
+                mix(e, t, i) {
+                    return e + (t - e) * i
+                }
+                clamp(e, t, i) {
+                    return e < t ? t : e > i ? i : e
+                }
+                fit(e, t, i, o, r) {
+                    return e = this.clamp((e - t) / (i - t), 0, 1),
+                    o + e * (r - o)
+                }
+                $(e, t=!1) {
+                    return t ? Array.from(document.querySelectorAll(e)) : document.querySelector(e)
+                }
+            }
+            const a = new m
+              , g = .16;
+            class v {
+                x = 0;
+                y = 0;
+                mouseX = 0;
+                mouseY = 0;
+                hoveringX = 0;
+                hoveringY = 0;
+                heightOffset = 0;
+                isHovering = !1;
+                init() {
+                    this.$el = document.getElementById("cursor"),
+                    window.addEventListener("mousemove", e => this._handleMouseMove(e))
+                }
+                onLoad() {
+                    this.$el.style.left = 0,
+                    this.$el.style.top = 0
+                }
+                _handleMouseMove(e) {
+                    this.mouseX = e.clientX,
+                    this.mouseY = e.clientY
+                }
+                updateHovering(e, t, i, o, r) {
+                    e && !isNaN(t) && !isNaN(i) && (this.hoveringX = t,
+                    this.hoveringY = i,
+                    this.heightOffset = o || 0),
+                    this.$el.classList[e ? "add" : "remove"]("is-hovering"),
+                    this.isHovering = e
+                }
+                update(e) {
+                    if (n.isMobile)
+                        return;
+                    let t = g * e * 60
+                      , i = this.mouseX
+                      , o = this.mouseY;
+                    this.isHovering && (i = this.hoveringX,
+                    o = this.hoveringY - n.scrollY,
+                    o += this.heightOffset),
+                    this.x = a.mix(this.x, i, t),
+                    this.y = a.mix(this.y, o, t),
+                    this._setTransform(this.x, this.y)
+                }
+                _setTransform(e, t) {
+                    this.$el.style.transform = `translate(${e}px, ${t}px)`
+                }
+            }
+            const l = new v;
+            class w {
+                activeLinkId = -1;
+                activeSection = null;
+                init() {
+                    this.$els = Array.from(document.querySelectorAll(".js-link")),
+                    this.$els.forEach(e => {
+                        e.addEventListener("mouseover", t => this._handleMouseOver(t, e)),
+                        e.addEventListener("mouseout", t => this._handleMouseOut(t, e))
+                    }
+                    )
+                }
+                _handleMouseOver(e, t) {
+                    let i = t.__left
+                      , o = t.__top
+                      , r = t.__heightOffset;
+                    l.updateHovering(!0, i, o, r, t),
+                    this.activeSection = t.getAttribute("data-section")
+                }
+                _handleMouseOut(e, t) {
+                    l.updateHovering(!1),
+                    this.activeSection = null
+                }
+                resize() {
+                    this.$els.forEach( (e, t) => {
+                        let i = e.getBoundingClientRect()
+                          , o = Math.min(n.viewWidth * .01, i.height * .5);
+                        e.__heightOffset = o,
+                        e.__top = i.top + n.scrollY,
+                        e.__left = i.left + n.viewWidth * -.0125
+                    }
+                    )
+                }
+            }
+            const _ = new w
+              , p = 400
+              , h = [l, _];
+            function E() {
+                document.documentElement.classList.remove("is-loading"),
+                u(),
+                h.forEach(s => s.onLoad?.()),
+                d()
+            }
+            let c = performance.now();
+            function d() {
+                requestAnimationFrame(d);
+                let s = performance.now()
+                  , e = (s - c) / 1e3;
+                c = s,
+                h.forEach(t => t.update?.(e))
+            }
+            function u() {
+                n.viewWidth = window.innerWidth,
+                n.viewHeight = window.innerHeight,
+                n.scrollY = window.scrollY,
+                n.isMobile = n.viewWidth <= 768,
+                document.body.classList[n.isMobile ? "add" : "remove"]("is-mobile"),
+                h.forEach(s => s.resize?.())
+            }
+            function L() {
+                h.forEach(s => s.init?.()),
+                window.addEventListener("resize", () => u()),
+                window.addEventListener("scroll", s => {
+                    n.scrollY = window.scrollY
+                }
+                ),
+                setTimeout( () => {
+                    E()
+                }
+                , p)
+            }
+            L();
+            window.dataLayer = window.dataLayer || [];
+            function f() {
+                dataLayer.push(arguments)
+            }
+            f("js", new Date);
+            f("config", "G-3YNDH9SM6E");
+        </script>
+    </head>
+    <body>
+        <div id="cursor">
+            <div id="cursor-circle"></div>
+        </div>
+        <main>
+            <div class="sigil">
+                <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                    <path class="sigil_outer-circle" d="M19 128a109 109 0 1 0 218 0a109 109 0 1 0 -218 0"></path>
+                    <path class="sigil_inner-circle" d="M77 131a51 51 0 1 0 102 0a51 51 0 1 0 -102 0"></path>
+                    <path class="sigil_triangle" d="M128 234L33.6032 79.5L222.397 79.5L128 234Z"></path>
+                </svg>
+            </div>
+            <header>
+                <div class="header_text">
+                    <a href="#bio" class="js-link">
+                        <span>bio ↓</span>
+                    </a>
+                </div>
+                <!-- <div class="header_text">{copy.header.text2}</div> -->
+                <div class="header_text">
+                    <a href="https://www.instagram.com/pneumatek__hq/" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                        <span>instagram ↗</span>
+                    </a>
+                </div>
+            </header>
+            <section class="hero">
+                <h1 class="hero_subtitle">new media art &amp;immersive installations — technology as a vessel into the depths of consciousness and the soul.</h1>
+                <h1 class="hero_title">pneumatek</h1>
+            </section>
+            <section class="gallery">
+                <a href="/projects/belfire" class="js-link">
+                    <span>
+                        <div class="gallery_item">
+                            <picture>
+                                <source media="(min-width: 720px)" srcset="./pneumatek/belfire.webp">
+                                <source media="(min-width: 0px)" srcset="./pneumatek/belfire-m.webp">
+                                <img src="./pneumatek/belfire.webp" alt="Belfire at Loco Klub" class="gallery_item_img">
+                            </picture>
+                            <div class="gallery_item_content">
+                                <h2 class="gallery_item_title">Belfire at Loco Klub</h2>
+                                <h2 class="gallery_item_title gallery_item_title--m">Belfire at Loco Klub</h2>
+                                <p class="gallery_item_subtitle">interactive installation · performance</p>
+                            </div>
+                        </div>
+                    </span>
+                </a>
+                <a href="https://lusion.co/projects/porsche_dream_machine" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                    <span>
+                        <div class="gallery_item">
+                            <picture>
+                                <source media="(min-width: 720px)" srcset="./pneumatek/porsche.webp">
+                                <source media="(min-width: 0px)" srcset="./pneumatek/porsche-m.webp">
+                                <img src="./pneumatek/porsche.webp" alt="Porsche x Wallpaper: Dream Machine" class="gallery_item_img">
+                            </picture>
+                            <div class="gallery_item_content">
+                                <h2 class="gallery_item_title">Porsche x Wallpaper: Dream Machine</h2>
+                                <h2 class="gallery_item_title gallery_item_title--m">
+                                    Porsche x Wallpaper:<br>Dream Machine
+                                </h2>
+                                <p class="gallery_item_subtitle">360 installation · outernet london</p>
+                            </div>
+                        </div>
+                    </span>
+                </a>
+                <a href="/projects/dreamhaze" class="js-link">
+                    <span>
+                        <div class="gallery_item">
+                            <picture>
+                                <source media="(min-width: 720px)" srcset="./pneumatek/dreamhaze.webp">
+                                <source media="(min-width: 0px)" srcset="./pneumatek/dreamhaze-m.webp">
+                                <img src="./pneumatek/dreamhaze.webp" alt="Dreamhaze at Mount Without" class="gallery_item_img">
+                            </picture>
+                            <div class="gallery_item_content">
+                                <h2 class="gallery_item_title">Dreamhaze at Mount Without</h2>
+                                <h2 class="gallery_item_title gallery_item_title--m">Dreamhaze at Mount Without</h2>
+                                <p class="gallery_item_subtitle">interactive installation · performance</p>
+                            </div>
+                        </div>
+                    </span>
+                </a>
+                <a href="https://www.squintopera.com/projects/lift-109-at-battersea-power-station/" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                    <span>
+                        <div class="gallery_item">
+                            <picture>
+                                <source media="(min-width: 720px)" srcset="./pneumatek/battersea.webp">
+                                <source media="(min-width: 0px)" srcset="./pneumatek/battersea-m.webp">
+                                <img src="./pneumatek/battersea.webp" alt="Battersea London" class="gallery_item_img">
+                            </picture>
+                            <div class="gallery_item_content">
+                                <h2 class="gallery_item_title">Battersea London</h2>
+                                <h2 class="gallery_item_title gallery_item_title--m">Battersea London</h2>
+                                <p class="gallery_item_subtitle">360 interactive installation · media room</p>
+                            </div>
+                        </div>
+                    </span>
+                </a>
+                <a href="/projects/scaler" class="js-link">
+                    <span>
+                        <div class="gallery_item">
+                            <picture>
+                                <source media="(min-width: 720px)" srcset="./pneumatek/scaler.webp">
+                                <source media="(min-width: 0px)" srcset="./pneumatek/scaler-m.webp">
+                                <img src="./pneumatek/scaler.webp" alt="BSOD — SCALER at Strange Brew" class="gallery_item_img">
+                            </picture>
+                            <div class="gallery_item_content">
+                                <h2 class="gallery_item_title">BSOD — SCALER at Strange Brew</h2>
+                                <h2 class="gallery_item_title gallery_item_title--m">
+                                    BSOD — SCALER<br>at Strange Brew
+                                </h2>
+                                <p class="gallery_item_subtitle">interactive installation · chillout space</p>
+                            </div>
+                        </div>
+                    </span>
+                </a>
+            </section>
+            <section class="bio" id="bio">
+                <h2>( bio )</h2>
+                <p class="js-text-anim">
+                    after years of dabbling with tech art, psychedelics, psychology, philosophy and still feeling a yearning for more, ajay incarnated <em>pneumatek</em>
+                    as an artistic practice exploring more metaphysical and esoteric theological themes through immersive mediums.
+		<br>
+                    <br>
+                    he recognized immersive technology as a means to communicate what lies beyond "physical" human perception. that which existed only in the minds of those who practiced certain spiritual traditions or altered states of consciousness can now be visualised and experienced, inviting more to expand their awareness and notions of reality.
+		<br>
+                    <br>
+                    [ <em>pneuma</em>
+                    ] — “breath” and in spiritual context, spirit or the soul
+		<br>
+                    [ <em>tek</em>
+                    ] — tech-nique or उपाय (upaya, loosely translated to skillful means)
+		
+                </p>
+            </section>
+            <footer>
+                <div class="footer_links">
+                    <div class="footer_links-column">
+                        <h3 class="footer_title">socials</h3>
+                        <ul>
+                            <li>
+                                <a href="https://www.instagram.com/pneumatek__hq/" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                                    <span>instagram</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://pneumatek.substack.com/" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                                    <span>blog</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://x.com/pneumatek__hq" target="_blank" rel="noopener noreferrer" class="js-link js-link-external">
+                                    <span>twitter</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="footer_links-column">
+                        <h3 class="footer_title">contact</h3>
+                        <div>
+                            <a href="mailto:pneumatek__hq@outlook.com" class="js-link">
+                                <span>EMAIL</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer_text-container">
+                    <div class="footer_text">solve et coagula ☿️</div>
+                </div>
+            </footer>
+        </main>
+    </body>
 </html>
