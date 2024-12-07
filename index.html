@@ -1,89 +1,145 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>LAZY FILMS</title>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<meta name="description" content="The Banana Graveyard pictures and the Banana Wall of Fame - Banana Miscellanea - Art and Poetry and Short Stories">
-<meta name="author" content="Zimmerman Skyrat">
-<meta name="robots" content="noimageindex">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-<style>
-body{background:#000000; color:#ffff33; font-family:"Bookman Old Style", Georgia; font-size:14pt; margin-left:20%; margin-right:20%; line-height:130%;}
-.center{text-align:center;}
-p#kafka{margin-left:10%; margin-right:10%;}
-p#contact{font-size:20pt; font-style:italic; text-align:center;}
-table{margin:auto; text-align:center; border-spacing:70px;}
-img{max-width:100%; height:auto;}
-a:link{color:#ffff33; text-decoration:none;}
-a:visited{color:#aaaaaa; text-decoration:none;}
-a:hover{color:#dd0000; text-decoration:none;}
-a:active{color:#dd0000; text-decoration:none;}
-a:link#what{color:#ffff33; text-decoration:underline;}
-a:visited#what{color:#aaaaaa; text-decoration:underline;}
-a:hover#what{color:#dd0000; text-decoration:underline;}
-a:active#what{color:#dd0000; text-decoration:underline;}
-</style>
+    <title>[ PNEUMATEK ]</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="techno mysticism + new media art">
+    <base href="/">
+    <link rel="icon" type="image/svg+xml" href="/pneumatek/p-favicon.svg">
+    <style>
+        /* General Styles */
+        html {
+            background: #121414;
+            color: #eee;
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 16px;
+            letter-spacing: -0.04em;
+            margin: 0;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Cursor Styles */
+        #cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            top: -20vw;
+            left: -20vh;
+        }
+
+        /* Components */
+        .hero {
+            margin-top: 16vw;
+        }
+        .hero .hero_title {
+            font-size: 18vw;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 720px) {
+            .hero {
+                margin-top: 8rem;
+            }
+            .hero .hero_title {
+                font-size: 12vw;
+            }
+        }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3YNDH9SM6E"></script>
 </head>
-
 <body>
-<br>
-<p class="center"><img src="101bananas.webp" width="800" height="123" alt=""></p>
+    <header>
+        <!-- Header content -->
+        <h1>Pneumatek</h1>
+    </header>
+    <main>
+        <div class="hero">
+            <h1 class="hero_title">Welcome to Pneumatek</h1>
+        </div>
+    </main>
+    <footer>
+        <!-- Footer content -->
+        <p>© 2024 Pneumatek</p>
+    </footer>
+    <div id="cursor"></div>
+    <script type="module">
+        // Global State
+        const state = {
+            scrollX: 0,
+            scrollY: 0,
+            viewWidth: 0,
+            viewHeight: 0,
+            isMobile: true,
+        };
 
-<p>....containing herein the random rantings of a fevered brain, miscellaneous detritus from various lost souls, everything you always wanted to know about bananas but were afraid to ask, incomprehensible shreds of dead letters from disgruntled postal employees, poetry for quiet nights and raucous wild parties, scrapbook items found in the dumpster of forgotten lives, great works of art to meditate on, shiny trinkets and glittering baubles lost and found by the roadside of wasted time, and a collection of the much sought-after photographs discovered by wandering Gypsies in the world-famous Banana Graveyard....</p>
+        // Utilities
+        class Utils {
+            static mix(start, end, amount) {
+                return start + (end - start) * amount;
+            }
+            static clamp(value, min, max) {
+                return Math.max(min, Math.min(max, value));
+            }
+        }
 
-<table><tr><td>
-<br>
-<br>
-<a href="art/art.html"><img src="art.jpg" alt=""><br>The Art Gallery</a>
-<br>
-<br>
-<br>
-<br>
-<a href="poems/poems.html"><img src="poems.jpg" alt=""><br>A Bag Full of Poems</a>
-<br>
-<br>
-<br>
-<br>
-<a href="wall/wall.html"><img src="wall.jpg" alt=""><br>The Banana<br>Wall of Fame</a>
-</td>
+        // Cursor Management
+        class Cursor {
+            constructor() {
+                this.x = 0;
+                this.y = 0;
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.init();
+            }
 
-<td>
-<a href="miscellanea/miscellanea.html"><img src="miscellanea.jpg" alt=""><br>Banana Miscellanea</a>
-<br>
-<br>
-<br>
-<a href="graveyard/graveyard.html"><img src="graveyard2.jpg" alt=""><br>The Banana Graveyard</a>
-<br>
-<br>
-<br>
-<a href="links/links.html"><img src="links.jpg" alt=""><br>Cool Links</a>
-</td>
+            init() {
+                this.cursorEl = document.getElementById("cursor");
+                window.addEventListener("mousemove", this.handleMouseMove.bind(this));
+            }
 
-<td>
-<br>
-<a href="garden/garden.html"><img src="garden.jpg" alt=""><br>The Garden of<br>Enigmatic Delights</a>
-<br>
-<br>
-<br>
-<br>
-<a href="library2/library2.html"><img src="library2.jpg" alt=""><br>The Scholar&rsquo;s Library</a>
-<br>
-<br>
-<br>
-<br>
-<a href="film/film.html"><img src="film.jpg" alt=""><br>Film Studies</a>
-</td></tr></table>
-<br>
-<br>
-<p class="center"><q>To live outside the law you must be honest.</q>
-<br>&mdash;Bob Dylan</p>
-<br>
-<p id="kafka"><q>You do not need to leave your room. Remain sitting at your table and listen. Do not even listen, simply wait, be quiet, still and solitary. The world will freely offer itself to you to be unmasked; it has no choice, it will roll in ecstasy at your feet.</q>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash;Franz Kafka</p>
-<br>
-<br>
-<p id="contact"><a id="what" href="contact/contact.html">...JUST WHAT IS HAPPENING HERE ANYWAY?</a></p>
-<br>
-<br>
+            handleMouseMove(event) {
+                this.mouseX = event.clientX;
+                this.mouseY = event.clientY;
+            }
+
+            update(deltaTime) {
+                const ease = 0.16 * deltaTime * 60;
+                this.x = Utils.mix(this.x, this.mouseX, ease);
+                this.y = Utils.mix(this.y, this.mouseY, ease);
+                this.setTransform(this.x, this.y);
+            }
+
+            setTransform(x, y) {
+                this.cursorEl.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        }
+
+        // Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            const cursor = new Cursor();
+            let lastTime = performance.now();
+
+            function update() {
+                const now = performance.now();
+                const deltaTime = (now - lastTime) / 1000;
+                lastTime = now;
+
+                cursor.update(deltaTime);
+                requestAnimationFrame(update);
+            }
+
+            update();
+        });
+    </script>
 </body>
 </html>
