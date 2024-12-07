@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAZY FILMS</title>
+    <title>Lazy Films</title>
     <!-- Importing the Stratos font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet">
     <style>
@@ -18,17 +18,17 @@
             font-family: 'Stratos', sans-serif; /* Applying Stratos font globally */
         }
 
-       .container {
-   	 position: relative;
-   	 width: 100%;
-    	height: 100vh; /* Use viewport height to fill the screen */
-   	 background-image: url('nathan.png'); /* Set your background image */
-   	 background-size: cover; /* Ensures the image covers the container */
-    	background-position: center; /* Center the image */
-    	background-repeat: no-repeat; /* Prevent repeating the background */
-    	color: white;
-    	text-align: center;
-}
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Use viewport height to fill the screen */
+            background-image: url('nathan.png'); /* Set your background image */
+            background-size: cover; /* Ensures the image covers the container */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Prevent repeating the background */
+            color: white;
+            text-align: center;
+        }
 
         .logo {
             position: absolute;
@@ -54,33 +54,50 @@
             font-weight: 900; /* Use the Stratos Black weight */
         }
 
-       a {
-    color: white;
-    text-decoration: none; /* No underline by default */
-}
+        a {
+            color: white;
+            text-decoration: none; /* No underline by default */
+        }
 
-a:hover {
-    text-decoration: none; /* Prevent underline on hover */
-}
+        a:hover {
+            text-decoration: none; /* Prevent underline on hover */
+        }
 
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 30px; /* Smaller logo for mobile */
+                top: 20px;
+                left: 20px;
+            }
+
+            .book {
+                font-size: 30px; /* Smaller font for "The Book" */
+                top: 20px;
+                right: 20px;
+            }
+
+            .contact {
+                font-size: 30px; /* Smaller font for "Contact" */
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .container {
+                background-size: contain; /* Ensure the entire background image fits */
+                background-position: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 24px; /* Further reduce font size for very small screens */
+            }
+
+            .book, .contact {
+                font-size: 24px; /* Further reduce font size for very small screens */
+            }
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Logo (Lazy Film) -->
-        <div class="logo">
-            <a href="#">LAZY FILMS</a>
-        </div>
-
-        <!-- Book link -->
-        <div class="book">
-              <a href="lazy.pdf" download="lazy.pdf" target="_blank">THE BOOK</a>
-        </div>
-
-        <!-- Contact link -->
-        <div class="contact">
-            <a href="mailto:enquiries@lazyfilms.in">CONTACT</a>
-        </div>
-    </div>
-</body>
-</html>
+<body
