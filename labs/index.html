@@ -11,6 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAZY FILM LAB</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            // Initialize EmailJS with your public key
+            emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+        })();
+    </script>
     <style>
         /* General Styles */
         body {
@@ -367,49 +374,149 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
                 width: calc(100% - 40px);
-                margin: 20px;
+                margin: 10px auto;
                 padding: 20px;
             }
-
+            
+            /* Keep other mobile styles */
             .order-row {
                 flex-wrap: wrap;
-                gap: 10px;
-                margin-bottom: 20px;
+                gap: 8px;
+                margin-bottom: 15px;
             }
 
             .order-row label {
                 width: 100%;
+                min-width: unset;
                 margin-bottom: 5px;
             }
 
             .quantity-control {
                 flex: 1;
+                min-width: 120px;
                 margin: 0;
+                gap: 4px;
+            }
+
+            .quantity-control button {
+                min-width: 32px;
+                height: 32px;
+                padding: 4px;
+            }
+
+            .quantity-control input {
+                width: 40px;
+                height: 32px;
+                font-size: 14px;
             }
 
             select {
-                flex: 2;
+                flex: 1.5;
+                min-width: unset;
                 margin: 0;
+                padding: 4px 6px;
+                height: 32px;
+                font-size: 14px;
             }
 
             .add-to-cart {
                 width: 100%;
                 margin: 5px 0 0 0;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            /* Scan options mobile optimization */
+            .scans {
+                margin: 15px 0;
+            }
+
+            .scans-options {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .scans-options label {
+                flex: 1;
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            /* Cart summary mobile optimization */
+            .cart-summary {
+                margin: 15px 0;
+                padding: 12px;
+            }
+
+            .cart-item {
+                font-size: 13px;
+                padding: 8px 0;
+            }
+
+            /* Modal mobile optimization */
+            .modal-content {
+                width: calc(100% - 30px);
+                padding: 20px;
+                margin: 15px;
+                max-height: calc(100vh - 60px);
+                overflow-y: auto;
+            }
+
+            .form-group input {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .modal-buttons {
+                gap: 8px;
+            }
+
+            .modal-buttons button {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            /* Description and FAQ mobile optimization */
+            .description-faq-section {
+                padding: 0 15px;
+            }
+
+            .section-heading {
+                font-size: 24px;
+                left: 0;
+            }
+
+            .description, .faq {
+                left: 0;
+                font-size: 14px;
+            }
+
+            .faq h4 {
+                font-size: 15px;
+            }
+
+            .faq p {
+                font-size: 14px;
             }
         }
 
-        /* Additional optimization for very small screens */
-        @media (max-width: 380px) {
+        /* Extra small screens */
+        @media (max-width: 360px) {
             .container {
-                margin: 5px;
+                width: calc(100% - 20px);
+                margin: 10px;
                 padding: 10px;
             }
 
             .order-row {
                 gap: 6px;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
             }
 
             .quantity-control {
@@ -417,24 +524,138 @@
             }
 
             .quantity-control button {
-                padding: 4px 8px;
+                min-width: 28px;
+                height: 28px;
+                font-size: 14px;
             }
 
             .quantity-control input {
                 width: 35px;
+                height: 28px;
             }
 
             select {
-                padding: 4px 6px;
+                padding: 4px;
+                height: 28px;
             }
 
             .add-to-cart {
-                padding: 6px 10px;
+                height: 28px;
+                font-size: 13px;
             }
 
             .cart-item {
                 font-size: 12px;
             }
+
+            .modal-content {
+                padding: 15px;
+            }
+
+            .form-group {
+                gap: 4px;
+            }
+
+            .form-group input {
+                padding: 6px;
+            }
+        }
+
+        /* Order Form Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .required {
+            color: red;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .confirm-order {
+            background: #000;
+            color: #fff;
+        }
+
+        .cancel-order {
+            background: #f1f1f1;
+            color: #000;
+            border: 1px solid #000;
         }
     </style>
 </head>
@@ -607,6 +828,44 @@
         </div>
     </div>
 
+    <!-- Order Form Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Order Details</h2>
+            <form class="order-form" id="customerForm" onsubmit="submitOrderForm(event)">
+                <div class="form-group">
+                    <label>Name <span class="required">*</span></label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone <span class="required">*</span></label>
+                    <input type="tel" name="phone" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                </div>
+                <div class="form-group">
+                    <label>Shipping Address <span class="required">*</span></label>
+                    <input type="text" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label>City <span class="required">*</span></label>
+                    <input type="text" name="city" required>
+                </div>
+                <div class="form-group">
+                    <label>PIN Code <span class="required">*</span></label>
+                    <input type="text" name="pincode" pattern="[0-9]{6}" title="Please enter a valid 6-digit PIN code" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-order" onclick="closeOrderModal()">Cancel</button>
+                    <button type="submit" class="confirm-order">Proceed to Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Original carousel JavaScript
         let currentIndex = 0;
@@ -635,8 +894,9 @@
         };
 
         function addToCart(type) {
-            const quantityInput = document.querySelector(`.quantity.${type.toLowerCase()}`);
-            const optionSelect = document.querySelector(`.process-option.${type.toLowerCase()}-option`);
+            const processType = type === 'B/W' ? 'bw' : type.toLowerCase();
+            const quantityInput = document.querySelector(`.quantity.${processType}`);
+            const optionSelect = document.querySelector(`.process-option.${processType}-option`);
             const quantity = parseInt(quantityInput.value || 0);
             const option = optionSelect.value;
 
@@ -730,62 +990,162 @@
             updateCart();
         });
 
-        function placeOrder() {
+        function showOrderModal() {
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        function submitOrderForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const customerData = Object.fromEntries(formData.entries());
+
+            // Update the placeOrder function to include customer data
+            initiateRazorpayPayment(customerData);
+        }
+
+        function sendOrderEmail(orderData, paymentId) {
+            // Format the order items for better email readability
+            const formattedItems = orderData.items.map(item => 
+                `- ${item.quantity} rolls of ${item.type} (${item.option}) - ₹${item.itemTotal}`
+            ).join('\n');
+
+            const emailContent = {
+                to_name: "Lazy Film Lab",
+                to_email: "labs@lazyfilms.in",
+                subject: `New Film Processing Order - #${paymentId}`,
+                customer_name: orderData.customer.name,
+                customer_email: orderData.customer.email,
+                customer_phone: orderData.customer.phone,
+                shipping_address: `${orderData.customer.address}, ${orderData.customer.city} - ${orderData.customer.pincode}`,
+                order_items: formattedItems,
+                scan_options: orderData.scans.length > 0 ? orderData.scans.join(', ') : 'None selected',
+                return_negatives: orderData.returnNegatives ? 'Yes (+₹150)' : 'No',
+                additional_notes: orderData.notes || 'None',
+                total_amount: `₹${total}`,
+                payment_id: paymentId,
+                order_date: new Date().toLocaleString('en-IN', { 
+                    timeZone: 'Asia/Kolkata',
+                    dateStyle: 'full',
+                    timeStyle: 'long'
+                })
+            };
+
+            // Send email using EmailJS with Zoho SMTP
+            emailjs.send(
+                'YOUR_ZOHO_SERVICE_ID', // Create this in EmailJS with Zoho SMTP
+                'YOUR_TEMPLATE_ID',      // Create a template in EmailJS
+                emailContent
+            ).then(
+                function(response) {
+                    console.log("Order confirmation sent to Zoho Mail", response);
+                },
+                function(error) {
+                    console.error("Failed to send email to Zoho", error);
+                }
+            );
+
+            // Send a copy to customer
+            const customerEmailContent = {
+                ...emailContent,
+                to_email: orderData.customer.email,
+                to_name: orderData.customer.name,
+                subject: `Order Confirmation - Lazy Film Lab #${paymentId}`
+            };
+
+            emailjs.send(
+                'YOUR_ZOHO_SERVICE_ID',
+                'YOUR_CUSTOMER_TEMPLATE_ID', // Create a separate template for customer emails
+                customerEmailContent
+            ).then(
+                function(response) {
+                    console.log("Order confirmation sent to customer", response);
+                },
+                function(error) {
+                    console.error("Failed to send email to customer", error);
+                }
+            );
+        }
+
+        function initiateRazorpayPayment(customerData) {
             if (cartData.length === 0) {
                 alert("Your cart is empty. Please add items to proceed.");
                 return;
             }
 
             // Get selected scan options
-            const selectedScans = getSelectedScans();
-            
+            const selectedScans = [];
+            document.querySelectorAll('input[name="scan-option"]:checked').forEach(checkbox => {
+                selectedScans.push(checkbox.value);
+            });
+
             // Get additional notes
-            const additionalNotes = document.querySelector('textarea').value;
+            const notes = document.querySelector('textarea').value;
 
             // Prepare order data
             const orderData = {
-                cart: cartData,
+                customer: customerData,
+                items: cartData,
                 scans: selectedScans,
-                returnNegatives: returnNegatives.checked,
-                notes: additionalNotes
+                returnNegatives: document.getElementById('return-negatives').checked,
+                notes: notes
             };
 
+            // Razorpay options
             const options = {
-                key: "rzp_test_YOUR_KEY_HERE",
+                key: "rzp_test_47G8Vu29Rw6KuM",
                 amount: total * 100,
                 currency: "INR",
                 name: "Lazy Film Lab",
                 description: "Film Processing Order",
+                prefill: {
+                    name: customerData.name,
+                    email: customerData.email,
+                    contact: customerData.phone
+                },
                 notes: {
-                    orderDetails: JSON.stringify(orderData)
+                    orderDetails: JSON.stringify(orderData),
+                    shippingAddress: `${customerData.address}, ${customerData.city} - ${customerData.pincode}`
+                },
+                theme: {
+                    color: "#000000"
                 },
                 handler: function(response) {
-                    // Clear cart after successful payment
-                    cartData = [];
-                    localStorage.removeItem('cartData');
-                    localStorage.removeItem('returnNegatives');
-                    updateCart();
+                    const paymentId = response.razorpay_payment_id;
                     
-                    // Clear form
+                    // Send order confirmation email
+                    sendOrderEmail(orderData, paymentId);
+                    
+                    // Clear cart and form
+                    cartData = [];
                     document.querySelector('textarea').value = '';
                     document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
                         checkbox.checked = false;
                     });
-                    returnNegatives.checked = false;
+                    document.getElementById('return-negatives').checked = false;
+                    updateCart();
+                    closeOrderModal();
                     
-                    alert("Payment successful! Your order has been placed.");
-                },
-                prefill: {
-                    email: "",
-                    contact: ""
-                },
-                theme: {
-                    color: "#000000"
+                    alert("Payment successful! Your order has been placed.\nPayment ID: " + paymentId);
                 }
             };
 
             const rzp = new Razorpay(options);
+            
+            rzp.on('payment.failed', function(response) {
+                alert("Payment failed. Please try again.\nError: " + response.error.description);
+            });
+
             rzp.open();
+        }
+
+        // Update the original placeOrder function to show the modal
+        function placeOrder() {
+            showOrderModal();
         }
     </script>
 </body>
