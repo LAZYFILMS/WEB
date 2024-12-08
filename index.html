@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <!-- Importing the Stratos font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet">
     <style>
         /* Global Reset */
@@ -17,12 +18,14 @@
             box-sizing: border-box;
         }
 
+        /* Body and HTML */
         body, html {
             height: 100%;
-            font-family: 'Stratos', sans-serif;
-            cursor: none;
+            font-family: 'Stratos', sans-serif; /* Applying Stratos font globally */
+            cursor: none; /* Hide the default cursor */
         }
 
+        /* Container */
         .container {
             position: relative;
             width: 100%;
@@ -35,11 +38,12 @@
             text-align: center;
         }
 
+        /* Logo, Book, Contact */
         .logo, .book, .contact {
             position: absolute;
             font-size: 40px;
-            font-weight: 900;
-            transition: transform 0.3s ease, font-size 0.3s ease;
+            font-weight: 900; /* Use the Stratos Black weight */
+            transition: transform 0.3s ease, font-size 0.3s ease; /* Smooth hover effect */
         }
 
         .logo {
@@ -57,28 +61,91 @@
             left: 30px;
         }
 
+        /* Link hover effect */
         a {
             color: white;
             text-decoration: none;
-            cursor: none;
+            cursor: none; /* Prevent the hand cursor from appearing */
         }
 
         a:hover {
-            text-decoration: none;
+            text-decoration: none; /* Prevent underline on hover */
         }
 
+        /* Text reacts to hover */
         .logo:hover, .book:hover, .contact:hover {
-            transform: scale(0.9);
+            transform: scale(0.9); /* Shrinks slightly on hover */
         }
 
-        /* Popup Styles */
-        .popup {
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .logo, .book, .contact {
+                font-size: 30px;
+            }
+
+            .logo {
+                top: 20px;
+                left: 20px;
+            }
+
+            .book {
+                top: 20px;
+                right: 20px;
+            }
+
+            .contact {
+                bottom: 50px;
+                left: 20px;
+            }
+
+            .container {
+                background-size: cover;
+                background-position: left;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo, .book, .contact {
+                font-size: 24px;
+            }
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        #cursor-circle {
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .is-hovering #cursor-circle {
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            opacity: 1;
+        }
+
+        /* Contact Popup Styles */
+        .contact-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
             width: 90%;
-            max-width: 600px;
+            max-width: 400px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -87,18 +154,57 @@
             z-index: 1000;
         }
 
-        .popup.show {
+        .contact-popup.show {
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
         }
 
-        .popup iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-            border-radius: 10px;
+        .popup-content {
+            padding: 20px;
+            text-align: left;
         }
 
+        .popup-content h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .popup-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .popup-content input, 
+        .popup-content textarea {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .popup-content button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: black;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .popup-content button:hover {
+            background: #333;
+        }
+
+        /* Close Button */
         .close-btn {
             position: absolute;
             top: 10px;
@@ -110,15 +216,20 @@
     </style>
 </head>
 <body>
+    <!-- Custom Cursor -->
+    <div id="cursor">
+        <div id="cursor-circle"></div>
+    </div>
+
     <div class="container">
-        <!-- Logo -->
+        <!-- Logo (Lazy Film) -->
         <div class="logo">
             <a href="#">LAZY FILMS</a>
         </div>
 
         <!-- Book link -->
         <div class="book">
-           <a href="#">THE BOOK</a>
+           <a href="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf" download="LAZY.pdf" target="_blank">THE BOOK</a>
         </div>
 
         <!-- Contact link -->
@@ -127,18 +238,10 @@
         </div>
     </div>
 
-    <!-- Book Preview Popup -->
-    <div class="popup" id="bookPopup">
-        <div class="popup-content">
-            <span class="close-btn" id="closeBookPopup">&times;</span>
-            <iframe src="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf" title="Book Preview"></iframe>
-        </div>
-    </div>
-
     <!-- Contact Popup -->
-    <div class="popup" id="contactPopup">
+    <div class="contact-popup" id="contactPopup">
         <div class="popup-content">
-            <span class="close-btn" id="closeContactPopup">&times;</span>
+            <span class="close-btn" id="closePopup">&times;</span>
             <h2>Contact Us</h2>
             <form id="contactForm">
                 <label for="email">Your Email:</label>
@@ -153,32 +256,53 @@
     </div>
 
     <script>
-        // Contact Popup
+        // Custom Cursor Script
+        const cursor = document.getElementById('cursor');
+        const cursorCircle = document.getElementById('cursor-circle');
+        const links = document.querySelectorAll('a');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursorCircle.classList.add('is-hovering');
+            });
+            link.addEventListener('mouseleave', () => {
+                cursorCircle.classList.remove('is-hovering');
+            });
+        });
+
+        // Contact Popup Script
         const contactLink = document.querySelector('.contact a');
         const contactPopup = document.getElementById('contactPopup');
-        const closeContactPopup = document.getElementById('closeContactPopup');
+        const closePopup = document.getElementById('closePopup');
+        const contactForm = document.getElementById('contactForm');
 
         contactLink.addEventListener('click', (e) => {
             e.preventDefault();
             contactPopup.classList.add('show');
         });
 
-        closeContactPopup.addEventListener('click', () => {
+        closePopup.addEventListener('click', () => {
             contactPopup.classList.remove('show');
         });
 
-        // Book Popup
-        const bookLink = document.querySelector('.book a');
-        const bookPopup = document.getElementById('bookPopup');
-        const closeBookPopup = document.getElementById('closeBookPopup');
-
-        bookLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            bookPopup.classList.add('show');
+        window.addEventListener('click', (e) => {
+            if (e.target === contactPopup) {
+                contactPopup.classList.remove('show');
+            }
         });
 
-        closeBookPopup.addEventListener('click', () => {
-            bookPopup.classList.remove('show');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            alert(`Message sent to enquiries@lazyfilms.in\n\nEmail: ${email}\nMessage: ${message}`);
+            contactPopup.classList.remove('show');
+            contactForm.reset();
         });
     </script>
 </body>
