@@ -1,5 +1,461 @@
-<html>
-  <body>
-    <p> <a href="#">Hello, world</a> </p>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+   
+ <!-- Importing the Stratos font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAZY FILM LAB</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: "Lucida Console", Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            color: #000;
+        }
+
+        .container {
+            max-width: 440px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-family: 'Stratos', sans-serif;
+            font-size: 24px;
+            margin: 0;
+            font-weight: bold; 
+        }
+
+        .email-link {
+            text-decoration: none;
+            color: #000;
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+
+        .carousel {
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #000;
+            border-radius: 8px;
+        }
+
+        .carousel img {
+            width: 100%;
+            display: none;
+        }
+
+        .carousel img:first-child {
+            display: block;
+        }
+
+        .order-box {
+            margin-top: 20px;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between buttons and input */
+        }
+
+        .quantity-control button {
+            background: none;
+            border: 2px solid #000;
+            padding: 10px;
+            font-size: 18px; /* Bigger buttons */
+            cursor: pointer;
+        }
+
+        .quantity-control input {
+            width: 60px;
+            font-size: 18px;
+            text-align: center;
+            border: 1px solid #000;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .scans {
+            margin: 20px 0;
+        }
+
+        .scans h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .scans-options {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .scans-options label {
+            font-size: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #000;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .place-order {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* New Styles for Description and FAQs */
+        .description, .faq {
+            font-family: "Lucida Console", Courier, monospace;
+            position: relative;
+ left: 50px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-top: 20px; /* Ensure space below the order box */
+        }
+
+        .faqs {
+            margin-top: 20px;
+        }
+
+        .faq h4 {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .faq p {
+            font-size: 16px;
+            margin: 5px 0 0 0;
+        }
+
+        .section-heading {
+            font-family: 'Stratos', sans-serif;
+position: relative;
+ left: 50px;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        /* Layout positioning */
+        .description-faq-section {
+	
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+       
+        .faq {
+            margin-bottom: 10px;
+        }
+
+        .faq label {
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .faq label:hover {
+            background-color: #e0e0e0;
+        }
+
+        .faq-content {
+            display: none;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            background-color: #fafafa;
+            border-radius: 4px;
+        }
+
+        .faq input[type="checkbox"]:checked + label + .faq-content {
+            display: block;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+
+            .carousel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title">LAZY FILM LAB</h1>
+            <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
+        </header>
+
+        <!-- Carousel Section -->
+        <div class="carousel">
+            <img src="1.jpg" alt="1">
+            <img src="2.jpg" alt="2">
+            <img src="3.jpg" alt="3">
+            <img src="4.jpg" alt="4">
+            <img src="5.jpg" alt="5">
+            <img src="6.jpg" alt="6">
+            <img src="7.jpg" alt="7">
+            <img src="8.jpg" alt="8">
+        </div>
+
+        <div class="order-box">
+            <form id="order-form">
+                <div class="order-row">
+                    <label>ECN Processing</label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus">-</button>
+                        <input type="number" class="quantity ecn" min="0" value="0">
+                        <button type="button" class="plus">+</button>
+                    </div>
+                    <select>
+                        <option>Normal</option>
+                        <option>Push</option>
+                        <option>Pull</option>
+                    </select>
+                </div>
+                <div class="order-row">
+                    <label>C41 Processing</label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus">-</button>
+                        <input type="number" class="quantity c41" min="0" value="0">
+                        <button type="button" class="plus">+</button>
+                    </div>
+                    <select>
+                        <option>Normal</option>
+                        <option>Push</option>
+                        <option>Pull</option>
+                    </select>
+                </div>
+                <div class="order-row">
+                    <label>B/W Processing</label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus">-</button>
+                        <input type="number" class="quantity bw" min="0" value="0">
+                        <button type="button" class="plus">+</button>
+                    </div>
+                    <select>
+                        <option>Normal</option>
+                        <option>Push</option>
+                        <option>Pull</option>
+                    </select>
+                </div>
+
+                <!-- Scans Section -->
+                <div class="scans">
+                    <h3>Scans</h3>
+                    <div class="scans-options">
+                        <label><input type="checkbox"> RAW</label>
+                        <label><input type="checkbox"> TIFF</label>
+                        <label><input type="checkbox"> JPEG</label>
+                    </div>
+                </div>
+
+                <label>
+                    <input type="checkbox" id="return-negatives"> Return my negatives (+₹150)
+                </label>
+
+                <textarea placeholder="Additional notes"></textarea>
+
+                <div class="total">
+                    Total Price: ₹<span id="total-price">0</span>
+                </div>
+
+                <button type="button" class="place-order" onclick="placeOrder()">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Description & FAQ Section Below the Order Box -->
+    <div class="description-faq-section">
+        <div class="section-heading"><br>// HOW IT WORKS</br></div>
+        <div class="description">
+            <p>
+               We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, and Black & White.<br>
+
+		<br>How to send your films :</br>
+		Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section. <br>
+		Choose if you want to add push/pull process.<br>
+		Label your rolls with your name, name of the film, ISO it is shot on. <br>
+		Wrap them in well in packaging material and ship it to this address, with your order number. <br>
+		<br>
+		Address : <br>
+		Lazy Film Lab <br>
+		C-13, Sahar CHS, sahar road, Parsiwada Chakala, Andheri East, Mumbai - 400099 <br>
+		phone - 9405143371 <br>
+
+
+        </div>
+
+        <div class="section-heading"> <br> // FAQ</div>
+        <div class="faqs">
+            <div class="faq">
+                <h4>I don't know which process my color rolls should be developed in - ECN-2 or C-41</h4>
+                <p>If it’s a respooled motion picture film like 250D, 500T, 200T, or 50D, it’s ideally processed in ECN-2 for better colors. <br>
+		Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41. <br>
+	If you’re still unsure about the process, just write the ISO you shot on and send it in.<br>
+	</p>
+            </div>
+            <div class="faq">
+                <h4>My films have Remjet. Is that okay?</h4>
+                <p>Yes, it’s perfectly okay to send a Remjet-backed motion picture film. We remove the Remjet and process the film in ECN-2.</p>
+            </div>
+             <div class="faq">
+                <h4>What scanning resolution will I get?</h4>
+                <p>We scan with a full-frame mirrorless camera, which approximates a resolution of 6000 x 4000 pixels. <br>
+It’s very high resolution and suitable for large prints.</p>
+            </div>
+		<div class="faq">
+                <h4>How do I get my negatives back?</h4>
+                <p>You can check the “return my negatives” box, and we’ll ship them back to your address for an additional courier charge.</p>
+            </div>
+		</div>
+		<div class="faq">
+                <h4>How should I label my rolls?</h4>
+                <p>Simply mention your name, the film name, the ISO you shot on, and the process.For example: lazy-500T-800-ECN2</p>
+            </div>
+		<div class="faq">
+                <h4>I have shot expired film. How should I proceed with processing?</h4>
+                <p>The best way to use expired film is to overexpose it by +1 stop for every decade it’s expired. <br>
+For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.<br>
+		If you’ve followed this method, we’ll develop it at box speed, and it should work fine. Otherwise, you can shoot at box speed and let us know the year it expired.</p>
+           	 </div>
+		<div class="faq">
+                <h4>I want RAW negative files of my film. Can I get them?</h4>
+                <p>Yes, you can select the format you want your digitized photos to be delivered in, including RAW files.</p>
+		</div>
+ </div>
+		<div class="faq">
+                <h4>Do you process Ektachrome?</h4>
+                <p>Yes, we process Ektachrome, but not as a slide film in E-6 chemistry. We process it in ECN-2 as a negative.</p>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for Carousel
+        let currentIndex = 0;
+        const images = document.querySelectorAll(".carousel img");
+
+        function showNextImage() {
+            images[currentIndex].style.display = "none";
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].style.display = "block";
+        }
+
+        setInterval(showNextImage, 6000); // Change image every 6 seconds
+
+        // JavaScript for Total Price Calculation
+        const quantities = document.querySelectorAll(".quantity");
+        const returnNegatives = document.getElementById("return-negatives");
+        const totalPriceEl = document.getElementById("total-price");
+
+        function calculateTotal() {
+            let total = 0;
+            quantities.forEach(input => {
+                total += parseInt(input.value || 0) * 500;
+            });
+
+            if (returnNegatives.checked) {
+                total += 150;
+            }
+
+            totalPriceEl.textContent = total;
+        }
+
+        document.querySelectorAll(".plus").forEach(button => {
+            button.addEventListener("click", event => {
+                const input = event.target.closest(".quantity-control").querySelector(".quantity");
+                input.value = parseInt(input.value || 0) + 1;
+                calculateTotal();
+            });
+        });
+
+        document.querySelectorAll(".minus").forEach(button => {
+            button.addEventListener("click", event => {
+                const input = event.target.closest(".quantity-control").querySelector(".quantity");
+                input.value = Math.max(0, parseInt(input.value || 0) - 1);
+                calculateTotal();
+            });
+        });
+
+        quantities.forEach(input => {
+            input.addEventListener("change", calculateTotal);
+        });
+
+        returnNegatives.addEventListener("change", calculateTotal);
+
+        function placeOrder() {
+            alert("Redirecting to payment gateway...");
+            // Redirect to Razorpay or other payment gateway
+        }
+    </script>
+</body>
 </html>
