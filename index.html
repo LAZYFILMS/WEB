@@ -39,7 +39,7 @@
         }
 
         /* Logo, Book, Contact */
-        .logo, .book, .contact {
+        .logo, .book, .contact, .lab {
             position: absolute;
             font-size: 40px;
             font-weight: 900; /* Use the Stratos Black weight */
@@ -60,6 +60,11 @@
             bottom: 30px;
             left: 30px;
         }
+        .lab {
+            bottom: 30px;
+            right: 30px;
+        }
+        
 
         /* Link hover effect */
         a {
@@ -73,7 +78,7 @@
         }
 
         /* Text reacts to hover */
-        .logo:hover, .book:hover, .contact:hover {
+        .logo:hover, .book:hover, .contact:hover, .lab:hover {
             transform: scale(0.9); /* Shrinks slightly on hover */
         }
 
@@ -94,6 +99,11 @@
             }
 
             .contact {
+                bottom: 50px;
+                left: 20px;
+            }
+
+            .lab {
                 bottom: 50px;
                 left: 20px;
             }
@@ -236,6 +246,12 @@
         <div class="contact">
             <a href="#">CONTACT</a>
         </div>
+
+        <!-- The Lab Link -->
+        <div class="lab">
+           <a href="www.lazyfilms.in.labs">THE LAB</a>
+        </div>
+        
     </div>
 
     <!-- Contact Popup -->
