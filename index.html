@@ -137,6 +137,80 @@
             margin-left: -10px;
             opacity: 1;
         }
+
+        /* Contact Popup Styles */
+        .contact-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0;
+            z-index: 1000;
+        }
+
+        .contact-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .popup-content {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .popup-content h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .popup-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .popup-content input, 
+        .popup-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .popup-content button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: black;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .popup-content button:hover {
+            background: #333;
+        }
+
+        /* Close Button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -158,7 +232,24 @@
 
         <!-- Contact link -->
         <div class="contact">
-            <a href="mailto:enquiries@lazyfilms.in">CONTACT</a>
+            <a href="#">CONTACT</a>
+        </div>
+    </div>
+
+    <!-- Contact Popup -->
+    <div class="contact-popup" id="contactPopup">
+        <div class="popup-content">
+            <span class="close-btn" id="closePopup">&times;</span>
+            <h2>Contact Us</h2>
+            <form id="contactForm">
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Write your email">
+                
+                <label for="message">Your Message:</label>
+                <textarea id="message" name="message" required placeholder="Write your message"></textarea>
+                
+                <button type="submit">Send</button>
+            </form>
         </div>
     </div>
 
@@ -179,6 +270,37 @@
             link.addEventListener('mouseleave', () => {
                 cursorCircle.classList.remove('is-hovering');
             });
+        });
+
+        // Contact Popup Script
+        const contactLink = document.querySelector('.contact a');
+        const contactPopup = document.getElementById('contactPopup');
+        const closePopup = document.getElementById('closePopup');
+        const contactForm = document.getElementById('contactForm');
+
+        contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            contactPopup.classList.add('show');
+        });
+
+        closePopup.addEventListener('click', () => {
+            contactPopup.classList.remove('show');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === contactPopup) {
+                contactPopup.classList.remove('show');
+            }
+        });
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            alert(`Message sent to enquiries@lazyfilms.in\n\nEmail: ${email}\nMessage: ${message}`);
+            contactPopup.classList.remove('show');
+            contactForm.reset();
         });
     </script>
 </body>
