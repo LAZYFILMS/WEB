@@ -39,6 +39,7 @@
             position: absolute;
             font-size: 40px;
             font-weight: 900; /* Use the Stratos Black weight */
+            transition: transform 0.3s ease, font-size 0.3s ease; /* Smooth hover effect */
         }
 
         .logo {
@@ -56,13 +57,20 @@
             left: 30px;
         }
 
+        /* Link hover effect */
         a {
             color: white;
-            text-decoration: none; /* No underline by default */
+            text-decoration: none;
+            cursor: none; /* Prevent the hand cursor from appearing */
         }
 
         a:hover {
             text-decoration: none; /* Prevent underline on hover */
+        }
+
+        /* Text reacts to hover */
+        .logo:hover, .book:hover, .contact:hover {
+            transform: scale(0.9); /* Shrinks slightly on hover */
         }
 
         /* Mobile optimization */
