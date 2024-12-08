@@ -6,12 +6,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-   
- <!-- Importing the Stratos font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAZY FILM LAB</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         /* General Styles */
         body {
@@ -23,9 +22,9 @@
         }
 
         .container {
-            max-width: 440px;
+            max-width: 580px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 30px;
             border: 2px solid #000;
             border-radius: 8px;
             background-color: #f9f9f9;
@@ -42,34 +41,64 @@
             font-family: 'Stratos', sans-serif;
             font-size: 24px;
             margin: 0;
-            font-weight: bold; 
+            font-weight: bold;
         }
 
         .email-link {
-	 font-family: 'Stratos', sans-serif;
+            font-family: 'Stratos', sans-serif;
             text-decoration: none;
             color: #000;
-            font-size: 24px; 
-            font-weight: bold; 
+            font-size: 24px;
+            font-weight: bold;
         }
 
+        /* Carousel Styles */
         .carousel {
-            margin: 20px 0;
+            margin: 15px 0;
             overflow: hidden;
             position: relative;
             border: 1px solid #000;
-            border-radius: 8px;
+            border-radius: 6px;
+            height: 350px;
         }
 
         .carousel img {
             width: 100%;
+            height: 100%;
             display: none;
+            object-fit: cover;
         }
 
         .carousel img:first-child {
             display: block;
         }
 
+        .carousel-nav {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            border: none;
+            padding: 0;
+        }
+
+        .carousel-dot.active {
+            background: #fff;
+        }
+
+        /* Order Box Styles */
         .order-box {
             margin-top: 20px;
         }
@@ -78,93 +107,181 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            gap: 20px;
+            padding: 5px 0;
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-row label {
+            font-size: 14px;
+            min-width: 120px;
+            flex-shrink: 0;
         }
 
         .quantity-control {
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between buttons and input */
+            gap: 8px;
+            flex-shrink: 0;
+            margin: 0 10px;
         }
 
         .quantity-control button {
             background: none;
             border: 2px solid #000;
-            padding: 10px;
-            font-size: 18px; /* Bigger buttons */
+            padding: 8px;
+            font-size: 16px;
             cursor: pointer;
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .quantity-control input {
-            width: 60px;
-            font-size: 18px;
+            width: 50px;
+            height: 36px;
+            font-size: 16px;
             text-align: center;
             border: 1px solid #000;
+            padding: 0;
         }
 
         select {
-            padding: 10px;
-            font-size: 16px;
+            padding: 8px;
+            font-size: 14px;
+            height: 36px;
+            border: 1px solid #000;
+            min-width: 130px;
+            flex-shrink: 0;
+            margin: 0 10px;
         }
 
+        /* Cart Styles */
+        .add-to-cart {
+            background: #000;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            height: 36px;
+            min-width: 100px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .add-to-cart:hover {
+            background: #333;
+        }
+
+        .cart-summary {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 8px;
+        }
+
+        .cart-summary h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .cart-item {
+            font-size: 14px;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .remove-item {
+            color: #000;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 5px;
+        }
+
+        .remove-item:hover {
+            opacity: 0.7;
+        }
+
+        .cart-total {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #000;
+        }
+
+        /* Scans Section */
         .scans {
-            margin: 20px 0;
+            margin: 25px 0;
+            padding: 0 5px;
         }
 
         .scans h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
         }
 
         .scans-options {
             display: flex;
-            justify-content: space-between;
+            gap: 25px;
         }
 
         .scans-options label {
-            font-size: 16px;
+            font-size: 14px;
         }
 
         textarea {
             width: 100%;
             margin: 20px 0;
-            padding: 15px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 14px;
             border: 2px solid #000;
             border-radius: 4px;
             box-sizing: border-box;
             resize: vertical;
-        }
-
-        .total {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            min-height: 80px;
         }
 
         .place-order {
             display: block;
             width: 100%;
             padding: 15px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             background: #000;
             color: #fff;
             text-align: center;
             border: none;
             cursor: pointer;
+            border-radius: 4px;
+            margin-top: 25px;
+            height: auto;
         }
 
-        /* New Styles for Description and FAQs */
+        /* Description & FAQ Styles */
         .description, .faq {
             font-family: "Lucida Console", Courier, monospace;
             position: relative;
- left: 50px;
+            left: 50px;
             font-size: 16px;
             line-height: 1.6;
             color: #333;
-            margin-top: 20px; /* Ensure space below the order box */
+            margin-top: 20px;
         }
 
         .faqs {
@@ -184,26 +301,28 @@
 
         .section-heading {
             font-family: 'Stratos', sans-serif;
-position: relative;
- left: 50px;
+            position: relative;
+            left: 50px;
             font-size: 30px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #000;
         }
 
-        /* Layout positioning */
         .description-faq-section {
-	
             margin-top: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px;
         }
 
-       
         .faq {
             margin-bottom: 10px;
+            width: 100%;
         }
 
         .faq label {
@@ -234,29 +353,101 @@ position: relative;
             display: block;
         }
 
-        /* Responsive design */
+        /* Label adjustments */
+        .order-row label {
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        /* Return negatives checkbox */
+        label[for="return-negatives"] {
+            display: block;
+            margin: 20px 5px;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .container {
-                width: 100%;
+                width: calc(100% - 40px);
+                margin: 20px;
+                padding: 20px;
             }
 
-            .carousel {
-                display: none;
+            .order-row {
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .order-row label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .quantity-control {
+                flex: 1;
+                margin: 0;
+            }
+
+            select {
+                flex: 2;
+                margin: 0;
+            }
+
+            .add-to-cart {
+                width: 100%;
+                margin: 5px 0 0 0;
+            }
+        }
+
+        /* Additional optimization for very small screens */
+        @media (max-width: 380px) {
+            .container {
+                margin: 5px;
+                padding: 10px;
+            }
+
+            .order-row {
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+
+            .quantity-control {
+                min-width: 100px;
+            }
+
+            .quantity-control button {
+                padding: 4px 8px;
+            }
+
+            .quantity-control input {
+                width: 35px;
+            }
+
+            select {
+                padding: 4px 6px;
+            }
+
+            .add-to-cart {
+                padding: 6px 10px;
+            }
+
+            .cart-item {
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-     <header>
+        <header>
             <h1 class="title">LAZY FILM LAB</h1>
             <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
         </header>
 
-
         <!-- Carousel Section -->
         <div class="carousel">
-            <img src="1.jpg" alt="1">
+            <img src="1.jpg" alt="1" class="active">
             <img src="2.jpg" alt="2">
             <img src="3.jpg" alt="3">
             <img src="4.jpg" alt="4">
@@ -264,10 +455,12 @@ position: relative;
             <img src="6.jpg" alt="6">
             <img src="7.jpg" alt="7">
             <img src="8.jpg" alt="8">
+            <div class="carousel-nav"></div>
         </div>
 
         <div class="order-box">
             <form id="order-form">
+                <!-- ECN Processing -->
                 <div class="order-row">
                     <label>ECN Processing</label>
                     <div class="quantity-control">
@@ -275,12 +468,17 @@ position: relative;
                         <input type="number" class="quantity ecn" min="0" value="0">
                         <button type="button" class="plus">+</button>
                     </div>
-                    <select>
-                        <option>Normal</option>
-                        <option>Push</option>
-                        <option>Pull</option>
+                    <select class="process-option ecn-option">
+                        <option>Boxspeed</option>
+                        <option>Push +1</option>
+                        <option>Push +2</option>
+                        <option>Pull -1</option>
+                        <option>Pull -2</option>
                     </select>
+                    <button type="button" class="add-to-cart" onclick="addToCart('ECN')">Add to Cart</button>
                 </div>
+
+                <!-- C41 Processing -->
                 <div class="order-row">
                     <label>C41 Processing</label>
                     <div class="quantity-control">
@@ -288,12 +486,17 @@ position: relative;
                         <input type="number" class="quantity c41" min="0" value="0">
                         <button type="button" class="plus">+</button>
                     </div>
-                    <select>
-                        <option>Normal</option>
-                        <option>Push</option>
-                        <option>Pull</option>
+                    <select class="process-option c41-option">
+                        <option>Boxspeed</option>
+                        <option>Push +1</option>
+                        <option>Push +2</option>
+                        <option>Pull -1</option>
+                        <option>Pull -2</option>
                     </select>
+                    <button type="button" class="add-to-cart" onclick="addToCart('C41')">Add to Cart</button>
                 </div>
+
+                <!-- B/W Processing -->
                 <div class="order-row">
                     <label>B/W Processing</label>
                     <div class="quantity-control">
@@ -301,20 +504,23 @@ position: relative;
                         <input type="number" class="quantity bw" min="0" value="0">
                         <button type="button" class="plus">+</button>
                     </div>
-                    <select>
-                        <option>Normal</option>
-                        <option>Push</option>
-                        <option>Pull</option>
+                    <select class="process-option bw-option">
+                        <option>Boxspeed</option>
+                        <option>Push +1</option>
+                        <option>Push +2</option>
+                        <option>Pull -1</option>
+                        <option>Pull -2</option>
                     </select>
+                    <button type="button" class="add-to-cart" onclick="addToCart('B/W')">Add to Cart</button>
                 </div>
 
                 <!-- Scans Section -->
                 <div class="scans">
                     <h3>Scans</h3>
                     <div class="scans-options">
-                        <label><input type="checkbox"> RAW</label>
-                        <label><input type="checkbox"> TIFF</label>
-                        <label><input type="checkbox"> JPEG</label>
+                        <label><input type="checkbox" name="scan-option" value="RAW"> RAW</label>
+                        <label><input type="checkbox" name="scan-option" value="TIFF"> TIFF</label>
+                        <label><input type="checkbox" name="scan-option" value="JPEG"> JPEG</label>
                     </div>
                 </div>
 
@@ -324,8 +530,13 @@ position: relative;
 
                 <textarea placeholder="Additional notes"></textarea>
 
-                <div class="total">
-                    Total Price: ₹<span id="total-price">0</span>
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <h3>Cart Summary</h3>
+                    <ul id="cart-items" class="cart-items"></ul>
+                    <div class="cart-total">
+                        Total: ₹<span id="total-price">0</span>
+                    </div>
                 </div>
 
                 <button type="button" class="place-order" onclick="placeOrder()">Place Order</button>
@@ -340,69 +551,64 @@ position: relative;
             <p>
                We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, and Black & White.<br>
 
-		<br>How to send your films :</br>
-		Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section. <br>
-		Choose if you want to add push/pull process.<br>
-		Label your rolls with your name, name of the film, ISO it is shot on. <br>
-		Wrap them in well in packaging material and ship it to this address, with your order number. <br>
-		<br>
-		Address : <br>
-		Lazy Film Lab <br>
-		C-13, Sahar CHS, sahar road, Parsiwada Chakala, Andheri East, Mumbai - 400099 <br>
-		phone - 9405143371 <br>
-
-
+                <br>How to send your films :</br>
+                Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section. <br>
+                Choose if you want to add push/pull process.<br>
+                Label your rolls with your name, name of the film, ISO it is shot on. <br>
+                Wrap them in well in packaging material and ship it to this address, with your order number. <br>
+                <br>
+                Address : <br>
+                Lazy Film Lab <br>
+                C-13, Sahar CHS, sahar road, Parsiwada Chakala, Andheri East, Mumbai - 400099 <br>
+                phone - 9405143371 <br>
+            </p>
         </div>
 
         <div class="section-heading"> <br> // FAQ</div>
         <div class="faqs">
             <div class="faq">
                 <h4>I don't know which process my color rolls should be developed in - ECN-2 or C-41</h4>
-                <p>If it’s a respooled motion picture film like 250D, 500T, 200T, or 50D, it’s ideally processed in ECN-2 for better colors. <br>
-		Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41. <br>
-	If you’re still unsure about the process, just write the ISO you shot on and send it in.<br>
-	</p>
+                <p>If it's a respooled motion picture film like 250D, 500T, 200T, or 50D, it's ideally processed in ECN-2 for better colors. <br>
+                Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41. <br>
+                If you're still unsure about the process, just write the ISO you shot on and send it in.<br>
+                </p>
             </div>
             <div class="faq">
                 <h4>My films have Remjet. Is that okay?</h4>
-                <p>Yes, it’s perfectly okay to send a Remjet-backed motion picture film. We remove the Remjet and process the film in ECN-2.</p>
+                <p>Yes, it's perfectly okay to send a Remjet-backed motion picture film. We remove the Remjet and process the film in ECN-2.</p>
             </div>
-             <div class="faq">
+            <div class="faq">
                 <h4>What scanning resolution will I get?</h4>
                 <p>We scan with a full-frame mirrorless camera, which approximates a resolution of 6000 x 4000 pixels. <br>
-It’s very high resolution and suitable for large prints.</p>
+                It's very high resolution and suitable for large prints.</p>
             </div>
-		<div class="faq">
+            <div class="faq">
                 <h4>How do I get my negatives back?</h4>
-                <p>You can check the “return my negatives” box, and we’ll ship them back to your address for an additional courier charge.</p>
+                <p>You can check the "return my negatives" box, and we'll ship them back to your address for an additional courier charge.</p>
             </div>
-		</div>
-		<div class="faq">
+            <div class="faq">
                 <h4>How should I label my rolls?</h4>
                 <p>Simply mention your name, the film name, the ISO you shot on, and the process.For example: lazy-500T-800-ECN2</p>
             </div>
-		<div class="faq">
+            <div class="faq">
                 <h4>I have shot expired film. How should I proceed with processing?</h4>
-                <p>The best way to use expired film is to overexpose it by +1 stop for every decade it’s expired. <br>
-For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.<br>
-		If you’ve followed this method, we’ll develop it at box speed, and it should work fine. Otherwise, you can shoot at box speed and let us know the year it expired.</p>
-           	 </div>
-		<div class="faq">
+                <p>The best way to use expired film is to overexpose it by +1 stop for every decade it's expired. <br>
+                For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.<br>
+                If you've followed this method, we'll develop it at box speed, and it should work fine. Otherwise, you can shoot at box speed and let us know the year it expired.</p>
+            </div>
+            <div class="faq">
                 <h4>I want RAW negative files of my film. Can I get them?</h4>
                 <p>Yes, you can select the format you want your digitized photos to be delivered in, including RAW files.</p>
-		</div>
- </div>
-		<div class="faq">
+            </div>
+            <div class="faq">
                 <h4>Do you process Ektachrome?</h4>
                 <p>Yes, we process Ektachrome, but not as a slide film in E-6 chemistry. We process it in ECN-2 as a negative.</p>
-
             </div>
-
         </div>
     </div>
 
     <script>
-        // JavaScript for Carousel
+        // Original carousel JavaScript
         let currentIndex = 0;
         const images = document.querySelectorAll(".carousel img");
 
@@ -414,49 +620,172 @@ For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.<br>
 
         setInterval(showNextImage, 6000); // Change image every 6 seconds
 
-        // JavaScript for Total Price Calculation
-        const quantities = document.querySelectorAll(".quantity");
-        const returnNegatives = document.getElementById("return-negatives");
+        // Cart functionality
+        const cartItems = document.getElementById("cart-items");
         const totalPriceEl = document.getElementById("total-price");
+        const returnNegatives = document.getElementById("return-negatives");
+        let cartData = [];
+        let total = 0;
 
-        function calculateTotal() {
-            let total = 0;
-            quantities.forEach(input => {
-                total += parseInt(input.value || 0) * 500;
+        const PRICES = {
+            'ECN': 500,
+            'C41': 500,
+            'B/W': 500,
+            'NEGATIVES_RETURN': 150
+        };
+
+        function addToCart(type) {
+            const quantityInput = document.querySelector(`.quantity.${type.toLowerCase()}`);
+            const optionSelect = document.querySelector(`.process-option.${type.toLowerCase()}-option`);
+            const quantity = parseInt(quantityInput.value || 0);
+            const option = optionSelect.value;
+
+            if (quantity > 0) {
+                const itemTotal = quantity * PRICES[type];
+                const cartItem = {
+                    id: Date.now(),
+                    type,
+                    quantity,
+                    option,
+                    itemTotal,
+                };
+
+                cartData.push(cartItem);
+                updateCart();
+                quantityInput.value = 0;
+                optionSelect.value = "Boxspeed";
+            } else {
+                alert("Please select a quantity greater than 0.");
+            }
+        }
+
+        function getSelectedScans() {
+            const scans = [];
+            document.querySelectorAll('input[name="scan-option"]:checked').forEach(checkbox => {
+                scans.push(checkbox.value);
+            });
+            return scans;
+        }
+
+        function updateCart() {
+            cartItems.innerHTML = "";
+            total = 0;
+
+            cartData.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "cart-item";
+                li.innerHTML = `
+                    <span>${item.quantity} rolls of ${item.type} (${item.option})</span>
+                    <span>
+                        ₹${item.itemTotal}
+                        <span class="remove-item" onclick="removeFromCart(${item.id})">×</span>
+                    </span>
+                `;
+                cartItems.appendChild(li);
+                total += item.itemTotal;
             });
 
             if (returnNegatives.checked) {
-                total += 150;
+                total += PRICES.NEGATIVES_RETURN;
+                const li = document.createElement("li");
+                li.className = "cart-item";
+                li.innerHTML = `
+                    <span>Return Negatives</span>
+                    <span>₹${PRICES.NEGATIVES_RETURN}</span>
+                `;
+                cartItems.appendChild(li);
             }
 
             totalPriceEl.textContent = total;
+            
+            // Save cart data to localStorage
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+            localStorage.setItem('returnNegatives', returnNegatives.checked);
         }
 
+        function removeFromCart(id) {
+            cartData = cartData.filter(item => item.id !== id);
+            updateCart();
+        }
+
+        // Event Listeners
         document.querySelectorAll(".plus").forEach(button => {
-            button.addEventListener("click", event => {
-                const input = event.target.closest(".quantity-control").querySelector(".quantity");
+            button.addEventListener("click", (e) => {
+                const input = e.target.closest(".quantity-control").querySelector("input");
                 input.value = parseInt(input.value || 0) + 1;
-                calculateTotal();
             });
         });
 
         document.querySelectorAll(".minus").forEach(button => {
-            button.addEventListener("click", event => {
-                const input = event.target.closest(".quantity-control").querySelector(".quantity");
+            button.addEventListener("click", (e) => {
+                const input = e.target.closest(".quantity-control").querySelector("input");
                 input.value = Math.max(0, parseInt(input.value || 0) - 1);
-                calculateTotal();
             });
         });
 
-        quantities.forEach(input => {
-            input.addEventListener("change", calculateTotal);
+        returnNegatives.addEventListener('change', updateCart);
+
+        // Load cart data from localStorage
+        window.addEventListener('load', () => {
+            updateCart();
         });
 
-        returnNegatives.addEventListener("change", calculateTotal);
-
         function placeOrder() {
-            alert("Redirecting to payment gateway...");
-            // Redirect to Razorpay or other payment gateway
+            if (cartData.length === 0) {
+                alert("Your cart is empty. Please add items to proceed.");
+                return;
+            }
+
+            // Get selected scan options
+            const selectedScans = getSelectedScans();
+            
+            // Get additional notes
+            const additionalNotes = document.querySelector('textarea').value;
+
+            // Prepare order data
+            const orderData = {
+                cart: cartData,
+                scans: selectedScans,
+                returnNegatives: returnNegatives.checked,
+                notes: additionalNotes
+            };
+
+            const options = {
+                key: "rzp_test_YOUR_KEY_HERE",
+                amount: total * 100,
+                currency: "INR",
+                name: "Lazy Film Lab",
+                description: "Film Processing Order",
+                notes: {
+                    orderDetails: JSON.stringify(orderData)
+                },
+                handler: function(response) {
+                    // Clear cart after successful payment
+                    cartData = [];
+                    localStorage.removeItem('cartData');
+                    localStorage.removeItem('returnNegatives');
+                    updateCart();
+                    
+                    // Clear form
+                    document.querySelector('textarea').value = '';
+                    document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    returnNegatives.checked = false;
+                    
+                    alert("Payment successful! Your order has been placed.");
+                },
+                prefill: {
+                    email: "",
+                    contact: ""
+                },
+                theme: {
+                    color: "#000000"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
         }
     </script>
 </body>
