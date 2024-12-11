@@ -291,15 +291,15 @@
             font-family: "stratos", sans-serif;
             font-weight: 900;
             font-style: normal;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 42px;
+            margin-bottom: 25px;
             color: white;
             letter-spacing: 1px;
         }
 
         .description .body-text {
             font-family: 'Lucida Console', Courier, monospace;
-            font-size: 24px;
+            font-size: 31px;
             line-height: 1.4;
             color: white;
         }
@@ -339,8 +339,8 @@
             font-family: "stratos", sans-serif;
             font-weight: 900;
             font-style: normal;
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            margin-bottom: 13px;
             color: white;
             cursor: pointer;
             letter-spacing: 1px;
@@ -348,7 +348,7 @@
 
         .lab-description .body-text {
             font-family: 'Lucida Console', Courier, monospace;
-            font-size: 24px;
+            font-size: 31px;
             line-height: 1.4;
             color: white;
             margin-top: 20px;
@@ -377,8 +377,8 @@
             font-family: "stratos", sans-serif;
             font-weight: 900;
             font-style: normal;
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            margin-bottom: 13px;
             color: white;
             display: block;
             text-decoration: none;
@@ -408,8 +408,8 @@
             font-family: "stratos", sans-serif;
             font-weight: 900;
             font-style: normal;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 42px;
+            margin-bottom: 25px;
             color: white;
             text-decoration: none;
             letter-spacing: 1px;
@@ -417,10 +417,57 @@
 
         .book-description .body-text {
             font-family: 'Lucida Console', Courier, monospace;
-            font-size: 24px;
+            font-size: 31px;
             line-height: 1.4;
             color: white;
             margin-top: 20px;
+        }
+
+        /* Desktop sizes (default) */
+        .description .subheading,
+        .lab-description .subheading,
+        .contact-description a,
+        .book-description .subheading a {
+            font-size: 42px; /* Increased for desktop */
+            margin-bottom: 25px;
+        }
+
+        .description .body-text,
+        .lab-description .body-text,
+        .book-description .body-text {
+            font-size: 31px; /* Increased for desktop */
+        }
+
+        /* Mobile sizes (update sizes) */
+        @media (max-width: 768px) {
+            .description .subheading,
+            .lab-description .subheading,
+            .contact-description a,
+            .book-description .subheading a {
+                font-size: 30px; /* Updated from 24px */
+                margin-bottom: 15px;
+            }
+
+            .description .body-text,
+            .lab-description .body-text,
+            .book-description .body-text {
+                font-size: 24px; /* Updated from 18px */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .description .subheading,
+            .lab-description .subheading,
+            .contact-description a,
+            .book-description .subheading a {
+                font-size: 26px; /* Updated from 20px */
+            }
+
+            .description .body-text,
+            .lab-description .body-text,
+            .book-description .body-text {
+                font-size: 22px; /* Updated from 16px */
+            }
         }
     </style>
 </head>
@@ -448,7 +495,7 @@
 
         <div class="description" id="description">
             <div class="subheading">// WE MAKE FILMS ON FILM</div>
-            <div class="body-text">Attempting to reintroduce the celluloid medium in India to create a new wave of narrative-driven, <br>
+            <div class="body-text">Attempting to reintroduce the celluloid medium in India to create a new wave of narrative-driven, 
                 emotionally resonant commercial films that are subversive, quirky, and memorable.</div>
         </div>
 
