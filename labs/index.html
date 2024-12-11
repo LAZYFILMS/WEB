@@ -26,6 +26,7 @@
             padding: 0;
             background: #fff;
             color: #000;
+            cursor: none;
         }
 
         .container {
@@ -57,6 +58,7 @@
             color: #000;
             font-size: 24px;
             font-weight: bold;
+            cursor: none;
         }
 
         /* Carousel Styles */
@@ -845,6 +847,49 @@
                 height: 40px;
             }
         }
+
+        /* Update cursor styles */
+
+        /* Custom Cursor - Only for desktop */
+        @media (min-width: 769px) {
+            #cursor {
+                position: fixed;
+                z-index: 9999;
+                pointer-events: none;
+                top: 0;
+                left: 0;
+            }
+
+            #cursor-circle {
+                width: 40px;
+                height: 40px;
+                margin-top: -20px;
+                margin-left: -20px;
+                border-radius: 50%;
+                border: 2px solid #000;
+                opacity: 0.6;
+                transition: all 0.2s ease;
+            }
+
+            .is-hovering #cursor-circle {
+                width: 20px;
+                height: 20px;
+                margin-top: -10px;
+                margin-left: -10px;
+                opacity: 1;
+            }
+
+            /* Remove default cursors for desktop */
+            a, button, input[type="button"], input[type="submit"], 
+            select, .add-roll-btn, .remove-roll, .place-order,
+            input[type="checkbox"], label, .carousel-dot {
+                cursor: none !important;
+            }
+
+            body, html {
+                cursor: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -914,7 +959,7 @@
         <div class="section-heading"><br>// HOW IT WORKS</br></div>
         <div class="description">
             <p>
-               We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, and Black & White.<br>
+               We offer high-quality 35mm and 120 film developing and scanning services at ₹650 per roll. Our processing options include ECN-2, C-41, and Black & White.<br>
 
                 <br>How to send your films :</br>
                 Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section. <br>
@@ -1010,6 +1055,10 @@
         </div>
     </div>
 
+    <div id="cursor">
+        <div id="cursor-circle"></div>
+    </div>
+
     <script>
         // Original carousel JavaScript
         let currentIndex = 0;
@@ -1031,9 +1080,9 @@
         let total = 0;
 
         const PRICES = {
-            'ECN': 500,
-            'C41': 500,
-            'B/W': 500,
+            'ECN': 650,
+            'C41': 650,
+            'B/W': 650,
             'NEGATIVES_RETURN': 150
         };
 
@@ -1293,7 +1342,7 @@
         }
 
         let rollCount = 0;
-        const PRICE_PER_ROLL = 500;
+        const PRICE_PER_ROLL = 650;
 
         function addNewRoll() {
             rollCount++;
@@ -1392,6 +1441,24 @@
 
         // Only add event listener, no initial roll
         document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+
+        // Custom Cursor Script
+        const cursor = document.getElementById('cursor');
+        const cursorCircle = document.getElementById('cursor-circle');
+        const links = document.querySelectorAll('a');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursorCircle.classList.add('is-hovering');
+            });
+            link.addEventListener('mouseleave', () => {
+                cursorCircle.classList.remove('is-hovering');
+            });
+        });
     </script>
 </body>
 </html>
