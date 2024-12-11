@@ -6,8 +6,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet" as="style">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAZY FILM LAB</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -1265,7 +1265,30 @@
         }
 
         function initiateRazorpayPayment(customerData) {
-            if (cartData.length === 0) {
+            // Get all roll rows
+            const rolls = document.querySelectorAll('.roll-row');
+            const orderItems = [];
+            let hasItems = false;
+
+            rolls.forEach(roll => {
+                const filmName = roll.querySelector('input[type="text"]').value;
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                const processType = roll.querySelector('select:nth-of-type(1)').value;
+                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+
+                if (quantity > 0 && filmName && processType) {
+                    hasItems = true;
+                    orderItems.push({
+                        filmName,
+                        quantity,
+                        processType,
+                        pushPull,
+                        itemTotal: quantity * PRICE_PER_ROLL
+                    });
+                }
+            });
+
+            if (!hasItems) {
                 alert("Your cart is empty. Please add items to proceed.");
                 return;
             }
@@ -1279,19 +1302,23 @@
             // Get additional notes
             const notes = document.querySelector('textarea').value;
 
+            // Calculate total
+            const orderTotal = calculateTotal();
+
             // Prepare order data
             const orderData = {
                 customer: customerData,
-                items: cartData,
+                items: orderItems,
                 scans: selectedScans,
                 returnNegatives: document.getElementById('return-negatives').checked,
-                notes: notes
+                notes: notes,
+                total: orderTotal
             };
 
             // Razorpay options
             const options = {
                 key: "rzp_test_47G8Vu29Rw6KuM",
-                amount: total * 100,
+                amount: orderTotal * 100, // Use calculated total
                 currency: "INR",
                 name: "Lazy Film Lab",
                 description: "Film Processing Order",
@@ -1313,14 +1340,8 @@
                     // Send order confirmation email
                     sendOrderEmail(orderData, paymentId);
                     
-                    // Clear cart and form
-                    cartData = [];
-                    document.querySelector('textarea').value = '';
-                    document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                    document.getElementById('return-negatives').checked = false;
-                    updateCart();
+                    // Clear form
+                    clearForm();
                     closeOrderModal();
                     
                     alert("Payment successful! Your order has been placed.\nPayment ID: " + paymentId);
@@ -1336,7 +1357,36 @@
             rzp.open();
         }
 
-        // Update the original placeOrder function to show the modal
+        // Add this helper function to calculate total
+        function calculateTotal() {
+            let total = 0;
+            const rolls = document.querySelectorAll('.roll-row');
+            
+            rolls.forEach(roll => {
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                total += quantity * PRICE_PER_ROLL;
+            });
+
+            if (document.getElementById('return-negatives').checked) {
+                total += 150;
+            }
+
+            return total;
+        }
+
+        // Add this helper function to clear the form
+        function clearForm() {
+            const rollsContainer = document.getElementById('rolls-container');
+            rollsContainer.innerHTML = '';
+            document.querySelector('textarea').value = '';
+            document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('return-negatives').checked = false;
+            updateOrderSummary();
+        }
+
+        // Add back the placeOrder function
         function placeOrder() {
             showOrderModal();
         }
