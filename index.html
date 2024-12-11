@@ -192,15 +192,68 @@
                 top: 20px;
                 right: 20px;
             }
+            
             .menu-item {
-                line-height: 0.9;
+                font-size: 40px;
+                line-height: 1.2;
+                margin-bottom: 5px;
+            }
+
+            /* Description adjustments */
+            .description, .lab-description, .contact-description, .book-description {
+                bottom: 40px;
+                left: 20px;
+                max-width: 85vw;
+                padding: 15px;
+            }
+
+            /* Subheading adjustments */
+            .description .subheading,
+            .lab-description .subheading,
+            .contact-description a,
+            .book-description .subheading a {
+                font-size: 24px;
+                line-height: 1.3;
+                margin-bottom: 15px;
+            }
+
+            /* Body text adjustments */
+            .description .body-text,
+            .lab-description .body-text,
+            .book-description .body-text {
+                font-size: 18px;
+                line-height: 1.5;
             }
         }
 
         @media (max-width: 480px) {
             .menu-item {
-                font-size: 40px;
-                line-height: 0.95;
+                font-size: 32px;
+                line-height: 1.3;
+                margin-bottom: 8px;
+            }
+
+            /* Description adjustments */
+            .description, .lab-description, .contact-description, .book-description {
+                bottom: 30px;
+                padding: 10px;
+            }
+
+            /* Subheading adjustments */
+            .description .subheading,
+            .lab-description .subheading,
+            .contact-description a,
+            .book-description .subheading a {
+                font-size: 20px;
+                line-height: 1.4;
+            }
+
+            /* Body text adjustments */
+            .description .body-text,
+            .lab-description .body-text,
+            .book-description .body-text {
+                font-size: 16px;
+                line-height: 1.6;
             }
         }
 
