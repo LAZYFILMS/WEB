@@ -29,7 +29,7 @@
         }
 
         .container {
-            max-width: 580px;
+            max-width: 650px;
             margin: 20px auto;
             padding: 30px;
             border: 2px solid #000;
@@ -66,7 +66,7 @@
             position: relative;
             border: 1px solid #000;
             border-radius: 6px;
-            height: 350px;
+            height: 500px;
         }
 
         .carousel img {
@@ -76,7 +76,7 @@
             object-fit: cover;
         }
 
-        .carousel img:first-child {
+        .carousel img.active {
             display: block;
         }
 
@@ -108,65 +108,61 @@
         /* Order Box Styles */
         .order-box {
             margin-top: 20px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 32px;
         }
 
-        .order-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            gap: 20px;
-            padding: 5px 0;
-        }
-
-        .order-row:last-child {
-            border-bottom: none;
-        }
-
-        .order-row label {
-            font-size: 14px;
-            min-width: 120px;
-            flex-shrink: 0;
-        }
-
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-            margin: 0 10px;
-        }
-
-        .quantity-control button {
-            background: none;
-            border: 2px solid #000;
-            padding: 8px;
-            font-size: 16px;
+        .add-roll-btn {
+            background: #000;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            min-width: 36px;
+            font-size: 14px;
             height: 36px;
-            display: flex;
+            min-width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .add-roll-btn:hover {
+            background: #333;
+        }
+
+        .roll-row {
+            display: grid;
+            grid-template-columns: 1.5fr 80px 120px 120px auto;
+            gap: 10px;
             align-items: center;
-            justify-content: center;
+            margin-bottom: 15px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
         }
 
-        .quantity-control input {
-            width: 50px;
-            height: 36px;
-            font-size: 16px;
-            text-align: center;
-            border: 1px solid #000;
-            padding: 0;
-        }
-
-        select {
+        .roll-row input[type="text"],
+        .roll-row input[type="number"],
+        .roll-row select {
             padding: 8px;
             font-size: 14px;
             height: 36px;
             border: 1px solid #000;
-            min-width: 130px;
-            flex-shrink: 0;
-            margin: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .remove-roll {
+            background: none;
+            border: none;
+            color: #000;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 5px;
+        }
+
+        .remove-roll:hover {
+            opacity: 0.7;
         }
 
         /* Cart Styles */
@@ -249,6 +245,12 @@
         }
 
         .scans-options label {
+            font-size: 14px;
+        }
+
+        /* Return negatives checkbox */
+        .return-negatives-container {
+            margin: 20px 5px;
             font-size: 14px;
         }
 
@@ -375,15 +377,76 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 0;
+                margin: 0;
+                overflow-x: hidden;
             }
-            
+
             .container {
-                width: calc(100% - 40px);
-                margin: 10px auto;
-                padding: 20px;
+                width: auto;
+                max-width: 95%;
+                margin: 10px;
+                padding: 15px;
+                border-width: 1px;
+                box-sizing: border-box;
             }
-            
+
+            .order-box {
+                margin: 15px 0;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+
+            /* Reduce carousel height for mobile */
+            .carousel {
+                height: 250px;
+                margin: 10px 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Mobile roll row layout */
+            .roll-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas: 
+                    "name name"
+                    "qty remove"
+                    "process process"
+                    "push push";
+                gap: 10px;
+                margin-bottom: 15px;
+                padding: 12px;
+                background: #f9f9f9;
+                border-radius: 8px;
+                box-sizing: border-box;
+                width: 100%;
+            }
+
+            .roll-row input[type="text"] {
+                grid-area: name;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .roll-row input[type="number"] {
+                grid-area: qty;
+                max-width: 100px;
+                box-sizing: border-box;
+            }
+
+            .roll-row select:nth-of-type(1) {
+                grid-area: process;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .roll-row select:nth-of-type(2) {
+                grid-area: push;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
             /* Keep other mobile styles */
             .order-row {
                 flex-wrap: wrap;
@@ -657,6 +720,131 @@
             color: #000;
             border: 1px solid #000;
         }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 100%;
+                margin: 10px auto;
+                padding: 15px;
+            }
+
+            /* Reduce carousel height for mobile */
+            .carousel {
+                height: 250px;
+                margin: 10px 0;
+            }
+
+            .order-box {
+                margin-top: 15px;
+                padding: 15px;
+            }
+
+            /* Mobile roll row layout */
+            .roll-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas: 
+                    "name name"
+                    "qty remove"
+                    "process process"
+                    "push push";
+                gap: 10px;
+                margin-bottom: 15px;
+                padding: 12px;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+
+            .roll-row input[type="text"] {
+                grid-area: name;
+            }
+
+            .roll-row input[type="number"] {
+                grid-area: qty;
+                max-width: 100px;
+            }
+
+            .roll-row select:nth-of-type(1) {
+                grid-area: process;
+            }
+
+            .roll-row select:nth-of-type(2) {
+                grid-area: push;
+            }
+
+            .roll-row .remove-roll {
+                grid-area: remove;
+                align-self: center;
+            }
+
+            .roll-row input,
+            .roll-row select {
+                height: 36px;
+                font-size: 14px;
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #000;
+                background: white;
+            }
+
+            /* Scan options mobile optimization */
+            .scans {
+                margin: 15px 0;
+                padding: 12px;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+
+            .scans-options {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .scans-options label {
+                font-size: 14px;
+            }
+
+            /* Cart summary mobile optimization */
+            .cart-summary {
+                margin: 15px 0;
+                padding: 15px;
+            }
+
+            .cart-item {
+                padding: 10px 0;
+                font-size: 14px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* Modal adjustments */
+            .modal-content {
+                width: 90%;
+                margin: 15px;
+                padding: 20px;
+            }
+
+            .form-group input {
+                height: 36px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-buttons button {
+                width: 100%;
+            }
+
+            .add-roll-btn {
+                width: 100%;
+                margin-bottom: 15px;
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -680,59 +868,13 @@
         </div>
 
         <div class="order-box">
+            <button type="button" class="add-roll-btn" onclick="addNewRoll()">
+                Add Roll
+            </button>
+            
             <form id="order-form">
-                <!-- ECN Processing -->
-                <div class="order-row">
-                    <label>ECN Processing</label>
-                    <div class="quantity-control">
-                        <button type="button" class="minus">-</button>
-                        <input type="number" class="quantity ecn" min="0" value="0">
-                        <button type="button" class="plus">+</button>
-                    </div>
-                    <select class="process-option ecn-option">
-                        <option>Boxspeed</option>
-                        <option>Push +1</option>
-                        <option>Push +2</option>
-                        <option>Pull -1</option>
-                        <option>Pull -2</option>
-                    </select>
-                    <button type="button" class="add-to-cart" onclick="addToCart('ECN')">Add to Cart</button>
-                </div>
-
-                <!-- C41 Processing -->
-                <div class="order-row">
-                    <label>C41 Processing</label>
-                    <div class="quantity-control">
-                        <button type="button" class="minus">-</button>
-                        <input type="number" class="quantity c41" min="0" value="0">
-                        <button type="button" class="plus">+</button>
-                    </div>
-                    <select class="process-option c41-option">
-                        <option>Boxspeed</option>
-                        <option>Push +1</option>
-                        <option>Push +2</option>
-                        <option>Pull -1</option>
-                        <option>Pull -2</option>
-                    </select>
-                    <button type="button" class="add-to-cart" onclick="addToCart('C41')">Add to Cart</button>
-                </div>
-
-                <!-- B/W Processing -->
-                <div class="order-row">
-                    <label>B/W Processing</label>
-                    <div class="quantity-control">
-                        <button type="button" class="minus">-</button>
-                        <input type="number" class="quantity bw" min="0" value="0">
-                        <button type="button" class="plus">+</button>
-                    </div>
-                    <select class="process-option bw-option">
-                        <option>Boxspeed</option>
-                        <option>Push +1</option>
-                        <option>Push +2</option>
-                        <option>Pull -1</option>
-                        <option>Pull -2</option>
-                    </select>
-                    <button type="button" class="add-to-cart" onclick="addToCart('B/W')">Add to Cart</button>
+                <div id="rolls-container">
+                    <!-- Rolls will only be added when user clicks the button -->
                 </div>
 
                 <!-- Scans Section -->
@@ -745,9 +887,11 @@
                     </div>
                 </div>
 
-                <label>
-                    <input type="checkbox" id="return-negatives"> Return my negatives (+₹150)
-                </label>
+                <div class="return-negatives-container">
+                    <label>
+                        <input type="checkbox" id="return-negatives"> Return my negatives (+₹150)
+                    </label>
+                </div>
 
                 <textarea placeholder="Additional notes"></textarea>
 
@@ -1147,6 +1291,107 @@
         function placeOrder() {
             showOrderModal();
         }
+
+        let rollCount = 0;
+        const PRICE_PER_ROLL = 500;
+
+        function addNewRoll() {
+            rollCount++;
+            const rollContainer = document.getElementById('rolls-container');
+            const rollDiv = document.createElement('div');
+            rollDiv.className = 'roll-row';
+            rollDiv.id = `roll-${rollCount}`;
+            
+            rollDiv.innerHTML = `
+                <input type="text" 
+                       placeholder="Film name" 
+                       onchange="updateOrderSummary()"
+                       required>
+                <input type="number" 
+                       placeholder="Qty"
+                       min="1" 
+                       max="30" 
+                       onchange="updateOrderSummary()"
+                       required>
+                <select onchange="updateOrderSummary()" required>
+                    <option value="" disabled selected>Process</option>
+                    <option value="ECN-2">ECN-2</option>
+                    <option value="C41">C41</option>
+                    <option value="B&W">Black & White</option>
+                </select>
+                <select onchange="updateOrderSummary()" required>
+                    <option value="" disabled selected>Push/Pull</option>
+                    <option value="none">No Push/Pull</option>
+                    <option value="push1">+1 Push</option>
+                    <option value="push2">+2 Push</option>
+                    <option value="pull1">-1 Pull</option>
+                    <option value="pull2">-2 Pull</option>
+                </select>
+                <button type="button" class="remove-roll" onclick="removeRoll(${rollCount})">×</button>
+            `;
+            
+            rollContainer.appendChild(rollDiv);
+            updateOrderSummary();
+        }
+
+        function removeRoll(id) {
+            const roll = document.getElementById(`roll-${id}`);
+            roll.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => {
+                roll.remove();
+                updateOrderSummary();
+            }, 280);
+        }
+
+        function updateOrderSummary() {
+            const cartItems = document.getElementById('cart-items');
+            const totalPriceEl = document.getElementById('total-price');
+            let total = 0;
+            cartItems.innerHTML = '';
+
+            // Get all roll rows
+            const rolls = document.querySelectorAll('.roll-row');
+            
+            rolls.forEach(roll => {
+                const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                const processType = roll.querySelector('select:nth-of-type(1)').value;
+                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+                
+                const itemTotal = quantity * PRICE_PER_ROLL;
+                total += itemTotal;
+
+                if (quantity > 0) {
+                    const li = document.createElement('li');
+                    li.className = 'cart-item';
+                    li.innerHTML = `
+                        <span>${quantity}× ${filmName} (${processType}${pushPull !== 'none' ? ', ' + pushPull : ''})</span>
+                        <span>₹${itemTotal}</span>
+                    `;
+                    cartItems.appendChild(li);
+                }
+            });
+
+            // Add return negatives cost if checked
+            if (document.getElementById('return-negatives').checked) {
+                total += 150;
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <span>Return Negatives</span>
+                    <span>₹150</span>
+                `;
+                cartItems.appendChild(li);
+            }
+
+            totalPriceEl.textContent = total;
+        }
+
+        // Add event listener for return negatives checkbox
+        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+
+        // Only add event listener, no initial roll
+        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
     </script>
 </body>
 </html>
