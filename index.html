@@ -483,7 +483,7 @@
                 <a href="#">LAZY FILMS</a>
             </div>
             <div class="menu-item">
-                <a href="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf" download="LAZY.pdf" target="_blank">THE WORK</a>
+                <a href="#" id="workLink">THE WORK</a>
             </div>
             <div class="menu-item">
                 <a href="labs/index.html" target="_blank">THE LAB</a>
@@ -495,12 +495,11 @@
 
         <div class="description" id="description">
             <div class="subheading">// WE MAKE FILMS ON FILM</div>
-            <div class="body-text">Attempting to reintroduce the celluloid medium in India to create a new wave of narrative-driven, 
-                emotionally resonant commercial films that are subversive, quirky, and memorable.</div>
+            <div class="body-text">Attempting to reintroduce the celluloid medium in India to create a new wave of narrative-driven, emotionally resonant commercial films that are subversive, quirky, and memorable.</div>
         </div>
 
         <div class="lab-description" id="labDescription">
-            <div class="subheading">// BUY FILM</div>
+            <div class="subheading">// BUY 35MM FILM</div>
             <div class="subheading" id="developFilm">// DEVELOP FILM</div>
             <div class="body-text">Lazy Film Lab offers a range of 35mm color photography films, along with developing, scanning services, and other fun stuff.</div>
         </div>
@@ -512,7 +511,7 @@
 
         <div class="book-description" id="bookDescription">
             <div class="subheading">
-                <a href="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf" download="LAZY.pdf">// DOWNLOAD OUR BRAND ZINE</a>
+                <a href="#" onclick="handlePDFViewAndDownload(event)">// DOWNLOAD OUR BRAND ZINE</a>
             </div>
             <div class="body-text">To collaborate and Know more about us</div>
         </div>
@@ -555,11 +554,10 @@
             description.classList.toggle('show');
         });
 
-        // Book Description Toggle
-        const bookLink = document.querySelector('.menu-item:nth-child(2) a');
-        const bookDescription = document.getElementById('bookDescription');
+        // Work Description Toggle
+        const workLink = document.getElementById('workLink');
         
-        bookLink.addEventListener('click', function(e) {
+        workLink.addEventListener('click', function(e) {
             e.preventDefault();
             hideAllDescriptions();
             bookDescription.classList.toggle('show');
@@ -589,6 +587,14 @@
             hideAllDescriptions();
             contactDescription.classList.toggle('show');
         });
+
+        // Add PDF viewer function
+        function handlePDFViewAndDownload(event) {
+            event.preventDefault();
+            const pdfUrl = 'https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf';
+            const viewerUrl = 'https://drive.google.com/viewerng/viewer?embedded=true&url=' + encodeURIComponent(pdfUrl);
+            window.open(viewerUrl, '_blank');
+        }
     </script>
 </body>
 </html>
