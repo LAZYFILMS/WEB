@@ -4,596 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAZY FILMS</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <!-- Update font import -->
     <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
-    <style>
-        /* Global Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body and HTML */
-        body, html {
-            height: 100%;
-            font-family: 'Stratos', sans-serif;
-            background-color: black;
-            color: white;
-            cursor: none;
-            overflow: hidden;
-        }
-
-        /* Container */
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-image: url('Untitled_1.27.8.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: black;
-            z-index: 1;
-        }
-
-        /* Navigation Menu */
-        .menu {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            text-align: right;
-            z-index: 2;
-        }
-
-        /* First menu item (LAZY FILMS) specific style */
-        .menu-item:first-child {
-            font-family: 'Stratos', sans-serif;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-        /* General menu items */
-        .menu-item {
-            font-family: "stratos", sans-serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 50px;
-            position: relative;
-            line-height: 1.5;
-            margin-bottom: -5px;
-            letter-spacing: 1px;
-        }
-
-        .menu-item a {
-            color: white;
-            text-decoration: none;
-            cursor: none;
-        }
-
-        /* Custom Cursor */
-        #cursor {
-            position: fixed;
-            z-index: 9999;
-            pointer-events: none;
-            top: 0;
-            left: 0;
-        }
-
-        #cursor-circle {
-            width: 40px;
-            height: 40px;
-            margin-top: -20px;
-            margin-left: -20px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            opacity: 0.6;
-            transition: all 0.2s ease;
-        }
-
-        .is-hovering #cursor-circle {
-            width: 20px;
-            height: 20px;
-            margin-top: -10px;
-            margin-left: -10px;
-            opacity: 1;
-        }
-
-        /* Contact Popup Styles */
-        .contact-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 90%;
-            max-width: 400px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            opacity: 0;
-            z-index: 1000;
-        }
-
-        .contact-popup.show {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-
-        .popup-content {
-            padding: 20px;
-            text-align: left;
-        }
-
-        .popup-content h2 {
-            margin-bottom: 15px;
-            font-size: 24px;
-        }
-
-        .popup-content label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .popup-content input,
-        .popup-content textarea {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .popup-content button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: black;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .popup-content button:hover {
-            background: #333;
-        }
-
-        /* Close Button */
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-
-        /* Mobile optimization */
-        @media (max-width: 768px) {
-            .menu {
-                top: 20px;
-                right: 20px;
-            }
-            
-            .menu-item {
-                font-size: 40px;
-                line-height: 1.2;
-                margin-bottom: 5px;
-            }
-
-            /* Description adjustments */
-            .description, .lab-description, .contact-description, .book-description {
-                bottom: 80px;
-                left: 20px;
-                max-width: 85vw;
-                padding: 15px;
-            }
-
-            /* Subheading adjustments */
-            .description .subheading,
-            .lab-description .subheading,
-            .contact-description a,
-            .book-description .subheading a {
-                font-size: 24px;
-                line-height: 1.3;
-                margin-bottom: 15px;
-            }
-
-            /* Body text adjustments */
-            .description .body-text,
-            .lab-description .body-text,
-            .book-description .body-text {
-                font-size: 18px;
-                line-height: 1.5;
-            }
-
-            /* Remove cursor for touch devices */
-            #cursor {
-                display: none;
-            }
-
-            .container {
-                background-position: 38.5% center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .menu-item {
-                font-size: 32px;
-                line-height: 1.3;
-                margin-bottom: 8px;
-            }
-
-            /* Description adjustments */
-            .description, .lab-description, .contact-description, .book-description {
-                bottom: 70px;
-                padding: 10px;
-            }
-
-            /* Subheading adjustments */
-            .description .subheading,
-            .lab-description .subheading,
-            .contact-description a,
-            .book-description .subheading a {
-                font-size: 20px;
-                line-height: 1.4;
-            }
-
-            /* Body text adjustments */
-            .description .body-text,
-            .lab-description .body-text,
-            .book-description .body-text {
-                font-size: 16px;
-                line-height: 1.6;
-            }
-
-            .container {
-                background-position: 38.5% center;
-            }
-        }
-
-        /* Description Text */
-        .description {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            text-align: left;
-            max-width: 600px;
-            display: none;
-            color: white;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .description.show {
-            display: block;
-        }
-
-        .description .subheading {
-            font-family: "stratos", sans-serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 42px;
-            margin-bottom: 25px;
-            color: white;
-            letter-spacing: 1px;
-        }
-
-        .description .body-text {
-            font-family: 'Lucida Console', Courier, monospace;
-            font-size: 31px;
-            line-height: 1.4;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .description {
-                bottom: 20px;
-                left: 20px;
-                max-width: 400px;
-            }
-            .description .subheading {
-                font-size: 28px;
-            }
-            .description .body-text {
-                font-size: 20px;
-            }
-        }
-
-        /* Lab Description */
-        .lab-description {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            text-align: left;
-            max-width: 600px;
-            display: none;
-            color: white;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .lab-description.show {
-            display: block;
-        }
-
-        .lab-description .subheading {
-            font-family: "stratos", sans-serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 42px;
-            margin-bottom: 13px;
-            color: white;
-            cursor: pointer;
-            letter-spacing: 1px;
-        }
-
-        .lab-description .body-text {
-            font-family: 'Lucida Console', Courier, monospace;
-            font-size: 31px;
-            line-height: 1.4;
-            color: white;
-            margin-top: 20px;
-        }
-
-        /* Add contact description styles */
-
-        /* Contact Description */
-        .contact-description {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            text-align: left;
-            max-width: 600px;
-            display: none;
-            color: white;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .contact-description.show {
-            display: block;
-        }
-
-        .contact-description a {
-            font-family: "stratos", sans-serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 42px;
-            margin-bottom: 13px;
-            color: white;
-            display: block;
-            text-decoration: none;
-            line-height: 1.5;
-        }
-
-        /* Add book description styles - add after other description styles */
-
-        /* Book Description */
-        .book-description {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            text-align: left;
-            max-width: 600px;
-            display: none;
-            color: white;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .book-description.show {
-            display: block;
-        }
-
-        .book-description .subheading a {
-            font-family: "stratos", sans-serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 42px;
-            margin-bottom: 25px;
-            color: white;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
-
-        .book-description .body-text {
-            font-family: 'Lucida Console', Courier, monospace;
-            font-size: 31px;
-            line-height: 1.4;
-            color: white;
-            margin-top: 20px;
-        }
-
-        /* Desktop sizes (default) */
-        .description .subheading,
-        .lab-description .subheading,
-        .contact-description a,
-        .book-description .subheading a {
-            font-size: 42px; /* Increased for desktop */
-            margin-bottom: 25px;
-        }
-
-        .description .body-text,
-        .lab-description .body-text,
-        .book-description .body-text {
-            font-size: 31px; /* Increased for desktop */
-        }
-
-        /* Mobile sizes (update sizes) */
-        @media (max-width: 768px) {
-            .description .subheading,
-            .lab-description .subheading,
-            .contact-description a,
-            .book-description .subheading a {
-                font-size: 30px; /* Updated from 24px */
-                margin-bottom: 15px;
-            }
-
-            .description .body-text,
-            .lab-description .body-text,
-            .book-description .body-text {
-                font-size: 24px; /* Updated from 18px */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .description .subheading,
-            .lab-description .subheading,
-            .contact-description a,
-            .book-description .subheading a {
-                font-size: 26px; /* Updated from 20px */
-            }
-
-            .description .body-text,
-            .lab-description .body-text,
-            .book-description .body-text {
-                font-size: 22px; /* Updated from 16px */
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div id="cursor">
-        <div id="cursor-circle"></div>
-    </div>
-
     <div class="container">
-        <div class="menu">
-            <div class="menu-item">
-                <a href="#">LAZY FILMS</a>
-            </div>
-            <div class="menu-item">
-                <a href="#" id="workLink">THE WORK</a>
-            </div>
-            <div class="menu-item">
-                <a href="labs/index.html" target="_blank">THE LAB</a>
-            </div>
-            <div class="menu-item">
-                <a href="#" id="contactLink">CONTACT</a>
-            </div>
-        </div>
-
-        <div class="description" id="description">
-            <div class="subheading">// WE MAKE FILMS ON FILM</div>
-            <div class="body-text">Attempting to reintroduce the celluloid medium in India to create a new wave of narrative-driven, emotionally resonant commercial films that are subversive, quirky, and memorable.</div>
-        </div>
-
-        <div class="lab-description" id="labDescription">
-            <div class="subheading">// BUY 35MM FILM</div>
-            <div class="subheading" id="developFilm">// DEVELOP FILM</div>
-            <div class="body-text">Lazy Film Lab offers a range of 35mm color photography films, along with developing, scanning services, and other fun stuff.</div>
-        </div>
-
-        <div class="contact-description" id="contactDescription">
-            <a href="mailto:enquiries@lazyfilms.in">// EMAIL</a>
-            <a href="https://instagram.com/lazy_films_" target="_blank">// INSTAGRAM</a>
-        </div>
-
-        <div class="book-description" id="bookDescription">
-            <div class="subheading">
-                <a href="#" onclick="handlePDFViewAndDownload(event)">// DOWNLOAD OUR BRAND ZINE</a>
-            </div>
-            <div class="body-text">To collaborate and Know more about us</div>
-        </div>
+        <h1>Welcome to Lazy Films</h1>
+        <button onclick="fetchUsers()">Get Users</button>
+        <button onclick="addUser()">Add User</button>
+        <button onclick="fetchFilms()">Get Films</button>
+        <button onclick="addFilm()">Add Film</button>
+        <div id="output"></div>
     </div>
 
     <script>
-        // Custom Cursor Script
-        const cursor = document.getElementById('cursor');
-        const cursorCircle = document.getElementById('cursor-circle');
-        const links = document.querySelectorAll('a');
+        const API_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:UISlYycK";
 
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-        });
-
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                cursorCircle.classList.add('is-hovering');
-            });
-            link.addEventListener('mouseleave', () => {
-                cursorCircle.classList.remove('is-hovering');
-            });
-        });
-
-        // Helper function to hide all descriptions
-        function hideAllDescriptions() {
-            description.classList.remove('show');
-            labDescription.classList.remove('show');
-            contactDescription.classList.remove('show');
-            bookDescription.classList.remove('show');
+        async function fetchUsers() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`);
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
         }
 
-        // LAZY FILMS Description Toggle
-        const lazyFilmsLink = document.querySelector('.menu-item:first-child a');
-        const description = document.getElementById('description');
-        
-        lazyFilmsLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            hideAllDescriptions();
-            description.classList.toggle('show');
-        });
+        async function addUser() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Name: "Sarang Joshi",
+                        Address: "Bombay",
+                        Phone: "1234567890",
+                        email: "sarang@example.com"
+                    })
+                });
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error adding user:", error);
+            }
+        }
 
-        // Work Description Toggle
-        const workLink = document.getElementById('workLink');
-        
-        workLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            hideAllDescriptions();
-            bookDescription.classList.toggle('show');
-        });
+        async function fetchFilms() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/films`);
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error fetching films:", error);
+            }
+        }
 
-        // Lab Description Toggle
-        const labLink = document.querySelector('.menu-item:nth-child(3) a');
-        const labDescription = document.getElementById('labDescription');
-        const developFilmLink = document.getElementById('developFilm');
-        
-        labLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            hideAllDescriptions();
-            labDescription.classList.toggle('show');
-        });
-
-        developFilmLink.addEventListener('click', function() {
-            window.open('labs/index.html', '_blank');
-        });
-
-        // Contact Description Toggle
-        const contactLink = document.getElementById('contactLink');
-        const contactDescription = document.getElementById('contactDescription');
-        
-        contactLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            hideAllDescriptions();
-            contactDescription.classList.toggle('show');
-        });
-
-        // Add PDF viewer function
-        function handlePDFViewAndDownload(event) {
-            event.preventDefault();
-            const pdfUrl = 'https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf';
-            const viewerUrl = 'https://drive.google.com/viewerng/viewer?embedded=true&url=' + encodeURIComponent(pdfUrl);
-            window.open(viewerUrl, '_blank');
+        async function addFilm() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/films`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Name_Of_Film: "Experimental 35mm",
+                        Push_Pull: "Normal",
+                        Process: "C-41",
+                        user_id: 1
+                    })
+                });
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error adding film:", error);
+            }
         }
     </script>
 </body>
