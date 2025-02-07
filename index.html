@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAZY FILMS</title>
     <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         body, html {
             height: 100%;
@@ -38,7 +39,8 @@
 
     <script>
         const API_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:vZcukp0r";
-        
+        const RAZORPAY_KEY_ID = "rzp_test_A0ByZRGOXNKKL4"; // Replace securely
+       
         async function fetchFilms() {
             try {
                 const response = await fetch(`${API_BASE_URL}/films`);
@@ -54,22 +56,23 @@
             container.innerHTML = "";
             films.forEach(film => {
                 const filmItem = document.createElement("div");
-                filmItem.textContent = `${film.name} - $${film.price}`;
+                filmItem.textContent = `${film.name} - ₹${film.price}`;
                 filmItem.classList.add("menu-item");
-                filmItem.onclick = () => addToCart(film.id);
+                filmItem.onclick = () => addToCart(film.id, film.price);
                 container.appendChild(filmItem);
             });
         }
         
-        async function addToCart(filmId) {
+        async function addToCart(filmId, price) {
             try {
                 const response = await fetch(`${API_BASE_URL}/cart_items`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        user_id: 1, 
-                        film_id: filmId, 
-                        quantity: 1
+                        user_id: 1,
+                        film_id: filmId,
+                        quantity: 1,
+                        price: price
                     })
                 });
                 const result = await response.json();
@@ -78,10 +81,11 @@
                 console.error("Error adding to cart:", error);
             }
         }
-        
+
         async function placeOrder() {
             try {
-                const response = await fetch(`${API_BASE_URL}/orders`, {
+                // Step 1: Create an order in Xano (Optional if handled by Razorpay)
+                const orderResponse = await fetch(`${API_BASE_URL}/orders`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -89,8 +93,56 @@
                         total_amount: 100
                     })
                 });
-                const result = await response.json();
-                alert("Order placed successfully!");
+
+                const orderData = await orderResponse.json();
+                const orderId = orderData.id;
+
+                // Step 2: Create a payment order in Razorpay
+                const razorpayOrderResponse = await fetch(`${API_BASE_URL}/create_razorpay_order`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        amount: 100 * 100, // Razorpay needs amount in paise
+                        currency: "INR",
+                        receipt: `order_${orderId}`
+                    })
+                });
+
+                const razorpayOrder = await razorpayOrderResponse.json();
+                
+                // Step 3: Open Razorpay checkout popup
+                const options = {
+                    key: RAZORPAY_KEY_ID,
+                    amount: razorpayOrder.amount,
+                    currency: "INR",
+                    name: "Lazy Films",
+                    description: "Order Payment",
+                    order_id: razorpayOrder.id, // Razorpay order ID
+                    handler: async function (response) {
+                        alert("Payment successful!");
+
+                        // Step 4: Update Xano after successful payment
+                        await fetch(`${API_BASE_URL}/update_order_status`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                order_id: orderId,
+                                status: "Paid",
+                                razorpay_payment_id: response.razorpay_payment_id
+                            })
+                        });
+                    },
+                    prefill: {
+                        name: "Sarang Joshi",
+                        email: "sarang@example.com",
+                        contact: "9999999999"
+                    },
+                    theme: { color: "#F37254" }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
             } catch (error) {
                 console.error("Error placing order:", error);
             }
