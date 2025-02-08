@@ -2,338 +2,313 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAZY FILM LAB</title>
+
+    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet" as="style">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAZY FILM LAB</title>
+
+    <!-- Scripts -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <!-- Constants and Configuration -->
     <script>
-        // API Configuration
         const XANO_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:QQr0KuJy";
         const RAZORPAY_KEY = "rzp_test_47G8Vu29Rw6KuM";
         const PRICE_PER_ROLL = 650;
-
-        // Helper Functions
-        function calculateTotal() {
-            let total = 0;
-            document.querySelectorAll('.roll-row').forEach(roll => {
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                total += quantity * PRICE_PER_ROLL;
-            });
-            
-            if (document.getElementById('return-negatives').checked) {
-                total += 150;
-            }
-            return total;
-        }
-
-        function getSelectedScans() {
-            const scans = [];
-            document.querySelectorAll('input[name="scan-option"]:checked').forEach(checkbox => {
-                scans.push(checkbox.value);
-            });
-            return scans;
-        }
-
-        function clearForm() {
-            document.getElementById('rolls-container').innerHTML = '';
-            document.getElementById('return-negatives').checked = false;
-            document.querySelector('textarea').value = '';
-            document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            updateOrderSummary();
-        }
     </script>
-    <style>
-        /* General Styles */
-        body {
-            font-family: "Lucida Console", Courier, monospace;
-            margin: 0;
-            padding: 0;
-            background: #fff;
-            color: #000;
-        }
+</head>
+<style>
+    /* General Styles */
+    body {
+        font-family: "Lucida Console", Courier, monospace;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        color: #000;
+    }
 
+    .container {
+        max-width: 650px;
+        margin: 20px auto;
+        padding: 30px;
+        border: 2px solid #000;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    /* Header Styles */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-family: 'Stratos', sans-serif;
+        font-size: 24px;
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .email-link {
+        font-family: 'Stratos', sans-serif;
+        text-decoration: none;
+        color: #000;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Carousel Styles */
+    .carousel {
+        margin: 15px 0;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #000;
+        border-radius: 6px;
+        height: 500px;
+    }
+
+    .carousel img {
+        width: 100%;
+        height: 100%;
+        display: none;
+        object-fit: cover;
+    }
+
+    .carousel img.active {
+        display: block;
+    }
+
+    /* Form and Input Styles */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #000;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    /* Order Box Styles */
+    .order-box {
+        margin-top: 20px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        padding: 32px;
+    }
+
+    .add-roll-btn {
+        background: #000;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        height: 36px;
+        min-width: 100px;
+        margin-bottom: 20px;
+    }
+
+    .roll-row {
+        display: grid;
+        grid-template-columns: 1.5fr 80px 120px 120px auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .roll-row input[type="text"],
+    .roll-row input[type="number"],
+    .roll-row select {
+        padding: 8px;
+        font-size: 14px;
+        height: 36px;
+        border: 1px solid #000;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background: white;
+        cursor: text;
+    }
+
+    /* Cart Summary Styles */
+    .cart-summary {
+        margin: 25px 0;
+        padding: 20px;
+        border: 2px solid #000;
+        border-radius: 8px;
+    }
+
+    .cart-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .cart-item {
+        font-size: 14px;
+        padding: 6px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-total {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid #000;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border: 2px solid #000;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .modal-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .confirm-order {
+        background: #000;
+        color: #fff;
+    }
+
+    .cancel-order {
+        background: #f1f1f1;
+    }
+
+    .place-order {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: #000;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    /* Additional Elements Styles */
+    .scans {
+        margin: 20px 0;
+    }
+
+    .scans h3 {
+        margin-bottom: 10px;
+    }
+
+    .scans-options {
+        display: flex;
+        gap: 20px;
+    }
+
+    .return-negatives-container {
+        margin: 20px 0;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #000;
+        border-radius: 4px;
+        margin: 20px 0;
+        min-height: 100px;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
         .container {
-            max-width: 650px;
-            margin: 20px auto;
-            padding: 30px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .title {
-            font-family: 'Stratos', sans-serif;
-            font-size: 24px;
-            margin: 0;
-            font-weight: bold;
-        }
-
-        .email-link {
-            font-family: 'Stratos', sans-serif;
-            text-decoration: none;
-            color: #000;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* Carousel Styles */
-        .carousel {
-            margin: 15px 0;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #000;
-            border-radius: 6px;
-            height: 500px;
-        }
-
-        .carousel img {
-            width: 100%;
-            height: 100%;
-            display: none;
-            object-fit: cover;
-        }
-
-        .carousel img.active {
-            display: block;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        /* Order Box Styles */
-        .order-box {
-            margin-top: 20px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            padding: 32px;
-        }
-
-        .add-roll-btn {
-            background: #000;
-            color: #fff;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            height: 36px;
-            min-width: 100px;
-            margin-bottom: 20px;
+            margin: 10px;
+            padding: 15px;
         }
 
         .roll-row {
-            display: grid;
-            grid-template-columns: 1.5fr 80px 120px 120px auto;
+            grid-template-columns: 1fr;
             gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .roll-row input[type="text"],
-        .roll-row input[type="number"],
-        .roll-row select {
-            padding: 8px;
-            font-size: 14px;
-            height: 36px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            box-sizing: border-box;
-            background: white;
-            cursor: text;
-        }
-
-        /* Cart Styles */
-        .cart-summary {
-            margin: 25px 0;
-            padding: 20px;
-            border: 2px solid #000;
-            border-radius: 8px;
-        }
-
-        .cart-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .cart-item {
-            font-size: 14px;
-            padding: 6px 0;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-total {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #000;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: #f9f9f9;
-            padding: 30px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .confirm-order {
-            background: #000;
-            color: #fff;
-        }
-
-        .cancel-order {
-            background: #f1f1f1;
-        }
-
-        .place-order {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: #000;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        /* Scans Section */
-        .scans {
-            margin: 20px 0;
-        }
-
-        .scans h3 {
-            margin-bottom: 10px;
         }
 
         .scans-options {
-            display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
         }
-
-        .return-negatives-container {
-            margin: 20px 0;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            margin: 20px 0;
-            min-height: 100px;
-            font-family: inherit;
-            box-sizing: border-box;
-        }
-
-        /* Mobile Styles */
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                padding: 15px;
-            }
-
-            .roll-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-
-            .scans-options {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
-</head>
+    }
+</style>
 <body>
     <div class="container">
-    <header>
-        <h1 class="title">LAZY FILM LAB</h1>
-        <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
-    </header>
-    
-    <!-- Add this test button -->
-    <button onclick="testRazorpay()" style="margin: 10px; padding: 10px; background: black; color: white; border: none; cursor: pointer;">
-        Test Razorpay
-    </button>
+        <header>
+            <h1 class="title">LAZY FILM LAB</h1>
+            <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
+        </header>
+        
+        <!-- Test Razorpay Button -->
+        <button onclick="testRazorpay()" style="margin: 10px; padding: 10px; background: black; color: white; border: none; cursor: pointer;">
+            Test Razorpay
+        </button>
 
         <!-- Carousel Section -->
         <div class="carousel">
@@ -345,9 +320,9 @@
             <img src="6.jpg" alt="6">
             <img src="7.jpg" alt="7">
             <img src="8.jpg" alt="8">
-            <div class="carousel-nav"></div>
         </div>
 
+        <!-- Order Form Section -->
         <div class="order-box">
             <button type="button" class="add-roll-btn" onclick="addNewRoll()">
                 Add Roll
@@ -368,6 +343,7 @@
                     </div>
                 </div>
 
+                <!-- Return Negatives Option -->
                 <div class="return-negatives-container">
                     <label>
                         <input type="checkbox" id="return-negatives"> Return my negatives (+₹150)
@@ -427,381 +403,289 @@
             </form>
         </div>
     </div>
-    <script>
-        // Cart functionality
-        function addNewRoll() {
-            const rollContainer = document.getElementById('rolls-container');
-            const rollDiv = document.createElement('div');
-            rollDiv.className = 'roll-row';
-            
-            rollDiv.innerHTML = `
-                <input type="text" placeholder="Film name" required>
-                <input type="number" placeholder="Qty" min="1" max="30" required>
-                <select required>
-                    <option value="" disabled selected>Process</option>
-                    <option value="ECN-2">ECN-2</option>
-                    <option value="C41">C41</option>
-                    <option value="B&W">Black & White</option>
-                </select>
-                <select required>
-                    <option value="" disabled selected>Push/Pull</option>
-                    <option value="none">No Push/Pull</option>
-                    <option value="push1">+1 Push</option>
-                    <option value="push2">+2 Push</option>
-                    <option value="pull1">-1 Pull</option>
-                    <option value="pull2">-2 Pull</option>
-                </select>
-                <button type="button" class="remove-roll" onclick="this.parentElement.remove();updateOrderSummary()">×</button>
-            `;
-            
-            rollContainer.appendChild(rollDiv);
-            updateOrderSummary();
-
-            // Add input event listeners to new roll
-            const inputs = rollDiv.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                input.addEventListener('change', updateOrderSummary);
-                input.addEventListener('input', updateOrderSummary);
-            });
+</body>
+<script>
+    // Core Helper Functions
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('.roll-row').forEach(roll => {
+            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            total += quantity * PRICE_PER_ROLL;
+        });
+        
+        if (document.getElementById('return-negatives').checked) {
+            total += 150;
         }
+        return total;
+    }
 
-        function updateOrderSummary() {
-            const cartItems = document.getElementById('cart-items');
-            const totalPriceEl = document.getElementById('total-price');
-            let total = 0;
-            cartItems.innerHTML = '';
+    function getSelectedScans() {
+        const scans = [];
+        document.querySelectorAll('input[name="scan-option"]:checked').forEach(checkbox => {
+            scans.push(checkbox.value);
+        });
+        return scans;
+    }
 
-            document.querySelectorAll('.roll-row').forEach(roll => {
-                const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                const processType = roll.querySelector('select:nth-of-type(1)').value;
-                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-                
-                if (quantity > 0) {
-                    const itemTotal = quantity * PRICE_PER_ROLL;
-                    total += itemTotal;
+    function clearForm() {
+        document.getElementById('rolls-container').innerHTML = '';
+        document.getElementById('return-negatives').checked = false;
+        document.querySelector('textarea').value = '';
+        document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateOrderSummary();
+    }
 
-                    const li = document.createElement('li');
-                    li.className = 'cart-item';
-                    li.innerHTML = `
-                        <span>${quantity}× ${filmName} (${processType}${pushPull !== 'none' ? ', ' + pushPull : ''})</span>
-                        <span>₹${itemTotal}</span>
-                    `;
-                    cartItems.appendChild(li);
-                }
-            });
+    // Razorpay Test Function
+    function testRazorpay() {
+        console.log('Testing Razorpay...');
+        const options = {
+            key: RAZORPAY_KEY,
+            amount: 100 * 100, // 100 rupees
+            currency: "INR",
+            name: "Lazy Film Lab",
+            description: "Test Order",
+            handler: function(response) {
+                console.log("Payment success:", response);
+                alert("Payment successful! Response: " + JSON.stringify(response));
+            }
+        };
+        
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
 
-            if (document.getElementById('return-negatives').checked) {
-                total += 150;
+    // Cart Functionality
+    function addNewRoll() {
+        const rollContainer = document.getElementById('rolls-container');
+        const rollDiv = document.createElement('div');
+        rollDiv.className = 'roll-row';
+        
+        rollDiv.innerHTML = `
+            <input type="text" placeholder="Film name" required>
+            <input type="number" placeholder="Qty" min="1" max="30" required>
+            <select required>
+                <option value="" disabled selected>Process</option>
+                <option value="ECN-2">ECN-2</option>
+                <option value="C41">C41</option>
+                <option value="B&W">Black & White</option>
+            </select>
+            <select required>
+                <option value="" disabled selected>Push/Pull</option>
+                <option value="none">No Push/Pull</option>
+                <option value="push1">+1 Push</option>
+                <option value="push2">+2 Push</option>
+                <option value="pull1">-1 Pull</option>
+                <option value="pull2">-2 Pull</option>
+            </select>
+            <button type="button" class="remove-roll" onclick="this.parentElement.remove();updateOrderSummary()">×</button>
+        `;
+        
+        rollContainer.appendChild(rollDiv);
+        updateOrderSummary();
+
+        // Add input event listeners to new roll
+        const inputs = rollDiv.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', updateOrderSummary);
+            input.addEventListener('input', updateOrderSummary);
+        });
+    }
+
+    function updateOrderSummary() {
+        const cartItems = document.getElementById('cart-items');
+        const totalPriceEl = document.getElementById('total-price');
+        let total = 0;
+        cartItems.innerHTML = '';
+
+        document.querySelectorAll('.roll-row').forEach(roll => {
+            const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
+            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            const processType = roll.querySelector('select:nth-of-type(1)').value;
+            const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+            
+            if (quantity > 0) {
+                const itemTotal = quantity * PRICE_PER_ROLL;
+                total += itemTotal;
+
                 const li = document.createElement('li');
                 li.className = 'cart-item';
                 li.innerHTML = `
-                    <span>Return Negatives</span>
-                    <span>₹150</span>
+                    <span>${quantity}× ${filmName} (${processType}${pushPull !== 'none' ? ', ' + pushPull : ''})</span>
+                    <span>₹${itemTotal}</span>
                 `;
                 cartItems.appendChild(li);
             }
-
-            totalPriceEl.textContent = total;
-        }
-
-        // Modal functionality
-        function showOrderModal() {
-            document.getElementById('orderModal').classList.add('active');
-        }
-
-        function closeOrderModal() {
-            document.getElementById('orderModal').classList.remove('active');
-        }
-
-        function placeOrder() {
-            const rolls = document.querySelectorAll('.roll-row');
-            let hasItems = false;
-
-            rolls.forEach(roll => {
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                if (quantity > 0) hasItems = true;
-            });
-
-            if (!hasItems) {
-                alert('Please add at least one roll to proceed.');
-                return;
-            }
-
-            showOrderModal();
-        }
-
-        // Xano and Razorpay Integration
-        async function submitOrderForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const customerData = Object.fromEntries(formData.entries());
-
-            // Get all roll data
-            const rolls = document.querySelectorAll('.roll-row');
-            const items = [];
-            
-            rolls.forEach(roll => {
-                const filmName = roll.querySelector('input[type="text"]').value;
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                const processType = roll.querySelector('select:nth-of-type(1)').value;
-                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-                if (quantity > 0 && filmName && processType) {
-                    items.push({
-                        film_name: filmName,
-                        quantity: quantity,
-                        process_type: processType,
-                        push_pull: pushPull,
-                        price: quantity * PRICE_PER_ROLL
-                    });
-                }
-            });
-
-            // Prepare order data for Xano
-            const orderData = {
-                customer_name: customerData.name,
-                customer_email: customerData.email,
-                customer_phone: customerData.phone,
-                customer_address: customerData.address,
-                customer_city: customerData.city,
-                customer_pincode: customerData.pincode,
-                items: items,
-                return_negatives: document.getElementById('return-negatives').checked,
-                total: calculateTotal(),
-                notes: document.querySelector('textarea').value,
-                scans: getSelectedScans()
-            };
-
-            try {
-                console.log('Sending order data:', orderData);
-                const response = await fetch(`${XANO_BASE_URL}/create_order`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(orderData)
-                });
-                const xanoResponse = await response.json();
-                console.log('Xano response:', xanoResponse);
-                
-                if (xanoResponse.success) {
-                    const options = {
-                        key: RAZORPAY_KEY,
-                        amount: orderData.total * 100,
-                        currency: "INR",
-                        name: "Lazy Film Lab",
-                        description: "Film Processing Order",
-                        order_id: xanoResponse.data.order.id,
-                        prefill: {
-                            name: orderData.customer_name,
-                            email: orderData.customer_email,
-                            contact: orderData.customer_phone
-                        },
-                        handler: async function(response) {
-                            try {
-                                const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        order_id: xanoResponse.data.order.id,
-                                        payment_id: response.razorpay_payment_id,
-                                        status: 'paid',
-                                        amount: orderData.total,
-                                        razorpay_order_id: response.razorpay_order_id
-                                    })
-                                });
-
-                                const result = await updateResponse.json();
-                                if (result.success) {
-                                    clearForm();
-                                    closeOrderModal();
-                                    alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
-                                }
-                            } catch (error) {
-                                console.error('Error updating payment status:', error);
-                                alert('Payment successful but failed to update order status. Please contact support.');
-                            }
-                        }
-                    };
-
-                    const rzp = new Razorpay(options);
-                    rzp.open();
-                } else {
-                    alert('Failed to create order. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Something went wrong. Please try again.');
-            }
-        }
-
-        // Find this function in your code
-async function submitOrderForm(event) {
-    event.preventDefault();
-    console.log('Form submitted - Debug Test');
-    const form = event.target;
-    const formData = new FormData(form);
-    const customerData = Object.fromEntries(formData.entries());
-
-    // Get all roll data
-    const rolls = document.querySelectorAll('.roll-row');
-    const items = [];
-    
-    rolls.forEach(roll => {
-        const filmName = roll.querySelector('input[type="text"]').value;
-        const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-        const processType = roll.querySelector('select:nth-of-type(1)').value;
-        const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-        if (quantity > 0 && filmName && processType) {
-            items.push({
-                film_name: filmName,
-                quantity: quantity,
-                process_type: processType,
-                push_pull: pushPull,
-                price: quantity * PRICE_PER_ROLL
-            });
-        }
-    });
-
-    // Prepare order data for Xano
-    const orderData = {
-        customer_name: customerData.name,
-        customer_email: customerData.email,
-        customer_phone: customerData.phone,
-        customer_address: customerData.address,
-        customer_city: customerData.city,
-        customer_pincode: customerData.pincode,
-        items: items,
-        return_negatives: document.getElementById('return-negatives').checked,
-        total: calculateTotal(),
-        notes: document.querySelector('textarea').value,
-        scans: getSelectedScans()
-    };
-
-    try {
-        const response = await fetch(`${XANO_BASE_URL}/create_order`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(orderData)
         });
-        
-        const xanoResponse = await response.json();
-        console.log('Xano response:', xanoResponse);
-        
-        if (xanoResponse.success) {
-            // Initialize Razorpay with the order from Xano response
-            const options = {
-                key: RAZORPAY_KEY,
-                amount: orderData.total * 100,
-                currency: "INR",
-                name: "Lazy Film Lab",
-                description: "Film Processing Order",
-                order_id: xanoResponse.data.razorpay.id, // Use the Razorpay order ID
-                prefill: {
-                    name: customerData.name,
-                    email: customerData.email,
-                    contact: customerData.phone
-                },
-                handler: async function(response) {
-                    try {
-                        const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                order_id: xanoResponse.data.order.id,
-                                payment_id: response.razorpay_payment_id,
-                                status: 'paid',
-                                amount: orderData.total,
-                                razorpay_order_id: response.razorpay_order_id
-                            })
-                        });
 
-                        const result = await updateResponse.json();
-                        if (result.success) {
-                            clearForm();
-                            closeOrderModal();
-                            alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
-                        }
-                    } catch (error) {
-                        console.error('Error updating payment status:', error);
-                        alert('Payment successful but failed to update order status. Please contact support.');
-                    }
-                }
-            };
-
-            const rzp = new Razorpay(options);
-            rzp.open();
-        } else {
-            alert('Failed to create order. Please try again.');
+        if (document.getElementById('return-negatives').checked) {
+            total += 150;
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = `
+                <span>Return Negatives</span>
+                <span>₹150</span>
+            `;
+            cartItems.appendChild(li);
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Something went wrong. Please try again.');
+
+        totalPriceEl.textContent = total;
     }
-}
-        // Carousel functionality
-        let currentIndex = 0;
-        const images = document.querySelectorAll('.carousel img');
+
+    // Modal Functions
+    function showOrderModal() {
+        document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+    }
+
+    function placeOrder() {
+        const rolls = document.querySelectorAll('.roll-row');
+        let hasItems = false;
+
+        rolls.forEach(roll => {
+            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            if (quantity > 0) hasItems = true;
+        });
+
+        if (!hasItems) {
+            alert('Please add at least one roll to proceed.');
+            return;
+        }
+
+        showOrderModal();
+    }
+
+    // Form Submission and Payment
+    async function submitOrderForm(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const customerData = Object.fromEntries(formData.entries());
+
+        // Get all roll data
+        const rolls = document.querySelectorAll('.roll-row');
+        const items = [];
         
-        function showNextImage() {
-            images[currentIndex].style.display = 'none';
-            currentIndex = (currentIndex + 1) % images.length;
-            images[currentIndex].style.display = 'block';
-        }
+        rolls.forEach(roll => {
+            const filmName = roll.querySelector('input[type="text"]').value;
+            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            const processType = roll.querySelector('select:nth-of-type(1)').value;
+            const pushPull = roll.querySelector('select:nth-of-type(2)').value;
 
-        setInterval(showNextImage, 6000);
-        // Add these event listeners right after the carousel code
-document.addEventListener('DOMContentLoaded', function() {
-    // Listen for quantity changes
-    document.body.addEventListener('input', function(e) {
-        if (e.target.matches('.roll-row input[type="number"]')) {
-            updateOrderSummary();
-        }
-    });
+            if (quantity > 0 && filmName && processType) {
+                items.push({
+                    film_name: filmName,
+                    quantity: quantity,
+                    process_type: processType,
+                    push_pull: pushPull,
+                    price: quantity * PRICE_PER_ROLL
+                });
+            }
+        });
 
-    // Listen for film name changes
-    document.body.addEventListener('input', function(e) {
-        if (e.target.matches('.roll-row input[type="text"]')) {
-            updateOrderSummary();
-        }
-    });
+        // Prepare order data
+        const orderData = {
+            customer_name: customerData.name,
+            customer_email: customerData.email,
+            customer_phone: customerData.phone,
+            customer_address: customerData.address,
+            customer_city: customerData.city,
+            customer_pincode: customerData.pincode,
+            items: items,
+            return_negatives: document.getElementById('return-negatives').checked,
+            total: calculateTotal(),
+            notes: document.querySelector('textarea').value,
+            scans: getSelectedScans()
+        };
 
-    // Listen for select changes
-    document.body.addEventListener('change', function(e) {
-        if (e.target.matches('.roll-row select')) {
-            updateOrderSummary();
+        try {
+            const response = await fetch(`${XANO_BASE_URL}/create_order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+            
+            const xanoResponse = await response.json();
+            console.log('Xano response:', xanoResponse);
+            
+            if (xanoResponse.success) {
+                const options = {
+                    key: RAZORPAY_KEY,
+                    amount: orderData.total * 100,
+                    currency: "INR",
+                    name: "Lazy Film Lab",
+                    description: "Film Processing Order",
+                    order_id: xanoResponse.data.razorpay.id,
+                    prefill: {
+                        name: customerData.name,
+                        email: customerData.email,
+                        contact: customerData.phone
+                    },
+                    handler: async function(response) {
+                        try {
+                            const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    order_id: xanoResponse.data.order.id,
+                                    payment_id: response.razorpay_payment_id,
+                                    status: 'paid',
+                                    amount: orderData.total,
+                                    razorpay_order_id: response.razorpay_order_id
+                                })
+                            });
+
+                            const result = await updateResponse.json();
+                            if (result.success) {
+                                clearForm();
+                                closeOrderModal();
+                                alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
+                            }
+                        } catch (error) {
+                            console.error('Error updating payment status:', error);
+                            alert('Payment successful but failed to update order status. Please contact support.');
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } else {
+                alert('Failed to create order. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Something went wrong. Please try again.');
         }
-    });
-// Test Razorpay Integration
-function testRazorpay() {
-    console.log('Testing Razorpay...');
-    const options = {
-        key: "rzp_test_47G8Vu29Rw6KuM",
-        amount: 100 * 100, // 100 rupees
-        currency: "INR",
-        name: "Lazy Film Lab",
-        description: "Test Order",
-        handler: function(response) {
-            console.log("Payment success:", response);
-            alert("Payment successful! Response: " + JSON.stringify(response));
-        }
-    };
+    }
+
+    // Carousel Functionality
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.carousel img');
     
-    const rzp = new Razorpay(options);
-    rzp.open();
-}
-    // Listen for return negatives checkbox
-    document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
-});
-    </script>
-</body>
-</html>
+    function showNextImage() {
+        images[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % images.length;
+        images[currentIndex].classList.add('active');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Start carousel
+        setInterval(showNextImage, 6000);
+
+        // Add event listeners for form updates
+        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+        
+        // Initial cart update
+        updateOrderSummary();
+    });
+</script>
