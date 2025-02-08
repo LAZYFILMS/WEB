@@ -96,25 +96,24 @@
             font-weight: bold;
         }
 
-        /* Carousel Styles */
-        .carousel {
-            margin: 15px 0;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #000;
-            border-radius: 6px;
-            height: 500px;
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        .carousel img {
-            width: 100%;
-            height: 100%;
-            display: none;
-            object-fit: cover;
-        }
-
-        .carousel img.active {
+        .form-group label {
             display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
         }
 
         /* Order Box Styles */
@@ -140,11 +139,6 @@
             margin-bottom: 20px;
         }
 
-        .add-roll-btn:hover {
-            background: #333;
-        }
-
-        /* Form and Input Styles */
         .roll-row {
             display: grid;
             grid-template-columns: 1.5fr 80px 120px 120px auto;
@@ -165,15 +159,6 @@
             border-radius: 4px;
             box-sizing: border-box;
             background: white;
-        }
-
-        .remove-roll {
-            background: none;
-            border: none;
-            color: #000;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 0 5px;
         }
 
         /* Cart Styles */
@@ -205,26 +190,6 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 2px solid #000;
-        }
-
-        /* Form Group Styles */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
         }
 
         /* Modal Styles */
@@ -318,6 +283,7 @@
             margin: 20px 0;
             min-height: 100px;
             font-family: inherit;
+            box-sizing: border-box;
         }
 
         /* Mobile Styles */
@@ -338,25 +304,13 @@
             }
         }
     </style>
+</head>
 <body>
     <div class="container">
         <header>
             <h1 class="title">LAZY FILM LAB</h1>
             <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
         </header>
-
-        <!-- Carousel Section -->
-        <div class="carousel">
-            <img src="1.jpg" alt="1" class="active">
-            <img src="2.jpg" alt="2">
-            <img src="3.jpg" alt="3">
-            <img src="4.jpg" alt="4">
-            <img src="5.jpg" alt="5">
-            <img src="6.jpg" alt="6">
-            <img src="7.jpg" alt="7">
-            <img src="8.jpg" alt="8">
-            <div class="carousel-nav"></div>
-        </div>
 
         <div class="order-box">
             <button type="button" class="add-roll-btn" onclick="addNewRoll()">
@@ -468,7 +422,6 @@
             rollContainer.appendChild(rollDiv);
             updateOrderSummary();
         }
-
         function updateOrderSummary() {
             const cartItems = document.getElementById('cart-items');
             const totalPriceEl = document.getElementById('total-price');
@@ -535,128 +488,116 @@
             showOrderModal();
         }
 
-        // Event listeners
-        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+        // Xano and Razorpay Integration
+        async function submitOrderForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const customerData = Object.fromEntries(formData.entries());
 
-        // Carousel
-        let currentIndex = 0;
-        const images = document.querySelectorAll('.carousel img');
-        
-        function showNextImage() {
-            images[currentIndex].style.display = 'none';
-            currentIndex = (currentIndex + 1) % images.length;
-            images[currentIndex].style.display = 'block';
+            // Get all roll data
+            const rolls = document.querySelectorAll('.roll-row');
+            const items = [];
+            
+            rolls.forEach(roll => {
+                const filmName = roll.querySelector('input[type="text"]').value;
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                const processType = roll.querySelector('select:nth-of-type(1)').value;
+                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+
+                if (quantity > 0 && filmName && processType) {
+                    items.push({
+                        film_name: filmName,
+                        quantity: quantity,
+                        process_type: processType,
+                        push_pull: pushPull,
+                        price: quantity * PRICE_PER_ROLL
+                    });
+                }
+            });
+
+            // Prepare order data for Xano
+            const orderData = {
+                customer_name: customerData.name,
+                customer_email: customerData.email,
+                customer_phone: customerData.phone,
+                customer_address: customerData.address,
+                customer_city: customerData.city,
+                customer_pincode: customerData.pincode,
+                items: items,
+                return_negatives: document.getElementById('return-negatives').checked,
+                total: calculateTotal(),
+                notes: document.querySelector('textarea').value,
+                scans: getSelectedScans()
+            };
+
+            try {
+                // Create order in Xano
+                const response = await fetch(`${XANO_BASE_URL}/create_order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                const xanoResponse = await response.json();
+                
+                if (xanoResponse.success) {
+                    // Initialize Razorpay
+                    const options = {
+                        key: RAZORPAY_KEY,
+                        amount: orderData.total * 100,
+                        currency: "INR",
+                        name: "Lazy Film Lab",
+                        description: "Film Processing Order",
+                        order_id: xanoResponse.data.order.id,
+                        prefill: {
+                            name: orderData.customer_name,
+                            email: orderData.customer_email,
+                            contact: orderData.customer_phone
+                        },
+                        handler: async function(response) {
+                            try {
+                                const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        order_id: xanoResponse.data.order.id,
+                                        payment_id: response.razorpay_payment_id,
+                                        status: 'paid',
+                                        amount: orderData.total,
+                                        razorpay_order_id: response.razorpay_order_id
+                                    })
+                                });
+
+                                const result = await updateResponse.json();
+                                if (result.success) {
+                                    clearForm();
+                                    closeOrderModal();
+                                    alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
+                                }
+                            } catch (error) {
+                                console.error('Error updating payment status:', error);
+                                alert('Payment successful but failed to update order status. Please contact support.');
+                            }
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    alert('Failed to create order. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            }
         }
 
-        setInterval(showNextImage, 6000);
+        // Event listeners
+        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
     </script>
 </body>
 </html>
-// Add this at the end of your script section, before </script>
-
-async function submitOrderForm(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const customerData = Object.fromEntries(formData.entries());
-
-    // Get all roll data
-    const rolls = document.querySelectorAll('.roll-row');
-    const items = [];
-    
-    rolls.forEach(roll => {
-        const filmName = roll.querySelector('input[type="text"]').value;
-        const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-        const processType = roll.querySelector('select:nth-of-type(1)').value;
-        const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-        if (quantity > 0 && filmName && processType) {
-            items.push({
-                film_name: filmName,
-                quantity: quantity,
-                process_type: processType,
-                push_pull: pushPull,
-                price: quantity * PRICE_PER_ROLL
-            });
-        }
-    });
-
-    // Prepare order data for Xano
-    const orderData = {
-        customer_name: customerData.name,
-        customer_email: customerData.email,
-        customer_phone: customerData.phone,
-        customer_address: customerData.address,
-        customer_city: customerData.city,
-        customer_pincode: customerData.pincode,
-        items: items,
-        return_negatives: document.getElementById('return-negatives').checked,
-        total: calculateTotal(),
-        notes: document.querySelector('textarea').value,
-        scans: getSelectedScans()
-    };
-
-    try {
-        // Create order in Xano
-        const response = await fetch(`${XANO_BASE_URL}/create_order`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(orderData)
-        });
-        const xanoResponse = await response.json();
-        
-        if (xanoResponse.success) {
-            // Initialize Razorpay
-            const options = {
-                key: RAZORPAY_KEY,
-                amount: orderData.total * 100,
-                currency: "INR",
-                name: "Lazy Film Lab",
-                description: "Film Processing Order",
-                order_id: xanoResponse.data.order.id,
-                prefill: {
-                    name: orderData.customer_name,
-                    email: orderData.customer_email,
-                    contact: orderData.customer_phone
-                },
-                handler: async function(response) {
-                    try {
-                        const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                order_id: xanoResponse.data.order.id,
-                                payment_id: response.razorpay_payment_id,
-                                status: 'paid',
-                                amount: orderData.total,
-                                razorpay_order_id: response.razorpay_order_id
-                            })
-                        });
-
-                        const result = await updateResponse.json();
-                        if (result.success) {
-                            clearForm();
-                            closeOrderModal();
-                            alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
-                        }
-                    } catch (error) {
-                        console.error('Error updating payment status:', error);
-                        alert('Payment successful but failed to update order status. Please contact support.');
-                    }
-                }
-            };
-
-            const rzp = new Razorpay(options);
-            rzp.open();
-        } else {
-            alert('Failed to create order. Please try again.');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Something went wrong. Please try again.');
-    }
-}
