@@ -636,6 +636,7 @@
         // Find this function in your code
 async function submitOrderForm(event) {
     event.preventDefault();
+    console.log('Form submitted - Debug Test');
     const form = event.target;
     const formData = new FormData(form);
     const customerData = Object.fromEntries(formData.entries());
