@@ -16,71 +16,100 @@
         <button onclick="fetchFilms()">Get Films</button>
         <button onclick="addFilm()">Add Film</button>
         <!-- Add Payment Button -->
-        <button onclick="initiatePayment()">Pay Now</button>
+        <button onclick="initiatePayment()">Pay Now (₹500)</button>
         <div id="output"></div>
     </div>
 
     <script>
         const API_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:vZcukp0r";
 
-        // Your existing functions remain the same
-        async function fetchUsers() { /* ... */ }
-        async function addUser() { /* ... */ }
-        async function fetchFilms() { /* ... */ }
-        async function addFilm() { /* ... */ }
-
-        async function initiatePayment() {
+        async function fetchUsers() {
             try {
-                // Create order directly with minimal data
-                const response = await fetch(`${API_BASE_URL}/razorpay`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                const response = await fetch(`${API_BASE_URL}/users`);
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        }
+
+        async function addUser() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        amount: 50000,
-                        currency: "INR"
+                        Name: "Sarang Joshi",
+                        Address: "Bombay",
+                        Phone: "1234567890",
+                        email: "sarang@example.com"
                     })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
                 const data = await response.json();
-                console.log('Order created:', data);
-
-                const options = {
-                    key: 'rzp_test_A0ByZRGOXNKKL4',
-                    amount: 50000,
-                    currency: "INR",
-                    name: "Lazy Films",
-                    description: "Film Processing Payment",
-                    order_id: data.result.id,
-                    handler: function (response) {
-                        alert('Payment Successful');
-                        console.log(response);
-                    },
-                    prefill: {
-                        name: "Customer Name",
-                        email: "customer@example.com",
-                        contact: "9999999999"
-                    },
-                    notes: {
-                        address: "Razorpay Corporate Office"
-                    },
-                    theme: {
-                        color: "#000000"
-                    }
-                };
-
-                const paymentObject = new Razorpay(options);
-                paymentObject.open();
-
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
             } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("output").innerText = error.message;
+                console.error("Error adding user:", error);
             }
+        }
+
+        async function fetchFilms() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/films`);
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error fetching films:", error);
+            }
+        }
+
+        async function addFilm() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/films`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Name_Of_Film: "Experimental 35mm",
+                        Push_Pull: "Normal",
+                        Process: "C-41",
+                        user_id: 1
+                    })
+                });
+                const data = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Error adding film:", error);
+            }
+        }
+
+        function initiatePayment() {
+            var options = {
+                key: "rzp_test_A0ByZRGOXNKKL4",
+                amount: "50000",
+                currency: "INR",
+                name: "Lazy Films",
+                description: "Film Processing Payment",
+                handler: function (response) {
+                    alert("Payment ID: " + response.razorpay_payment_id);
+                    document.getElementById("output").innerText = 
+                        "Payment successful!\nPayment ID: " + response.razorpay_payment_id;
+                },
+                prefill: {
+                    name: "Customer Name",
+                    email: "customer@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: "#000000"
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response){
+                alert("Payment Failed");
+                document.getElementById("output").innerText = "Payment Failed: " + response.error.description;
+            });
+            
+            rzp1.open();
         }
     </script>
 </body>
