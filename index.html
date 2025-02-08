@@ -21,7 +21,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:UISlYycK";
+        const API_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:vZcukp0r";
 
         async function fetchUsers() {
             try {
@@ -83,40 +83,58 @@
 
         async function initiatePayment() {
             try {
+                console.log('Starting payment process...'); // Debug log
+                
                 // First get the order from your XANO endpoint
-                const response = await fetch(`${API_BASE_URL}/razorpay`);
-                const orderData = await response.json();
+                const orderResponse = await fetch(`${API_BASE_URL}/razorpay`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('XANO Response:', orderResponse); // Debug log
+                
+                if (!orderResponse.ok) {
+                    throw new Error(`XANO API error! status: ${orderResponse.status}`);
+                }
+                
+                const orderData = await orderResponse.json();
+                console.log('Order Data:', orderData); // Debug log
+                
+                if (!orderData || !orderData.result || !orderData.result.id) {
+                    throw new Error('Invalid order data received from XANO');
+                }
                 
                 const options = {
-                    key: 'rzp_test_A0ByZRGOXNKKL4', // your razorpay key
-                    amount: orderData.result.amount,
-                    currency: orderData.result.currency,
+                    key: 'rzp_test_A0ByZRGOXNKKL4',
+                    amount: 50000,
+                    currency: 'INR',
                     name: 'Lazy Films',
                     description: 'Film Processing Payment',
                     order_id: orderData.result.id,
                     handler: function(response) {
-                        // This function runs after successful payment
                         document.getElementById("output").innerText = 
                             "Payment successful!\nPayment ID: " + response.razorpay_payment_id + 
                             "\nOrder ID: " + response.razorpay_order_id;
-                        
-                        // You can add API call here to update your backend about successful payment
                     },
                     prefill: {
-                        name: "Customer Name",
-                        email: "customer@example.com",
-                        contact: "9999999999"
+                        name: document.querySelector('input[name="name"]')?.value || "Customer Name",
+                        email: document.querySelector('input[name="email"]')?.value || "customer@example.com",
+                        contact: document.querySelector('input[name="phone"]')?.value || "9999999999"
                     },
                     theme: {
-                        color: "#3399cc"
+                        color: "#000000"
                     }
                 };
+                
+                console.log('Razorpay Options:', options); // Debug log
                 
                 const rzp = new Razorpay(options);
                 rzp.open();
                 
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Payment Error:', error);
                 document.getElementById("output").innerText = "Error initiating payment: " + error.message;
             }
         }
