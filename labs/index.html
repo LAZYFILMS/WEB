@@ -647,6 +647,32 @@
         }
 
         setInterval(showNextImage, 6000);
+        // Add these event listeners right after the carousel code
+document.addEventListener('DOMContentLoaded', function() {
+    // Listen for quantity changes
+    document.body.addEventListener('input', function(e) {
+        if (e.target.matches('.roll-row input[type="number"]')) {
+            updateOrderSummary();
+        }
+    });
+
+    // Listen for film name changes
+    document.body.addEventListener('input', function(e) {
+        if (e.target.matches('.roll-row input[type="text"]')) {
+            updateOrderSummary();
+        }
+    });
+
+    // Listen for select changes
+    document.body.addEventListener('change', function(e) {
+        if (e.target.matches('.roll-row select')) {
+            updateOrderSummary();
+        }
+    });
+
+    // Listen for return negatives checkbox
+    document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+});
     </script>
 </body>
 </html>
