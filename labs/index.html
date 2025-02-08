@@ -780,7 +780,24 @@ document.addEventListener('DOMContentLoaded', function() {
             updateOrderSummary();
         }
     });
-
+// Test Razorpay Integration
+function testRazorpay() {
+    console.log('Testing Razorpay...');
+    const options = {
+        key: "rzp_test_47G8Vu29Rw6KuM",
+        amount: 100 * 100, // 100 rupees
+        currency: "INR",
+        name: "Lazy Film Lab",
+        description: "Test Order",
+        handler: function(response) {
+            console.log("Payment success:", response);
+            alert("Payment successful! Response: " + JSON.stringify(response));
+        }
+    };
+    
+    const rzp = new Razorpay(options);
+    rzp.open();
+}
     // Listen for return negatives checkbox
     document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
 });
