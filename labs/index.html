@@ -170,17 +170,30 @@
             border-bottom: 1px solid #eee;
         }
 
-        .roll-row input[type="text"],
-        .roll-row input[type="number"],
-        .roll-row select {
-            padding: 8px;
-            font-size: 14px;
-            height: 36px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            box-sizing: border-box;
-            background: white;
-        }
+        /* Add these styles in your <style> section */
+.roll-row input[type="text"],
+.roll-row input[type="number"],
+.roll-row select {
+    padding: 8px;
+    font-size: 14px;
+    height: 36px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: white;
+    pointer-events: auto;  /* Add this line */
+    cursor: text;          /* Add this line */
+}
+
+/* Remove any cursor: none; properties from your CSS */
+body {
+    font-family: "Lucida Console", Courier, monospace;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    /* Remove cursor: none; if it exists */
+}
 
         /* Cart Styles */
         .cart-summary {
