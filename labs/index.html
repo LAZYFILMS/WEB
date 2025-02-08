@@ -539,7 +539,20 @@ body {
     const form = event.target;
     const formData = new FormData(form);
     const customerData = Object.fromEntries(formData.entries());
-
+            
+    console.log('Order Data:', {
+        customer_name: customerData.name,
+        customer_email: customerData.email,
+        customer_phone: customerData.phone,
+        customer_address: customerData.address,
+        customer_city: customerData.city,
+        customer_pincode: customerData.pincode,
+        items: items,
+        return_negatives: document.getElementById('return-negatives').checked,
+        total: calculateTotal(),
+        notes: document.querySelector('textarea').value,
+        scans: getSelectedScans()
+            
     // Get all roll data
     const rolls = document.querySelectorAll('.roll-row');
     const items = [];
