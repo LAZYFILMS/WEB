@@ -633,9 +633,114 @@
             }
         }
 
-        // Event listeners
-        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+        // Find this function in your code
+async function submitOrderForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const customerData = Object.fromEntries(formData.entries());
 
+    // Get all roll data
+    const rolls = document.querySelectorAll('.roll-row');
+    const items = [];
+    
+    rolls.forEach(roll => {
+        const filmName = roll.querySelector('input[type="text"]').value;
+        const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+        const processType = roll.querySelector('select:nth-of-type(1)').value;
+        const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+
+        if (quantity > 0 && filmName && processType) {
+            items.push({
+                film_name: filmName,
+                quantity: quantity,
+                process_type: processType,
+                push_pull: pushPull,
+                price: quantity * PRICE_PER_ROLL
+            });
+        }
+    });
+
+    // Prepare order data for Xano
+    const orderData = {
+        customer_name: customerData.name,
+        customer_email: customerData.email,
+        customer_phone: customerData.phone,
+        customer_address: customerData.address,
+        customer_city: customerData.city,
+        customer_pincode: customerData.pincode,
+        items: items,
+        return_negatives: document.getElementById('return-negatives').checked,
+        total: calculateTotal(),
+        notes: document.querySelector('textarea').value,
+        scans: getSelectedScans()
+    };
+
+    try {
+        const response = await fetch(`${XANO_BASE_URL}/create_order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+        
+        const xanoResponse = await response.json();
+        console.log('Xano response:', xanoResponse);
+        
+        if (xanoResponse.success) {
+            // Initialize Razorpay with the order from Xano response
+            const options = {
+                key: RAZORPAY_KEY,
+                amount: orderData.total * 100,
+                currency: "INR",
+                name: "Lazy Film Lab",
+                description: "Film Processing Order",
+                order_id: xanoResponse.data.razorpay.id, // Use the Razorpay order ID
+                prefill: {
+                    name: customerData.name,
+                    email: customerData.email,
+                    contact: customerData.phone
+                },
+                handler: async function(response) {
+                    try {
+                        const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                order_id: xanoResponse.data.order.id,
+                                payment_id: response.razorpay_payment_id,
+                                status: 'paid',
+                                amount: orderData.total,
+                                razorpay_order_id: response.razorpay_order_id
+                            })
+                        });
+
+                        const result = await updateResponse.json();
+                        if (result.success) {
+                            clearForm();
+                            closeOrderModal();
+                            alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
+                        }
+                    } catch (error) {
+                        console.error('Error updating payment status:', error);
+                        alert('Payment successful but failed to update order status. Please contact support.');
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        } else {
+            alert('Failed to create order. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+    }
+}
         // Carousel functionality
         let currentIndex = 0;
         const images = document.querySelectorAll('.carousel img');
