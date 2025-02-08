@@ -16,123 +16,44 @@
         // API Configuration
         const XANO_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:QQr0KuJy";
         const RAZORPAY_KEY = "rzp_test_47G8Vu29Rw6KuM";
+        const PRICE_PER_ROLL = 650;
 
         // Initialize EmailJS
         (function() {
             emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
         })();
 
-        // Function to create order in Xano
-        async function submitOrderForm(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const customerData = Object.fromEntries(formData.entries());
-
-    // Get all roll data
-    const rolls = document.querySelectorAll('.roll-row');
-    const items = [];
-    
-    rolls.forEach(roll => {
-        const filmName = roll.querySelector('input[type="text"]').value;
-        const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-        const processType = roll.querySelector('select:nth-of-type(1)').value;
-        const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-        if (quantity > 0 && filmName && processType) {
-            items.push({
-                film_name: filmName,
-                quantity: quantity,
-                process_type: processType,
-                push_pull: pushPull,
-                price: quantity * PRICE_PER_ROLL
+        // Helper Functions
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                total += quantity * PRICE_PER_ROLL;
             });
+            
+            if (document.getElementById('return-negatives').checked) {
+                total += 150;
+            }
+            return total;
         }
-    });
 
-    // Prepare order data for Xano
-    const orderData = {
-        customer_name: customerData.name,
-        customer_email: customerData.email,
-        customer_phone: customerData.phone,
-        customer_address: customerData.address,
-        customer_city: customerData.city,
-        customer_pincode: customerData.pincode,
-        items: items,
-        return_negatives: document.getElementById('return-negatives').checked,
-        total: calculateTotal(),
-        notes: document.querySelector('textarea').value,
-        scans: getSelectedScans()
-    };
-
-    try {
-        // Create order in Xano
-        const response = await fetch(`${XANO_BASE_URL}/create_order`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(orderData)
-        });
-        const xanoResponse = await response.json();
-        
-        if (xanoResponse.success) {
-            // Initialize Razorpay
-            const options = {
-                key: RAZORPAY_KEY,
-                amount: orderData.total * 100, // Razorpay expects amount in paise
-                currency: "INR",
-                name: "Lazy Film Lab",
-                description: "Film Processing Order",
-                order_id: xanoResponse.data.order.id,
-                prefill: {
-                    name: orderData.customer_name,
-                    email: orderData.customer_email,
-                    contact: orderData.customer_phone
-                },
-                handler: async function(response) {
-                    // Update payment status in Xano
-                    try {
-                        const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                order_id: xanoResponse.data.order.id,
-                                payment_id: response.razorpay_payment_id,
-                                status: 'paid',
-                                amount: orderData.total,
-                                razorpay_order_id: response.razorpay_order_id
-                            })
-                        });
-
-                        const result = await updateResponse.json();
-                        if (result.success) {
-                            // Clear cart and form
-                            clearForm();
-                            closeOrderModal();
-                            
-                            // Show success message
-                            alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
-                        }
-                    } catch (error) {
-                        console.error('Error updating payment status:', error);
-                        alert('Payment successful but failed to update order status. Please contact support.');
-                    }
-                }
-            };
-
-            const rzp = new Razorpay(options);
-            rzp.open();
-        } else {
-            alert('Failed to create order. Please try again.');
+        function getSelectedScans() {
+            const scans = [];
+            document.querySelectorAll('input[name="scan-option"]:checked').forEach(checkbox => {
+                scans.push(checkbox.value);
+            });
+            return scans;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Something went wrong. Please try again.');
-    }
-}
+
+        function clearForm() {
+            document.getElementById('rolls-container').innerHTML = '';
+            document.getElementById('return-negatives').checked = false;
+            document.querySelector('textarea').value = '';
+            document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateOrderSummary();
+        }
     </script>
     <style>
         /* General Styles */
@@ -142,7 +63,6 @@
             padding: 0;
             background: #fff;
             color: #000;
-            cursor: none;
         }
 
         .container {
@@ -174,7 +94,6 @@
             color: #000;
             font-size: 24px;
             font-weight: bold;
-            cursor: none;
         }
 
         /* Carousel Styles */
@@ -196,31 +115,6 @@
 
         .carousel img.active {
             display: block;
-        }
-
-        .carousel-nav {
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            z-index: 2;
-        }
-
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            border: none;
-            padding: 0;
-        }
-
-        .carousel-dot.active {
-            background: #fff;
         }
 
         /* Order Box Styles */
@@ -268,7 +162,9 @@
             font-size: 14px;
             height: 36px;
             border: 1px solid #000;
+            border-radius: 4px;
             box-sizing: border-box;
+            background: white;
         }
 
         .remove-roll {
@@ -278,10 +174,6 @@
             cursor: pointer;
             font-size: 18px;
             padding: 0 5px;
-        }
-
-        .remove-roll:hover {
-            opacity: 0.7;
         }
 
         /* Cart Styles */
@@ -315,6 +207,26 @@
             border-top: 2px solid #000;
         }
 
+        /* Form Group Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -343,11 +255,74 @@
             position: relative;
         }
 
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .confirm-order {
+            background: #000;
+            color: #fff;
+        }
+
+        .cancel-order {
+            background: #f1f1f1;
+        }
+
+        .place-order {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Scans Section */
+        .scans {
+            margin: 20px 0;
+        }
+
+        .scans h3 {
+            margin-bottom: 10px;
+        }
+
+        .scans-options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .return-negatives-container {
+            margin: 20px 0;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            margin: 20px 0;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
         /* Mobile Styles */
         @media (max-width: 768px) {
             .container {
-                width: auto;
-                max-width: 95%;
                 margin: 10px;
                 padding: 15px;
             }
@@ -357,29 +332,12 @@
                 gap: 10px;
             }
 
-            .modal-content {
-                width: 95%;
-                margin: 10px;
-                padding: 15px;
+            .scans-options {
+                flex-direction: column;
+                gap: 10px;
             }
         }
-
-        /* Custom Cursor */
-        #cursor {
-            position: fixed;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        #cursor-circle {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #000;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
     </style>
-</head>
 <body>
     <div class="container">
         <header>
@@ -480,15 +438,8 @@
         </div>
     </div>
 
-    <div id="cursor">
-        <div id="cursor-circle"></div>
-    </div>
-
     <script>
         // Cart functionality
-        let cartData = [];
-        const PRICE_PER_ROLL = 650;
-
         function addNewRoll() {
             const rollContainer = document.getElementById('rolls-container');
             const rollDiv = document.createElement('div');
@@ -586,14 +537,6 @@
 
         // Event listeners
         document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
-
-        // Custom cursor
-        const cursor = document.getElementById('cursor');
-        const cursorCircle = document.getElementById('cursor-circle');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-        });
 
         // Carousel
         let currentIndex = 0;
