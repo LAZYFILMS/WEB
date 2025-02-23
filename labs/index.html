@@ -16,26 +16,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet" as="style">
 
     <!-- Scripts -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <!-- Constants and Configuration -->
     <script>
-        const XANO_BASE_URL = "https://x8ki-letl-twmt.n7.xano.io/api:QQr0KuJy";
-        const RAZORPAY_KEY = "rzp_test_47G8Vu29Rw6KuM";
-        const PRICE_PER_ROLL = 650;
-    </script>
-
-    <!-- Verify Razorpay loading -->
-    <script>
-        window.addEventListener('load', function() {
-            if (typeof Razorpay === 'undefined') {
-                console.error('Razorpay failed to load');
-                alert('Payment system failed to load. Please refresh the page or try again later.');
-            } else {
-                console.log('Razorpay loaded successfully');
-            }
-        });
+        const PRICE_PER_ROLL = 700;
+        const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
+        const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
     </script>
 </head>
 <style>
@@ -371,6 +358,15 @@
                 <button type="button" class="place-order" onclick="placeOrder()">Place Order</button>
             </form>
         </div>
+
+        <!-- Add this before closing </div> of container -->
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+            <div style="display: flex; justify-content: center; gap: 20px; font-size: 14px;">
+                <a href="/refund-policy" style="color: #000; text-decoration: none;">Refund Policy</a>
+                <a href="/terms" style="color: #000; text-decoration: none;">Terms & Conditions</a>
+                <a href="/privacy-policy" style="color: #000; text-decoration: none;">Privacy Policy</a>
+            </div>
+        </footer>
     </div>
 
     <!-- Order Form Modal -->
@@ -452,17 +448,20 @@
             <input type="number" placeholder="Qty" min="1" max="30" required>
             <select required>
                 <option value="" disabled selected>Process</option>
-                <option value="ECN-2">ECN-2</option>
-                <option value="C41">C41</option>
-                <option value="B&W">Black & White</option>
+                <option value="Ecn2">ECN-2</option>
+                <option value="c41">C41</option>
+                <option value="BnW">Black & White</option>
             </select>
             <select required>
                 <option value="" disabled selected>Push/Pull</option>
                 <option value="none">No Push/Pull</option>
-                <option value="push1">+1 Push</option>
-                <option value="push2">+2 Push</option>
-                <option value="pull1">-1 Pull</option>
-                <option value="pull2">-2 Pull</option>
+                <option value="push1">+1 Stop</option>
+                <option value="push2">+2 Stop</option>
+                <option value="push3">+3 Stop</option>
+                <option value="pull1">-1 Stop</option>
+                <option value="pull2">-2 Stop</option>
+                <option value="pull3">-3 Stop</option>
+                <option value="not-sure">Not sure</option>
             </select>
             <button type="button" class="remove-roll" onclick="this.parentElement.remove();updateOrderSummary()">×</button>
         `;
@@ -558,158 +557,6 @@
         showOrderModal();
     }
 
-    // Modify the start of submitOrderForm
-    async function submitOrderForm(event) {
-        event.preventDefault();
-        
-        try {
-            const form = event.target;
-            const formData = new FormData(form);
-            const customerData = Object.fromEntries(formData.entries());
-
-            // Validate customer data
-            if (!customerData.name || !customerData.email || !customerData.phone || 
-                !customerData.address || !customerData.city || !customerData.pincode) {
-                throw new Error('Please fill in all required fields');
-            }
-
-            // Collect roll data
-            const items = Array.from(document.querySelectorAll('.roll-row'))
-                .map(roll => {
-                    const filmName = roll.querySelector('input[type="text"]').value;
-                    const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                    const processType = roll.querySelector('select:nth-of-type(1)').value;
-                    const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-                    return quantity > 0 && filmName && processType ? {
-                        film_name: filmName,
-                        quantity: quantity,
-                        process_type: processType,
-                        push_pull: pushPull,
-                        price: quantity * PRICE_PER_ROLL
-                    } : null;
-                })
-                .filter(item => item !== null);
-
-            if (items.length === 0) {
-                throw new Error('Please add at least one film roll');
-            }
-
-            const total = calculateTotal();
-            if (total <= 0) {
-                throw new Error('Invalid order total');
-            }
-
-            const orderData = {
-                customer_name: customerData.name,
-                customer_email: customerData.email,
-                customer_phone: customerData.phone,
-                customer_address: customerData.address,
-                customer_city: customerData.city,
-                customer_pincode: customerData.pincode,
-                items: items,
-                return_negatives: document.getElementById('return-negatives').checked,
-                total: total,
-                notes: document.querySelector('textarea').value || '',
-                scans: getSelectedScans()
-            };
-
-            console.log('Sending order data:', orderData);
-
-            // First API call to create order
-            const createOrderResponse = await fetch(`${XANO_BASE_URL}/create_order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            if (!createOrderResponse.ok) {
-                const errorText = await createOrderResponse.text();
-                console.error('Create order response:', errorText);
-                throw new Error(`Failed to create order: ${createOrderResponse.status}`);
-            }
-
-            const xanoResponse = await createOrderResponse.json();
-            console.log('Xano response:', xanoResponse);
-
-            if (!xanoResponse.success || !xanoResponse.data || !xanoResponse.data.razorpay || !xanoResponse.data.razorpay.id) {
-                console.error('Invalid Xano response:', xanoResponse);
-                throw new Error('Invalid response from server');
-            }
-
-            // Initialize Razorpay
-            const options = {
-                key: RAZORPAY_KEY,
-                amount: total * 100, // Convert to paise
-                currency: "INR",
-                name: "Lazy Film Lab",
-                description: "Film Processing Order",
-                order_id: xanoResponse.data.razorpay.id,
-                prefill: {
-                    name: customerData.name,
-                    email: customerData.email,
-                    contact: customerData.phone
-                },
-                handler: async function(response) {
-                    try {
-                        console.log('Payment success, updating status...');
-                        const updateResponse = await fetch(`${XANO_BASE_URL}/update_payment_status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                order_id: xanoResponse.data.order.id,
-                                payment_id: response.razorpay_payment_id,
-                                status: 'paid',
-                                amount: total,
-                                razorpay_order_id: response.razorpay_order_id
-                            })
-                        });
-
-                        if (!updateResponse.ok) {
-                            throw new Error(`Failed to update payment status: ${updateResponse.status}`);
-                        }
-
-                        const result = await updateResponse.json();
-                        if (result.success) {
-                            clearForm();
-                            closeOrderModal();
-                            alert('Order placed successfully! Your order ID is: ' + xanoResponse.data.order.id);
-                        } else {
-                            throw new Error('Failed to update payment status');
-                        }
-                    } catch (error) {
-                        console.error('Error updating payment status:', error);
-                        alert('Payment successful but failed to update order status. Please contact support with your payment ID: ' + response.razorpay_payment_id);
-                    }
-                },
-                modal: {
-                    ondismiss: function() {
-                        console.log('Payment modal closed');
-                    }
-                }
-            };
-
-            console.log('Creating Razorpay instance with options:', options);
-            const rzp = new Razorpay(options);
-            
-            rzp.on('payment.failed', function(response) {
-                console.error('Payment failed:', response.error);
-                alert('Payment failed: ' + response.error.description);
-            });
-
-            rzp.open();
-
-        } catch (error) {
-            console.error('Error in order submission:', error);
-            alert('Failed to create order: ' + error.message);
-        }
-    }
-
     // Carousel Functionality
     let currentIndex = 0;
     
@@ -744,5 +591,309 @@
         
         document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
         updateOrderSummary();
+    });
+
+    // Update the submitOrderForm function
+    async function submitOrderForm(event) {
+        event.preventDefault();
+        
+        try {
+            const form = event.target;
+            const formData = new FormData(form);
+            const customerData = Object.fromEntries(formData.entries());
+
+            // Get selected scans
+            const selectedScans = getSelectedScans();
+            if (selectedScans.length === 0) {
+                throw new Error('Please select at least one scan option');
+            }
+
+            // Collect roll data
+            const items = Array.from(document.querySelectorAll('.roll-row'))
+                .map(roll => {
+                    const filmName = roll.querySelector('input[type="text"]').value;
+                    const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                    const processType = roll.querySelector('select:nth-of-type(1)').value;
+                    const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+
+                    // Get variant ID based on process type and push/pull
+                    const variantId = getVariantId(processType, pushPull);
+                    if (!variantId) {
+                        throw new Error(`Invalid variant combination: ${processType} ${pushPull}`);
+                    }
+
+                    return quantity > 0 && filmName && processType ? {
+                        film_name: filmName,
+                        quantity: quantity,
+                        process_type: processType,
+                        push_pull: pushPull,
+                        variantId: variantId
+                    } : null;
+                })
+                .filter(item => item !== null);
+
+            if (items.length === 0) {
+                throw new Error('Please add at least one film roll');
+            }
+
+            // Add return negatives if selected
+            const returnNegatives = document.getElementById('return-negatives').checked;
+            if (returnNegatives) {
+                items.push({
+                    quantity: 1,
+                    variantId: 'gid://shopify/ProductVariant/43199974604899', // Return Negatives variant ID
+                    attributes: [{ key: "type", value: "return_negatives" }]
+                });
+            }
+
+            // Create cart with all details
+            const cart = await createShopifyCart({
+                items: items,
+                customerInfo: customerData,
+                notes: document.querySelector('textarea').value || '',
+                scans: selectedScans,
+                returnNegatives: returnNegatives
+            });
+
+            // Redirect to checkout
+            if (cart.checkoutUrl) {
+                window.location.href = cart.checkoutUrl;
+            } else {
+                throw new Error('No checkout URL received');
+            }
+
+        } catch (error) {
+            console.error('Error in order submission:', error);
+            alert('Failed to create order: ' + error.message);
+        }
+    }
+
+    // Update the getVariantId function
+    function getVariantId(processType, pushPull) {
+        const variantMap = {
+            'ECN-2': {
+                'none': 'gid://shopify/ProductVariant/43181189103715',    // No Push/Pull
+                'push1': 'gid://shopify/ProductVariant/43181189136483',   // +1 Stop
+                'push2': 'gid://shopify/ProductVariant/43181189169251',   // +2 Stop
+                'push3': 'gid://shopify/ProductVariant/43181189202019',   // +3 Stop
+                'pull1': 'gid://shopify/ProductVariant/43181189234787',   // -1 Stop
+                'pull2': 'gid://shopify/ProductVariant/43181189267555',   // -2 Stop
+                'pull3': 'gid://shopify/ProductVariant/43181189300323',   // -3 Stop
+                'not-sure': 'gid://shopify/ProductVariant/43181189333091' // Not sure
+            },
+            'C41': {
+                'none': 'gid://shopify/ProductVariant/43181189365859',    // No Push/Pull
+                'push1': 'gid://shopify/ProductVariant/43181189398627',   // +1 Stop
+                'push2': 'gid://shopify/ProductVariant/43181189431395',   // +2 Stop
+                'push3': 'gid://shopify/ProductVariant/43181189464163',   // +3 Stop
+                'pull1': 'gid://shopify/ProductVariant/43181189496931',   // -1 Stop
+                'pull2': 'gid://shopify/ProductVariant/43181189529699',   // -2 Stop
+                'pull3': 'gid://shopify/ProductVariant/43181189562467',   // -3 Stop
+                'not-sure': 'gid://shopify/ProductVariant/43181189595235' // Not sure
+            },
+            'B&W': {
+                'none': 'gid://shopify/ProductVariant/43181189628003',    // No Push/Pull
+                'push1': 'gid://shopify/ProductVariant/43181189660771',   // +1 Stop
+                'push2': 'gid://shopify/ProductVariant/43181189693539',   // +2 Stop
+                'push3': 'gid://shopify/ProductVariant/43181189726307'    // +3 Stop
+            }
+        };
+        
+        // Convert process type to match Shopify variants
+        const processMap = {
+            'Ecn2': 'ECN-2',
+            'c41': 'C41',
+            'BnW': 'B&W'
+        };
+
+        // Convert push/pull to match variant names
+        const pushPullMap = {
+            'none': 'none',
+            'push1': 'push1',
+            'push2': 'push2',
+            'pull1': 'pull1',
+            'pull2': 'pull2'
+        };
+
+        const mappedProcess = processMap[processType] || processType;
+        const mappedPushPull = pushPullMap[pushPull] || pushPull;
+
+        return variantMap[mappedProcess]?.[mappedPushPull] || null;
+    }
+
+    // Update the createShopifyCart function
+    async function createShopifyCart(orderData) {
+        try {
+            // Add buyerIdentity with tax exemption
+            const cartInput = {
+                lines: orderData.items.map(item => ({
+                    quantity: item.quantity,
+                    merchandiseId: item.variantId
+                })),
+                buyerIdentity: {
+                    countryCode: "IN",
+                    taxExempt: true  // Add this to remove tax
+                }
+            };
+
+            const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
+                    'Accept': 'application/json',
+                    'Origin': 'https://rphzqx-d5.myshopify.com'
+                },
+                body: JSON.stringify({
+                    query: `mutation cartCreate($input: CartInput!) {
+                        cartCreate(input: $input) {
+                            cart {
+                                checkoutUrl
+                                id
+                            }
+                        }
+                    }`,
+                    variables: {
+                        input: cartInput
+                    }
+                })
+            });
+
+            const data = await response.json();
+            console.log('Cart Response:', data);
+
+            if (!data.data?.cartCreate?.cart) {
+                throw new Error('Failed to create cart');
+            }
+
+            // Add customer details to URL
+            const url = new URL(data.data.cartCreate.cart.checkoutUrl);
+            url.searchParams.append('checkout[email]', orderData.customerInfo.email);
+            url.searchParams.append('checkout[shipping_address][first_name]', orderData.customerInfo.name);
+            url.searchParams.append('checkout[shipping_address][address1]', orderData.customerInfo.address);
+            url.searchParams.append('checkout[shipping_address][city]', orderData.customerInfo.city);
+            url.searchParams.append('checkout[shipping_address][zip]', orderData.customerInfo.pincode);
+            url.searchParams.append('checkout[shipping_address][country]', 'IN');
+            url.searchParams.append('checkout[shipping_address][phone]', orderData.customerInfo.phone);
+
+            return {
+                ...data.data.cartCreate.cart,
+                checkoutUrl: url.toString()
+            };
+        } catch (error) {
+            console.error('Cart creation error:', error);
+            throw error;
+        }
+    }
+
+    // Update the getProductVariants function to check inventory
+    async function getProductVariants() {
+        try {
+            const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                },
+                body: JSON.stringify({
+                    query: `{
+                        product(handle: "film-processing") {
+                            title
+                            variants(first: 20) {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        availableForSale
+                                        quantityAvailable
+                                    }
+                                }
+                            }
+                        }
+                    }`
+                })
+            });
+
+            const data = await response.json();
+            console.log('Product Data:', data);
+            return data;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Add a test button to get variants
+    document.addEventListener('DOMContentLoaded', function() {
+        const button = document.createElement('button');
+        button.textContent = 'Get Variants';
+        button.onclick = getProductVariants;
+        button.style.position = 'fixed';
+        button.style.top = '50px';
+        button.style.right = '10px';
+        button.style.padding = '10px 20px';
+        button.style.backgroundColor = '#000';
+        button.style.color = '#fff';
+        button.style.border = 'none';
+        button.style.borderRadius = '4px';
+        button.style.cursor = 'pointer';
+        button.style.zIndex = '9999';
+        document.body.appendChild(button);
+    });
+
+    // Update the testCartCreation function
+    async function testCartCreation() {
+        try {
+            // Sample order data
+            const testOrder = {
+                items: [{
+                    film_name: "Test Film",
+                    quantity: 1,
+                    process_type: "ECN-2",
+                    push_pull: "none",
+                    variantId: "gid://shopify/ProductVariant/43181189103715"
+                }],
+                customerInfo: {
+                    name: "Test User",
+                    email: "test@example.com",
+                    phone: "+911234567890", // Add country code
+                    address: "Test Address, Mumbai",
+                    city: "Mumbai",
+                    pincode: "400001",
+                    country: "India"
+                },
+                notes: "Test order",
+                scans: ["JPEG"]
+            };
+
+            // Create cart
+            const cart = await createShopifyCart(testOrder);
+            console.log('Cart created:', cart);
+            
+            if (cart.checkoutUrl) {
+                // Open in same window for better payment flow
+                window.location.href = cart.checkoutUrl;
+            }
+        } catch (error) {
+            console.error('Test cart creation failed:', error);
+            alert('Cart creation failed: ' + error.message);
+        }
+    }
+
+    // Add test button
+    document.addEventListener('DOMContentLoaded', function() {
+        const button = document.createElement('button');
+        button.textContent = 'Test Cart';
+        button.onclick = testCartCreation;
+        button.style.position = 'fixed';
+        button.style.top = '100px';  // Below the other test button
+        button.style.right = '10px';
+        button.style.padding = '10px 20px';
+        button.style.backgroundColor = '#000';
+        button.style.color = '#fff';
+        button.style.border = 'none';
+        button.style.borderRadius = '4px';
+        button.style.cursor = 'pointer';
+        button.style.zIndex = '9999';
+        document.body.appendChild(button);
     });
 </script>
