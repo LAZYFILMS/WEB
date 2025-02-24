@@ -42,6 +42,7 @@
         border: 2px solid #000;
         border-radius: 8px;
         background-color: #f9f9f9;
+        min-height: auto;
     }
 
     /* Header Styles */
@@ -296,12 +297,278 @@
             gap: 10px;
         }
     }
+
+    /* Universal Cart Styles */
+    .universal-cart-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #000;
+        color: #fff;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transition: transform 0.2s;
+    }
+
+    .universal-cart-button:hover {
+        transform: scale(1.05);
+    }
+
+    .cart-count-bubble {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ff0000;
+        color: #fff;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    /* Cart Drawer Styles */
+    .cart-drawer {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100vh;
+        background: #fff;
+        box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+        z-index: 1001;
+        transition: right 0.3s;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .cart-drawer.active {
+        right: 0;
+    }
+
+    .cart-drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-items-container {
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    .cart-item {
+        display: flex;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-item-details {
+        flex: 1;
+        margin-right: 15px;
+    }
+
+    .cart-item-details h4 {
+        font-family: "stratos-black", sans-serif;
+        font-size: 16px;
+        margin: 0 0 5px 0;
+    }
+
+    .cart-item-details p {
+        font-size: 14px;
+        margin: 0;
+        color: #666;
+    }
+
+    .cart-item button {
+        background: #fff;
+        color: #ff0000;
+        border: 1px solid #ff0000;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+
+    .cart-item button:hover {
+        background: #ff0000;
+        color: #fff;
+    }
+
+    .cart-drawer-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: #fff;
+        border-top: 1px solid #eee;
+    }
+
+    .cart-total {
+        font-family: "stratos-black", sans-serif;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .checkout-button {
+        width: 100%;
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 4px;
+        font-family: "stratos-black", sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .checkout-button:hover {
+        opacity: 0.9;
+    }
+
+    /* How It Works & FAQ Sections */
+    .info-sections {
+        width: 650px;
+        margin: 20px auto;
+        padding: 0;
+        font-family: "Lucida Console", Courier, monospace;
+        white-space: pre-line;
+        line-height: 1.4;
+    }
+
+    .info-section {
+        padding: 0;
+        margin-bottom: 40px;
+        width: 100%;
+    }
+
+    .info-section h2 {
+        font-family: "Lucida Console", Courier, monospace;
+        font-size: 32px;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .info-section p {
+        margin-bottom: 0;
+        white-space: pre-line;
+        line-height: 1.2;
+        width: 100%;
+    }
+
+    .section-heading {
+        font-weight: bold;
+        font-size: 16px;
+        margin: 20px 0 10px 0;
+    }
+
+    .label-format-box {
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #000;
+        margin: 15px 0;
+        border-radius: 4px;
+        line-height: 1.2;
+        width: 650px;
+        box-sizing: border-box;
+        margin-left: -2px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .label-format-content {
+        flex: 1;
+    }
+
+    .label-format-image {
+        width: 220px;
+        height: auto;
+        margin-left: 20px;
+        object-fit: contain;
+    }
+
+    .label-format-heading {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .faq-item {
+        margin-bottom: 45px;
+    }
+
+    .faq-item h3 {
+        font-weight: normal;
+        margin-bottom: 15px;
+        margin-top: 0;
+        white-space: pre-line;
+    }
+
+    .faq-item p {
+        margin-top: 10px;
+        line-height: 2;
+        white-space: pre-line;
+    }
+
+    .faq-question, .faq-answer {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .faq-question {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .faq-answer {
+        margin-bottom: 25px;
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .address-box {
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #000;
+        margin: 15px 0;
+        border-radius: 4px;
+        line-height: 1.2;
+        width: 650px;
+        box-sizing: border-box;
+        margin-left: -2px;
+    }
+
+    .address-heading {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
 </style>
 <body>
     <div class="container">
         <header>
             <h1 class="title">LAZY FILM LAB</h1>
-            <a href="mailto:labs@lazyfilms.in" class="email-link">EMAIL US</a>
+            <a href="https://lazyfilms.in/store" class="email-link">BUY FILM</a>
         </header>
         
         <!-- Carousel Section -->
@@ -345,6 +612,12 @@
                 </div>
 
                 <textarea placeholder="Additional notes"></textarea>
+
+                <a href="#how-it-works" 
+                   onclick="event.preventDefault(); document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})" 
+                   style="color: #0000EE; text-decoration: underline; font-size: 14px; display: block; margin-top: -15px; margin-bottom: 15px; cursor: pointer;">
+                   How to send films →
+                </a>
 
                 <!-- Cart Summary -->
                 <div class="cart-summary">
@@ -407,6 +680,96 @@
             </form>
         </div>
     </div>
+
+    <!-- Universal Cart Button -->
+    <div class="universal-cart-button" onclick="toggleCartDrawer()">
+        🛒
+        <span class="cart-count-bubble">0</span>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div class="cart-drawer">
+        <div class="cart-drawer-header">
+            <h3>Your Cart</h3>
+            <button onclick="toggleCartDrawer()">✕</button>
+        </div>
+        <div class="cart-items-container">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <div class="cart-drawer-footer">
+            <div class="cart-total">Total: ₹0</div>
+            <button class="checkout-button" onclick="universalCheckout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- After the container div -->
+    <div class="info-sections">
+        <div class="info-section">
+            <h2 id="how-it-works">// HOW IT WORKS</h2>
+            <p>We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, and Black & White.</p>
+
+            <p class="section-heading">How to pack & send your films :</p>
+            <p>
+Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section.
+Choose if you want to add push/pull process.</p>
+
+            <div class="label-format-box">
+                <div class="label-format-content">
+                    <p class="label-format-heading">Label your rolls in this format :</p>
+                    <p>
+"YOUR_NAME_____"
+"FILM_NAME_____"
+"ISO_YOU_SHOT_ON_____"
+"PROCESS_____" (Leave Blank if you're not sure)</p>
+                </div>
+                <img src="images/film-label.png" alt="Film Label Format" class="label-format-image">
+            </div>
+
+            <p>Wrap them in well in packaging material and ship it to the address below.</p>
+
+            <div class="address-box">
+                <p class="address-heading">Address :</p>
+                <p>Lazy Film Lab
+C-13, Sahar Co-operative Housing Society, Sahar road, Parsiwada Chakala, Andheri East, Mumbai - 400099
+phone - 9405143371</p>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>// FAQ</h2>
+            <div class="faq-question">I don't know which process my color rolls should be developed in - ECN-2 or C-41</div>
+            <div class="faq-answer">If it's a respooled motion picture film like 250D, 500T, 200T, or 50D, it's ideally processed in ECN-2 for better colors.
+Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41.
+If you're still unsure about the process, just write the ISO you shot on and send it in.</div>
+
+            <div class="faq-question">My films have Remjet. Is that okay?</div>
+            <div class="faq-answer">Yes, it's perfectly okay to send a Remjet-backed motion picture film. We remove the Remjet and process the film in ECN-2.</div>
+
+            <div class="faq-question">What scanning resolution will I get?</div>
+            <div class="faq-answer">We scan with a full-frame mirrorless camera, which approximates a resolution of 6000 x 4000 pixels.
+It's very high resolution and suitable for large prints.</div>
+
+            <div class="faq-question">How do I get my negatives back?</div>
+            <div class="faq-answer">You can check the "return my negatives" box, and we'll ship them back to your address for an additional courier charge.</div>
+
+            <div class="faq-question">How should I label my rolls?</div>
+            <div class="faq-answer">Simply mention your name, the film name, the ISO you shot on, and the process.For example: lazy-500T-800-ECN2. Check how to label your rolls.</div>
+
+            <div class="faq-question">I have shot expired film. How should I proceed with processing?</div>
+            <div class="faq-answer">The best way to use expired film is to overexpose it by +1 stop for every decade it's expired.
+For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.
+If you've followed this method, we'll develop it at box speed, and it should work fine. Otherwise, you can shoot at box speed and let us know the year it expired.</div>
+
+            <div class="faq-question">I want RAW negative files of my film. Can I get them?</div>
+            <div class="faq-answer">Yes, you can select the format you want your digitized photos to be delivered in, including RAW files.</div>
+
+            <div class="faq-question">Do you process Ektachrome?</div>
+            <div class="faq-answer">Yes, we process Ektachrome, but not as a slide film in E-6 chemistry. We process it in ECN-2 as a negative.</div>
+
+            <div class="faq-question">What is the turn-around time for digital scans?</div>
+            <div class="faq-answer">Usually it is between 3-7 days after we receive the film rolls.</div>
+        </div>
+    </div>
 </body>
 <script>
     // Core Helper Functions
@@ -439,51 +802,21 @@
     }
 
     // Cart Functionality
-    function addNewRoll() {
-        const rollContainer = document.getElementById('rolls-container');
-        const rollDiv = document.createElement('div');
-        rollDiv.className = 'roll-row';
-        
-        rollDiv.innerHTML = `
-            <input type="text" placeholder="Film name" required>
-            <input type="number" placeholder="Qty" min="1" max="30" required>
-            <select required>
-                <option value="" disabled selected>Process</option>
-                <option value="Ecn2">ECN-2</option>
-                <option value="c41">C41</option>
-                <option value="BnW">Black & White</option>
-            </select>
-            <select required>
-                <option value="" disabled selected>Push/Pull</option>
-                <option value="none">No Push/Pull</option>
-                <option value="push1">+1 Stop</option>
-                <option value="push2">+2 Stop</option>
-                <option value="push3">+3 Stop</option>
-                <option value="pull1">-1 Stop</option>
-                <option value="pull2">-2 Stop</option>
-                <option value="pull3">-3 Stop</option>
-                <option value="not-sure">Not sure</option>
-            </select>
-            <button type="button" class="remove-roll" onclick="this.parentElement.remove();updateOrderSummary()">×</button>
-        `;
-        
-        rollContainer.appendChild(rollDiv);
-        
-        // Add input event listeners
-        rollDiv.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('change', updateOrderSummary);
-            input.addEventListener('input', updateOrderSummary);
-        });
-        
-        updateOrderSummary();
+    function toggleCartDrawer() {
+        const drawer = document.querySelector('.cart-drawer');
+        drawer.classList.toggle('active');
+        if (drawer.classList.contains('active')) {
+            updateCartDrawer();
+        }
     }
 
-    function updateOrderSummary() {
-        const cartItems = document.getElementById('cart-items');
-        const totalPriceEl = document.getElementById('total-price');
+    function updateCartDrawer() {
+        const cartItemsContainer = document.querySelector('.cart-items-container');
+        const cartTotal = document.querySelector('.cart-drawer-footer .cart-total');
         let total = 0;
-        cartItems.innerHTML = '';
+        let cartHtml = '';
 
+        // Add film processing items
         document.querySelectorAll('.roll-row').forEach(roll => {
             const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
             const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
@@ -493,30 +826,123 @@
             if (quantity > 0) {
                 const itemTotal = quantity * PRICE_PER_ROLL;
                 total += itemTotal;
-
-                const li = document.createElement('li');
-                li.className = 'cart-item';
-                li.innerHTML = `
-                    <span>${quantity}× ${filmName} (${processType}${pushPull !== 'none' ? ', ' + pushPull : ''})</span>
-                    <span>₹${itemTotal}</span>
-                `;
-                cartItems.appendChild(li);
+                cartHtml += `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <h4>${quantity}× ${filmName}</h4>
+                            <p>${processType}${pushPull !== 'none' ? ', ' + pushPull : ''}</p>
+                        </div>
+                        <span>₹${itemTotal}</span>
+                    </div>`;
             }
         });
 
+        // Add return negatives if checked
         if (document.getElementById('return-negatives').checked) {
             total += 150;
-            const li = document.createElement('li');
-            li.className = 'cart-item';
-            li.innerHTML = `
-                <span>Return Negatives</span>
-                <span>₹150</span>
-            `;
-            cartItems.appendChild(li);
+            cartHtml += `
+                <div class="cart-item">
+                    <div class="cart-item-details">
+                        <h4>Return Negatives</h4>
+                    </div>
+                    <span>₹150</span>
+                </div>`;
         }
 
-        totalPriceEl.textContent = total;
+        cartItemsContainer.innerHTML = cartHtml;
+        cartTotal.textContent = `Total: ₹${total}`;
     }
+
+    function universalCheckout() {
+        // Close cart drawer
+        toggleCartDrawer();
+        // Show order modal
+        showOrderModal();
+    }
+
+    // Cart Functionality
+    function createRollHtml(rollCount) {
+        return `
+            <div class="roll-row">
+                <input type="text" placeholder="Film name" required>
+                <input type="number" placeholder="Qty" min="1" max="30" required>
+                <select required>
+                    <option value="" disabled selected>Process</option>
+                    <option value="Ecn2">ECN-2</option>
+                    <option value="c41">C41</option>
+                    <option value="BnW">Black & White</option>
+                </select>
+                <select required>
+                    <option value="" disabled selected>Push/Pull</option>
+                    <option value="none">No Push/Pull</option>
+                    <option value="push1">+1 Stop</option>
+                    <option value="push2">+2 Stop</option>
+                    <option value="push3">+3 Stop</option>
+                    <option value="pull1">-1 Stop</option>
+                    <option value="pull2">-2 Stop</option>
+                    <option value="pull3">-3 Stop</option>
+                    <option value="not-sure">Not sure</option>
+                </select>
+                <button type="button" class="remove-roll" onclick="removeRoll(this)">×</button>
+            </div>
+        `;
+    }
+
+    function addNewRoll() {
+        const rollsContainer = document.getElementById('rolls-container');
+        const rollCount = rollsContainer.children.length + 1;
+        
+        const rollHtml = createRollHtml(rollCount);
+        rollsContainer.insertAdjacentHTML('beforeend', rollHtml);
+        
+        const newRoll = rollsContainer.lastElementChild;
+        newRoll.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('change', () => {
+                updateOrderSummary();
+                updateCartDrawer();
+            });
+            input.addEventListener('input', () => {
+                updateOrderSummary();
+                updateCartDrawer();
+            });
+        });
+        
+        updateOrderSummary();
+        updateCartDrawer();
+        updateCartCount();
+    }
+
+    function updateOrderSummary() {
+        const total = calculateTotal();
+        document.getElementById('total-price').textContent = total;
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        const rollCount = document.querySelectorAll('.roll-row').length;
+        const cartCountBubble = document.querySelector('.cart-count-bubble');
+        cartCountBubble.textContent = rollCount;
+        
+        // Hide bubble if no items
+        if (rollCount === 0) {
+            cartCountBubble.style.display = 'none';
+        } else {
+            cartCountBubble.style.display = 'flex';
+        }
+    }
+
+    function removeRoll(button) {
+        button.closest('.roll-row').remove();
+        updateOrderSummary();
+        updateCartDrawer();
+        updateCartCount();
+    }
+
+    // Add event listener for return negatives checkbox
+    document.getElementById('return-negatives').addEventListener('change', () => {
+        updateOrderSummary();
+        updateCartDrawer();
+    });
 
     // Modal Functions
     function showOrderModal() {
@@ -795,24 +1221,6 @@
         }
     }
 
-    // Add a test button to get variants
-    document.addEventListener('DOMContentLoaded', function() {
-        const button = document.createElement('button');
-        button.textContent = 'Get Variants';
-        button.onclick = getProductVariants;
-        button.style.position = 'fixed';
-        button.style.top = '50px';
-        button.style.right = '10px';
-        button.style.padding = '10px 20px';
-        button.style.backgroundColor = '#000';
-        button.style.color = '#fff';
-        button.style.border = 'none';
-        button.style.borderRadius = '4px';
-        button.style.cursor = 'pointer';
-        button.style.zIndex = '9999';
-        document.body.appendChild(button);
-    });
-
     // Update the testCartCreation function
     async function testCartCreation() {
         try {
@@ -851,23 +1259,5 @@
             alert('Cart creation failed: ' + error.message);
         }
     }
-
-    // Add test button
-    document.addEventListener('DOMContentLoaded', function() {
-        const button = document.createElement('button');
-        button.textContent = 'Test Cart';
-        button.onclick = testCartCreation;
-        button.style.position = 'fixed';
-        button.style.top = '100px';  // Below the other test button
-        button.style.right = '10px';
-        button.style.padding = '10px 20px';
-        button.style.backgroundColor = '#000';
-        button.style.color = '#fff';
-        button.style.border = 'none';
-        button.style.borderRadius = '4px';
-        button.style.cursor = 'pointer';
-        button.style.zIndex = '9999';
-        document.body.appendChild(button);
-    });
 </script>
 
