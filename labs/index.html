@@ -300,10 +300,10 @@
         /* Clear specific width for label and address boxes */
         .label-format-box,
         .address-box {
-            width: 100% !important;
+            width: 95% !important;
             margin: 15px auto;
             box-sizing: border-box;
-            padding: 15px;
+            padding: 15px 15px 15px 20px;  /* top right bottom left */
             border: 1px solid #000;
             clear: both;
             display: block;
@@ -390,7 +390,7 @@
 
         .label-format-image {
             width: 180px;
-            margin: 15px auto 0 -5px;
+            margin: 15px auto 0 -30px;
         }
 
         /* Cart Drawer Mobile Styles */
@@ -470,7 +470,7 @@
         /* Fix text alignment in info sections */
         .info-section {
             width: 100%;
-            padding: 0 15px;
+            padding: 0 15px 0 22px;
             box-sizing: border-box;
         }
 
@@ -490,12 +490,12 @@
 
         /* FAQ and How it works sections */
         .info-section:not(.label-format-box):not(.address-box) {
-            max-width: 400px;
-            margin-left: 15px;
+            max-width: 380px;
+            margin-left: 22px;
         }
 
         .info-section:not(.label-format-box):not(.address-box) p {
-            max-width: 400px;
+            max-width: 380px;
             word-wrap: break-word;
             margin: 10px 0;
             padding: 0;
@@ -503,7 +503,7 @@
         }
 
         .info-section:not(.label-format-box):not(.address-box) h2 {
-            max-width: 400px;
+            max-width: 380px;
             word-wrap: break-word;
             margin: 15px 0;
             padding: 0;
@@ -740,9 +740,8 @@
     }
 
     .label-format-image {
-        width: 220px;
-        height: auto;
-        margin-left: 20px;
+        width: 180px;
+        margin: 15px auto 0 -30px;
         object-fit: contain;
     }
 
