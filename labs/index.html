@@ -259,10 +259,13 @@
     /* Additional Elements Styles */
     .scans {
         margin: 20px 0;
+        padding-left: 0;
     }
 
     .scans h3 {
         margin-bottom: 10px;
+        font-family: "Lucida Console", Courier, monospace;
+        font-weight: bold;
     }
 
     .scans-options {
@@ -288,22 +291,98 @@
     /* Mobile Responsive Styles */
     @media (max-width: 768px) {
         .container {
-            width: 85%;
-            margin: 20px auto;
-            padding: 20px;
+            width: 90%;
+            margin: 10px auto;
+            padding: 15px;
+            box-sizing: border-box;
         }
 
-        .info-sections {
-            width: 85%;
-            margin: 20px auto;
+        /* Clear specific width for label and address boxes */
+        .label-format-box,
+        .address-box {
+            width: 100% !important;
+            margin: 15px auto;
+            box-sizing: border-box;
+            padding: 15px;
+            border: 1px solid #000;
+            clear: both;
+            display: block;
         }
 
-        p {
-            font-size: 14px;
-            line-height: 1.5;
+        /* Ensure content inside boxes fits properly */
+        .label-format-box *,
+        .address-box * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Add consistent text padding */
+        p, h2, h3, label {
+            padding: 0 15px;
+            margin: 10px 0;
+            box-sizing: border-box;
         }
 
         /* Text size adjustments */
+        .info-section p,
+        .label-format-box p:not(.label-format-heading),
+        .address-box p:not(.address-heading) {
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        .roll-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        /* Form elements */
+        textarea, 
+        .roll-row input,
+        .roll-row select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Cart and order elements */
+        .cart-summary,
+        .place-order {
+            width: 100%;
+            box-sizing: border-box;
+            margin: 15px 0;
+        }
+
+        .scans {
+            margin: 10px 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 15px;
+        }
+
+        .scans h3 {
+            padding-left: 0;
+            margin-bottom: 8px;
+        }
+
+        .scans-options {
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 8px;
+            padding-left: 15px;
+            flex-wrap: nowrap;
+            width: auto;
+        }
+
+        /* Info sections */
+        .info-sections {
+            width: 100%;
+            margin: 20px auto;
+            padding: 0;
+        }
+
         .info-section h2 {
             font-size: 24px;
             margin-bottom: 15px;
@@ -311,7 +390,7 @@
 
         .label-format-image {
             width: 180px;
-            margin: 15px auto 0;
+            margin: 15px auto 0 -5px;
         }
 
         /* Cart Drawer Mobile Styles */
@@ -352,6 +431,95 @@
         .carousel {
             margin: 10px 0;
             border-radius: 4px;
+        }
+
+        /* Align return negatives checkbox */
+        .return-negatives-container {
+            padding-left: 15px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Reset any padding from general rules */
+        .scans-options label,
+        .return-negatives-container label {
+            padding: 0;
+        }
+
+        /* Control text width and wrapping in info sections */
+        .info-section p,
+        .label-format-box p,
+        .address-box p {
+            max-width: 100%;
+            word-wrap: break-word;
+            margin-left: 0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Adjust heading width */
+        .info-section h2,
+        .label-format-heading,
+        .address-heading {
+            max-width: 100%;
+            margin-left: 0;
+        }
+
+        /* Fix text alignment in info sections */
+        .info-section {
+            width: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+
+        /* Fix alignment of "How to pack & send your film" section */
+        .info-section p,
+        .info-section h2 {
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        /* Ensure consistent container padding */
+        .container > * {
+            padding-left: 15px;
+            padding-right: 15px;
+            box-sizing: border-box;
+        }
+
+        /* FAQ and How it works sections */
+        .info-section:not(.label-format-box):not(.address-box) {
+            max-width: 400px;
+            margin-left: 15px;
+        }
+
+        .info-section:not(.label-format-box):not(.address-box) p {
+            max-width: 400px;
+            word-wrap: break-word;
+            margin: 10px 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        .info-section:not(.label-format-box):not(.address-box) h2 {
+            max-width: 400px;
+            word-wrap: break-word;
+            margin: 15px 0;
+            padding: 0;
+        }
+
+        /* Make header text 80% of original size */
+        .title,
+        .email-link {
+            font-size: 19px;  /* Original was 24px, now 80% of original */
+            margin: 0;
+        }
+
+        /* Adjust header spacing */
+        header {
+            margin-bottom: 15px;
+            padding: 5px 0;
         }
     }
 
@@ -936,17 +1104,17 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     function createRollHtml(rollCount) {
         return `
             <div class="roll-row">
-                <input type="text" placeholder="Film name" required>
-                <input type="number" placeholder="Qty" min="1" max="30" required>
-                <select required>
-                    <option value="" disabled selected>Process</option>
+            <input type="text" placeholder="Film name" required>
+            <input type="number" placeholder="Qty" min="1" max="30" required>
+            <select required>
+                <option value="" disabled selected>Process</option>
                     <option value="Ecn2">ECN-2</option>
                     <option value="c41">C41</option>
                     <option value="BnW">Black & White</option>
-                </select>
-                <select required>
-                    <option value="" disabled selected>Push/Pull</option>
-                    <option value="none">No Push/Pull</option>
+            </select>
+            <select required>
+                <option value="" disabled selected>Push/Pull</option>
+                <option value="none">No Push/Pull</option>
                     <option value="push1">+1 Stop</option>
                     <option value="push2">+2 Stop</option>
                     <option value="push3">+3 Stop</option>
@@ -954,7 +1122,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                     <option value="pull2">-2 Stop</option>
                     <option value="pull3">-3 Stop</option>
                     <option value="not-sure">Not sure</option>
-                </select>
+            </select>
                 <button type="button" class="remove-roll" onclick="removeRoll(this)">×</button>
             </div>
         `;
@@ -1137,9 +1305,9 @@ If you've followed this method, we'll develop it at box speed, and it should wor
 
             // Create cart with all details
             const cart = await createShopifyCart({
-                items: items,
+                    items: items,
                 customerInfo: customerData,
-                notes: document.querySelector('textarea').value || '',
+                    notes: document.querySelector('textarea').value || '',
                 scans: selectedScans,
                 returnNegatives: document.getElementById('return-negatives').checked
             });
@@ -1298,11 +1466,11 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         try {
             // Sample order data
             const testOrder = {
-                items: [{
-                    film_name: "Test Film",
-                    quantity: 1,
+            items: [{
+                film_name: "Test Film",
+                quantity: 1,
                     process_type: "ECN-2",
-                    push_pull: "none",
+                push_pull: "none",
                     variantId: "gid://shopify/ProductVariant/43181189103715"
                 }],
                 customerInfo: {
@@ -1315,8 +1483,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                     country: "India"
                 },
                 notes: "Test order",
-                scans: ["JPEG"]
-            };
+            scans: ["JPEG"]
+        };
 
             // Create cart
             const cart = await createShopifyCart(testOrder);
