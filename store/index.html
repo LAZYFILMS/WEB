@@ -71,9 +71,8 @@
         }
 
         .product-thumbnail {
-            width: 80px;
+            width: 114px;
             height: auto;
-            border: 1px solid #000;
             margin-right: 10px;
         }
 
@@ -864,6 +863,31 @@
                 addToCartBtn.textContent = 'Add to Cart';
             }, 1000);
         });
+
+        // Add this function to handle removing items from cart
+        function removeFromCart(type, itemId) {
+            // Find and remove the item from the appropriate cart
+            if (type === 'store') {
+                // Find item index
+                const index = universalCart.store.items.findIndex(item => item.id === itemId);
+                if (index !== -1) {
+                    // Subtract the item's price from total
+                    universalCart.store.total -= universalCart.store.items[index].price;
+                    // Remove the item
+                    universalCart.store.items.splice(index, 1);
+                }
+            } else if (type === 'labs') {
+                const index = universalCart.labs.items.findIndex(item => item.id === itemId);
+                if (index !== -1) {
+                    universalCart.labs.total -= universalCart.labs.items[index].price;
+                    universalCart.labs.items.splice(index, 1);
+                }
+            }
+            
+            // Update cart display
+            updateUniversalCart();
+            updateCartSummary();
+        }
     </script>
 </body>
 </html>
