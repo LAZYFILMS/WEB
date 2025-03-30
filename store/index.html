@@ -49,31 +49,39 @@
             font-size: 24px;
             text-transform: uppercase;
             font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
         }
 
         .product-header {
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .product-header img {
             width: 100%;
             height: auto;
             border: 1px solid #000;
+            margin-bottom: 15px;
         }
 
         .product-details {
+            margin-top: 10px;
             display: flex;
             gap: 25px;
             margin-bottom: 20px;
             align-items: flex-start;
             flex-wrap: wrap;
             padding-top: 10px;
+            width: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
+            margin: 0;
         }
 
         .product-thumbnail {
-            width: 114px;
+            width: 112px;
             height: auto;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .product-info {
@@ -83,6 +91,8 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 20px;
+            padding-right: 8px;
+            margin: 0;
         }
 
         .product-header-group {
@@ -111,16 +121,16 @@
             font-family: "stratos-black", sans-serif;
             font-size: 20px;
             margin: 0;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
         .product-price {
             display: block;
             font-family: "stratos-black", sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             margin: 0 0 15px 0;
-            font-weight: bold;
+            font-weight: 500;
         }
 
         .product-description {
@@ -244,8 +254,9 @@
             text-transform: uppercase;
         }
 
+        /* Base gallery styles */
         .sample-photos {
-            position: absolute;
+            position: absolute;  /* Keep absolute positioning */
             left: 50%;
             transform: translateX(-50%);
             width: 800px;
@@ -273,6 +284,11 @@
             height: 220px;
             object-fit: cover;
             transition: transform 0.2s ease;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.02);
+            z-index: 1;
         }
 
         /* Adjust heights and crop positions for all images */
@@ -320,11 +336,6 @@
         .gallery-image:nth-child(9) {
             height: 220px;
             object-position: center 50%;
-        }
-
-        .gallery-image:hover {
-            transform: scale(1.02);
-            z-index: 1;
         }
 
         /* Modal styles for full-size images */
@@ -512,16 +523,60 @@
 
         /* Add mobile responsive styles */
         @media (max-width: 768px) {
-            /* Container adjustments */
             .container {
                 width: 90%;
                 margin: 10px auto;
                 padding: 15px;
+                border-width: 1px;
+            }
+
+            /* Carousel styles */
+            .carousel {
+                position: relative;
+                width: 100%;
+                height: 250px;
+                overflow: hidden;
+                margin-bottom: 0px;  /* Negative margin to remove gap */
+            }
+
+            /* Product details container */
+            .product-details {
+                margin-top: -100px;  /* Keep the negative margin for first product */
+                padding: 0;
+                gap: 10px;
+                display: flex;
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            /* Spacing for second product only */
+            .product-details + .product-details {
+                margin-top: 50px;  /* Increased spacing to prevent overlap */
+                padding-top: 30px;
+                border-top: 1px solid #eee;
+                position: relative;  /* Ensure proper stacking */
+                z-index: 1;  /* Ensure it stays above first product */
+            }
+
+            /* Product thumbnail */
+            .product-thumbnail {
+                width: 130px;
+                height: auto;
+                margin-right: 5px;
+                margin-top: 0;
+                display: block;
+            }
+
+            /* Remove any extra spacing */
+            .product-header {
+                margin: 0;
+                padding: 0;
+                font-size: 0;  /* Remove any font spacing */
+                line-height: 0;  /* Remove line height spacing */
             }
 
             /* Header adjustments */
             header {
-                margin-top: 7px;  /* Add top margin to move headings down */
                 margin-bottom: 15px;
                 padding: 5px 0;
             }
@@ -533,38 +588,92 @@
             /* Develop film link adjustment */
             .develop-link {
                 font-size: 19px;
+                text-decoration: underline;
             }
 
-            /* Product image adjustments */
+            /* Product header adjustments */
+            .product-header {
+                margin: 0;
+            }
+
+            /* Product header image */
             .product-header img {
                 width: 100%;
                 height: auto;
                 margin-bottom: 15px;
             }
 
-            /* Product details adjustments */
-            .product-details {
-                width: 100%;
-                padding: 0 15px;
-                box-sizing: border-box;
+            /* Product info adjustments */
+            .product-info {
+                min-width: unset;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end;
+                padding-right: 8px;
             }
 
-            /* Product title and price */
+            /* Product header-group adjustments */
+            .product-header-group {
+                margin-bottom: 5px;
+                text-align: right;
+                margin-right: 2px;  /* Slight adjustment for text alignment */
+            }
+
             .product-title {
-                font-size: 18px;
-                margin: 10px 0;
+                font-size: 20px;
+                font-weight: 600;
+                margin: 0 0 4px 0;
             }
 
             .product-price {
-                font-size: 16px;
-                margin: 10px 0;
+                font-size: 18px;
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .product-actions {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-right: 2px;  /* Align with text above */
+                width: 100%;  /* Ensure full width for better touch targets */
+            }
+
+            .quantity-input {
+                width: 60px;
+                height: 36px;
+                -webkit-appearance: none;  /* Fix for iOS */
+                appearance: none;
+                margin: 0;
+                padding: 0 5px;
+                text-align: center;
+                pointer-events: auto !important;  /* Force enable interaction */
+                z-index: 2;  /* Ensure it's above other elements */
+            }
+
+            .add-to-cart {
+                padding: 8px 15px;
+                font-size: 14px;
+                pointer-events: auto !important;  /* Force enable interaction */
+                z-index: 2;  /* Ensure it's above other elements */
+                position: relative;  /* Ensure proper stacking */
+            }
+
+            /* Fix stacking context */
+            .product-info {
+                position: relative;
+                z-index: 1;
             }
 
             /* Description text */
             .product-description {
+                margin: 10px 0;
                 font-size: 14px;
                 line-height: 1.4;
-                margin: 15px 0;
             }
 
             /* Cart summary adjustments */
@@ -577,33 +686,80 @@
 
             /* Sample photos grid */
             .sample-photos {
-                position: relative;
-                width: 100%;
-                left: 0;
-                transform: none;
-                margin: 15px auto;
-                padding: 0 10px;
-                box-sizing: border-box;
+                position: relative !important;  /* Override absolute positioning */
+                left: 0 !important;  /* Reset left position */
+                transform: none !important;  /* Remove transform */
+                width: 90% !important;  /* Set width relative to viewport */
+                margin: 20px auto !important;  /* Center align with consistent spacing */
             }
 
             .gallery-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;  /* Two columns for mobile */
+                grid-template-columns: 1fr 1fr;
                 gap: 8px;
-                width: 100%;
             }
 
             .gallery-image {
-                width: 100%;
-                height: 160px;  /* Smaller height for mobile */
-                object-fit: cover;
+                height: 160px;
             }
 
             .gallery-title {
-                font-size: 16px;
-                margin: 20px 0;
-                text-align: center;
+                font-size: 18px;
             }
+
+            /* Reset the second gallery spacing for mobile */
+            #sample-gallery-250 {
+                position: relative !important;
+                margin-top: 60px !important;  /* Consistent spacing between galleries */
+            }
+
+            .carousel {
+                height: 250px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .carousel-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-image.active {
+            opacity: 1;
+        }
+
+        .see-more-btn {
+            background: none;
+            border: none;
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-right: 15px;
+        }
+
+        /* Separator between galleries */
+        .sample-photos + .sample-photos {
+            margin-top: 80px;
+            border-top: 1px solid #eee;
+            padding-top: 40px;
+        }
+
+        /* Spacing for second gallery */
+        #sample-gallery-250 {
+            margin-top: 900px;  /* Original spacing */
         }
     </style>
 </head>
@@ -615,7 +771,10 @@
         </header>
 
         <div class="product-header">
-            <img src="images/lazy500.jpg" alt="Lazy 500 Film">
+            <div class="carousel">
+                <img src="images/lazy500.jpg" alt="Lazy 500 Film" class="carousel-image active">
+                <img src="images/lazy250.jpg" alt="Lazy 250 Film" class="carousel-image">
+            </div>
         </div>
 
         <div class="product-details">
@@ -626,14 +785,38 @@
                     <p class="product-price">₹600</p>
                 </div>
                 <div class="product-actions">
-                    <input type="number" class="quantity-input" value="1" min="1">
-                    <button class="add-to-cart">Add to Cart</button>
-                    <div class="error-message"></div>
+                    <input type="number" class="quantity-input" value="1" min="1" data-product="lazy500">
+                    <button class="add-to-cart" data-product="lazy500" data-variant="43200428507235">Add to Cart</button>
                 </div>
             </div>
             <p class="product-description">
                 Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues. Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.
                 <a href="#sample-gallery" class="see-samples">See Sample photos</a>
+            </p>
+        </div>
+
+        <div class="product-details">
+            <img src="images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">LAZY 250</h2>
+                    <p class="product-price">₹600</p>
+                </div>
+                <div class="product-actions">
+                    <input type="number" class="quantity-input" value="1" min="1" data-product="lazy250">
+                    <button class="add-to-cart" data-product="lazy250" data-variant="43269458690147">Add to Cart</button>
+                </div>
+            </div>
+            <p class="product-description">
+                Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude. Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision.
+                <span class="more-content" style="display: none;">
+                    <br><br>
+                    Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast.
+                    <br><br>
+                    Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.
+                </span>
+                <button class="see-more-btn">See more</button>
+                <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
             </p>
         </div>
 
@@ -658,10 +841,26 @@
         <div class="gallery-grid">
             <img src="images/samples/sample7.jpg" alt="Sample 7" class="gallery-image">
             <img src="images/samples/sample1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="images/samples/sample2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="images/samples/sample3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="images/samples/sample4.jpg" alt="Sample 4" class="gallery-image">
             <img src="images/samples/sample8.jpg" alt="Sample 8" class="gallery-image">
             <img src="images/samples/sample9.jpg" alt="Sample 9" class="gallery-image">
             <img src="images/samples/sample6.jpg" alt="Sample 6" class="gallery-image">
             <img src="images/samples/sample5.jpg" alt="Sample 5" class="gallery-image">
+        </div>
+    </div>
+
+    <!-- Lazy 250 Sample Photos -->
+    <div id="sample-gallery-250" class="sample-photos">
+        <h3 class="gallery-title">LAZY250</h3>
+        <div class="gallery-grid">
+            <img src="./images/samples2/sample1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="./images/samples2/sample2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="./images/samples2/sample3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="./images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="./images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
+            <img src="./images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
         </div>
     </div>
 
@@ -692,53 +891,95 @@
     </div>
 
     <script>
-        // Add smooth scrolling
-        document.querySelector('.see-samples').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.querySelector('#sample-gallery').scrollIntoView({ 
-                behavior: 'smooth' 
+        // Add smooth scrolling for both galleries
+        document.querySelectorAll('.see-samples').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            });
+        });
+
+        // Initialize quantity inputs
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            // Allow number input via keyboard
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowUp') {
+                    this.value = parseInt(this.value) + 1;
+                } else if (e.key === 'ArrowDown' && parseInt(this.value) > 1) {
+                    this.value = parseInt(this.value) - 1;
+                }
+            });
+
+            // Allow number input via spinner
+            input.addEventListener('input', function() {
+                if (this.value < 1) this.value = 1;
             });
         });
 
         // Simple cart functionality
-        let cartQuantity = 0;
-        const VARIANT_ID = '43200428507235';  // Your variant ID without the gid:// prefix
+        const VARIANT_IDS = {
+            'lazy500': '43200428507235',
+            'lazy250': '43269458690147'
+        };
 
         function updateCartSummary() {
-            const total = cartQuantity * 600; // ₹600 per item
+            const total = universalCart.store.total;
             document.querySelector('.cart-summary').innerHTML = `
                 <h3>Cart Summary</h3>
                 <p>Total: ₹${total}</p>
             `;
         }
 
-        // Add to cart functionality
-        document.querySelector('.add-to-cart').addEventListener('click', function() {
-            const quantity = parseInt(document.querySelector('.quantity-input').value) || 1;
-            const addToCartBtn = this;
-            
-            // Show loading state
-            addToCartBtn.textContent = 'Adding...';
-            addToCartBtn.disabled = true;
-            
-            // Update cart quantity
-            cartQuantity += quantity;
-            updateCartSummary();
-            
-            // Show success state
-            setTimeout(() => {
-                addToCartBtn.textContent = 'Added!';
+        // Add to cart functionality for all products
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.product;
+                const variantId = this.dataset.variant;
+                const quantityInput = this.previousElementSibling;
+                const quantity = parseInt(quantityInput.value) || 1;
+                
+                // Disable button temporarily
+                this.disabled = true;
+                
+                // Add to universal cart
+                universalCart.store.items.push({
+                    id: Date.now(),
+                    name: productId === 'lazy500' ? 'LAZY 500' : 'LAZY 250',
+                    price: 600 * quantity,
+                    quantity: quantity,
+                    variantId: variantId
+                });
+                universalCart.store.total += 600 * quantity;
+                
+                updateUniversalCart();
+                updateCartSummary();
+                
+                // Show success state
+                this.textContent = 'Added!';
                 setTimeout(() => {
-                    addToCartBtn.textContent = 'Add to Cart';
-                    addToCartBtn.disabled = false;
+                    this.textContent = 'Add to Cart';
+                    this.disabled = false;
                 }, 1000);
-            }, 500);
+            });
         });
 
-        // Place order functionality
+        // Ensure quantity inputs only accept positive numbers
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.value < 1) this.value = 1;
+            });
+        });
+
+        // Update Place order functionality
         document.querySelector('.place-order').addEventListener('click', function() {
-            if (cartQuantity > 0) {
-                const shopifyCartUrl = `https://rphzqx-d5.myshopify.com/cart/${VARIANT_ID}:${cartQuantity}`;
+            if (universalCart.store.items.length > 0) {
+                const items = universalCart.store.items.map(item => 
+                    `${item.variantId}:${item.quantity}`
+                ).join(',');
+                const shopifyCartUrl = `https://rphzqx-d5.myshopify.com/cart/${items}`;
                 window.location.href = shopifyCartUrl;
             } else {
                 alert('Please add items to cart first');
@@ -837,40 +1078,12 @@
             window.location.href = checkoutUrl;
         }
 
-        // Modify your existing add to cart function
-        document.querySelector('.add-to-cart').addEventListener('click', function() {
-            const quantity = parseInt(document.querySelector('.quantity-input').value) || 1;
-            const addToCartBtn = this;
-            
-            // Add to universal cart
-            universalCart.store.items.push({
-                id: Date.now(),
-                name: 'LAZY 500',
-                price: 600 * quantity,
-                quantity: quantity,
-                variantId: VARIANT_ID
-            });
-            universalCart.store.total += 600 * quantity;
-            
-            updateUniversalCart();
-            
-            // Show success state
-            addToCartBtn.textContent = 'Added!';
-            setTimeout(() => {
-                addToCartBtn.textContent = 'Add to Cart';
-            }, 1000);
-        });
-
-        // Add this function to handle removing items from cart
+        // Update removeFromCart function
         function removeFromCart(type, itemId) {
-            // Find and remove the item from the appropriate cart
             if (type === 'store') {
-                // Find item index
                 const index = universalCart.store.items.findIndex(item => item.id === itemId);
                 if (index !== -1) {
-                    // Subtract the item's price from total
                     universalCart.store.total -= universalCart.store.items[index].price;
-                    // Remove the item
                     universalCart.store.items.splice(index, 1);
                 }
             } else if (type === 'labs') {
@@ -881,10 +1094,36 @@
                 }
             }
             
-            // Update cart display
             updateUniversalCart();
             updateCartSummary();
         }
+
+        // Add carousel functionality
+        function startCarousel() {
+            const images = document.querySelectorAll('.carousel-image');
+            let currentIndex = 0;
+
+            setInterval(() => {
+                images[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % images.length;
+                images[currentIndex].classList.add('active');
+            }, 5000); // Change image every 5 seconds
+        }
+
+        // Start carousel when page loads
+        document.addEventListener('DOMContentLoaded', startCarousel);
+
+        // Add see more functionality
+        document.querySelector('.see-more-btn').addEventListener('click', function() {
+            const moreContent = this.previousElementSibling;
+            if (moreContent.style.display === 'none') {
+                moreContent.style.display = 'inline';
+                this.textContent = 'See less';
+            } else {
+                moreContent.style.display = 'none';
+                this.textContent = 'See more';
+            }
+        });
     </script>
 </body>
 </html>
