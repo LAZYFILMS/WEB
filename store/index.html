@@ -116,6 +116,58 @@
             font-size: 14px;
         }
 
+        /* Hide native number spinners */
+        .quantity-input::-webkit-outer-spin-button,
+        .quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .quantity-input { -moz-appearance: textfield; }
+
+        /* Quantity control with +/- buttons inside the input (keeps same size) */
+        .quantity-control { position: relative; display: inline-block; }
+        .quantity-control .quantity-input {
+            width: 72px;
+            height: 35px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            padding: 0 24px; /* room for +/- */
+            box-sizing: border-box;
+        }
+        .qty-btn {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 24px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        .qty-btn.decrement { left: 0; }
+        .qty-btn.increment { right: 0; }
+
+        /* Out of stock styling */
+        .out-of-stock {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .out-of-stock .quantity-control,
+        .out-of-stock .add-to-cart {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .stock-status {
+            color: #ff0000;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: center;
+            width: 100%;
+        }
+
         .product-title {
             display: block;
             font-family: "stratos-black", sans-serif;
@@ -140,6 +192,29 @@
             width: 100%;
             flex-basis: 100%;
             order: 3;
+        }
+
+        .description-preview {
+            display: block;
+        }
+
+        .description-full {
+            display: none;
+        }
+
+        .description-full.show {
+            display: inline;
+        }
+
+        .see-more-desc {
+            background: none;
+            border: none;
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-top: 5px;
         }
 
         .see-samples {
@@ -782,15 +857,22 @@
             <div class="product-info">
                 <div class="product-header-group">
                     <h2 class="product-title">LAZY 500</h2>
-                    <p class="product-price">₹600</p>
+                    <p class="product-price">₹750</p>
                 </div>
                 <div class="product-actions">
-                    <input type="number" class="quantity-input" value="1" min="1" data-product="lazy500">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazy500">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy500">
+                        <button type="button" class="qty-btn increment" data-product="lazy500">+</button>
+                    </div>
                     <button class="add-to-cart" data-product="lazy500" data-variant="43200428507235">Add to Cart</button>
                 </div>
+                <div class="stock-status" id="stock-status-lazy500" style="display: none;">Out of Stock</div>
             </div>
             <p class="product-description">
-                Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues. Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.
+                <span class="description-preview">Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues.</span>
+                <span class="description-full">Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.</span>
+                <button class="see-more-desc" data-product="lazy500">See more</button>
                 <a href="#sample-gallery" class="see-samples">See Sample photos</a>
             </p>
         </div>
@@ -800,22 +882,22 @@
             <div class="product-info">
                 <div class="product-header-group">
                     <h2 class="product-title">LAZY 250</h2>
-                    <p class="product-price">₹600</p>
+                    <p class="product-price">₹750</p>
                 </div>
                 <div class="product-actions">
-                    <input type="number" class="quantity-input" value="1" min="1" data-product="lazy250">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazy250">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy250">
+                        <button type="button" class="qty-btn increment" data-product="lazy250">+</button>
+                    </div>
                     <button class="add-to-cart" data-product="lazy250" data-variant="43269458690147">Add to Cart</button>
                 </div>
+                <div class="stock-status" id="stock-status-lazy250" style="display: none;">Out of Stock</div>
             </div>
             <p class="product-description">
-                Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude. Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision.
-                <span class="more-content" style="display: none;">
-                    <br><br>
-                    Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast.
-                    <br><br>
-                    Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.
-                </span>
-                <button class="see-more-btn">See more</button>
+                <span class="description-preview">Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude.</span>
+                <span class="description-full">Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision. Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast. Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.</span>
+                <button class="see-more-desc" data-product="lazy250">See more</button>
                 <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
             </p>
         </div>
@@ -902,20 +984,26 @@
             });
         });
 
-        // Initialize quantity inputs
+        // Quantity input and button handlers
         document.querySelectorAll('.quantity-input').forEach(input => {
-            // Allow number input via keyboard
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowUp') {
-                    this.value = parseInt(this.value) + 1;
-                } else if (e.key === 'ArrowDown' && parseInt(this.value) > 1) {
-                    this.value = parseInt(this.value) - 1;
-                }
-            });
-
-            // Allow number input via spinner
             input.addEventListener('input', function() {
-                if (this.value < 1) this.value = 1;
+                const val = parseInt(this.value) || 1;
+                this.value = val < 1 ? 1 : val;
+            });
+        });
+
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const product = this.dataset.product;
+                const wrapper = this.closest('.quantity-control');
+                const input = wrapper.querySelector('.quantity-input[data-product="' + product + '"]');
+                let current = parseInt(input.value) || 1;
+                if (this.classList.contains('decrement')) {
+                    current = Math.max(1, current - 1);
+                } else {
+                    current = current + 1;
+                }
+                input.value = current;
             });
         });
 
@@ -924,6 +1012,63 @@
             'lazy500': '43200428507235',
             'lazy250': '43269458690147'
         };
+
+        // Shopify Storefront API configuration
+        const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
+        const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
+
+        // Check product availability from Shopify
+        async function checkProductAvailability() {
+            const query = `
+                query {
+                    products(first: 10, query: "title:LAZY500 OR title:LAZY 250") {
+                        edges {
+                            node {
+                                title
+                                variants(first: 1) {
+                                    edges {
+                                        node {
+                                            id
+                                            availableForSale
+                                            quantityAvailable
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2023-10/graphql.json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                
+                data.data.products.edges.forEach(edge => {
+                    const product = edge.node;
+                    const variant = product.variants.edges[0]?.node;
+                    
+                    if (variant && !variant.availableForSale) {
+                        const productId = product.title.toLowerCase().includes('500') ? 'lazy500' : 'lazy250';
+                        const productActions = document.querySelector(`[data-product="${productId}"]`).closest('.product-actions');
+                        const stockStatus = document.getElementById(`stock-status-${productId}`);
+                        
+                        productActions.classList.add('out-of-stock');
+                        stockStatus.style.display = 'block';
+                    }
+                });
+            } catch (error) {
+                console.error('Error checking product availability:', error);
+            }
+        }
 
         function updateCartSummary() {
             const total = universalCart.store.total;
@@ -938,7 +1083,7 @@
             button.addEventListener('click', function() {
                 const productId = this.dataset.product;
                 const variantId = this.dataset.variant;
-                const quantityInput = this.previousElementSibling;
+                const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
                 const quantity = parseInt(quantityInput.value) || 1;
                 
                 // Disable button temporarily
@@ -948,11 +1093,11 @@
                 universalCart.store.items.push({
                     id: Date.now(),
                     name: productId === 'lazy500' ? 'LAZY 500' : 'LAZY 250',
-                    price: 600 * quantity,
+                    price: 750 * quantity,
                     quantity: quantity,
                     variantId: variantId
                 });
-                universalCart.store.total += 600 * quantity;
+                universalCart.store.total += 750 * quantity;
                 
                 updateUniversalCart();
                 updateCartSummary();
@@ -1111,18 +1256,27 @@
         }
 
         // Start carousel when page loads
-        document.addEventListener('DOMContentLoaded', startCarousel);
+        document.addEventListener('DOMContentLoaded', function() {
+            startCarousel();
+            checkProductAvailability(); // Check stock status on page load
+        });
 
-        // Add see more functionality
-        document.querySelector('.see-more-btn').addEventListener('click', function() {
-            const moreContent = this.previousElementSibling;
-            if (moreContent.style.display === 'none') {
-                moreContent.style.display = 'inline';
-                this.textContent = 'See less';
-            } else {
-                moreContent.style.display = 'none';
-                this.textContent = 'See more';
-            }
+        // Add see more functionality for descriptions
+        document.querySelectorAll('.see-more-desc').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productId = this.dataset.product;
+                const description = this.closest('.product-description');
+                const fullText = description.querySelector('.description-full');
+                const previewText = description.querySelector('.description-preview');
+                
+                if (fullText.classList.contains('show')) {
+                    fullText.classList.remove('show');
+                    this.textContent = 'See more';
+                } else {
+                    fullText.classList.add('show');
+                    this.textContent = 'See less';
+                }
+            });
         });
     </script>
 </body>
