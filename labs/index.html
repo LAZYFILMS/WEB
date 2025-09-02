@@ -23,6 +23,10 @@
         const PRICE_PER_ROLL = 700;
         const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
         const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
+        // Variant IDs for upsell products
+        const VARIANT_LAZY500 = '43637440315491'; // upsell variant (10% off)
+        const VARIANT_LAZY250 = '43637439725667'; // upsell variant (10% off)
+        // No discount code used; pricing/discount handled in Shopify
     </script>
 </head>
 <style>
@@ -215,8 +219,14 @@
         border: 2px solid #000;
         border-radius: 8px;
         width: 90%;
-        max-width: 500px;
+        max-width: 420px; /* slightly narrower to make it taller and images more prominent */
         position: relative;
+    }
+
+    /* Upsell copy tuning */
+    #upsellModal .modal-content p {
+        font-size: 13px;      /* slightly smaller */
+        line-height: 1.5;     /* slightly more space between lines */
     }
 
     .modal-buttons {
@@ -413,8 +423,22 @@
 
         /* Modal Mobile Styles */
         .modal-content {
-            width: 95%;
-            max-height: 80vh;
+            width: 92%;
+            max-width: 360px;
+            max-height: 85vh;
+        }
+
+        /* Upsell mobile sizing */
+        #upsellModal .modal-content img[alt="LAZY 500"],
+        #upsellModal .modal-content img[alt="LAZY 250"] {
+            width: 72px;
+        }
+        #upsellModal .modal-content .quantity-control input {
+            width: 64px;
+            height: 32px;
+        }
+        #upsellModal .modal-content .qty-btn {
+            width: 22px;
         }
 
         /* Footer Mobile Styles */
@@ -882,6 +906,46 @@
         </footer>
     </div>
 
+    <!-- Upsell Modal -->
+    <div class="modal" id="upsellModal">
+        <div class="modal-content">
+            <h2>Add film at 10% OFF?</h2>
+            <p style="margin-top: 10px;">You’re already sending in film—why not reload while you’re at it? Snag fresh stock now with 10% off and <span style="color:#ff0000;">zero shipping costs</span> in the same order</p>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px; align-items:stretch;">
+                <div style="flex:1; border:1px solid #000; border-radius:6px; padding:10px; background:#fff; display:flex; gap:10px; align-items:center; justify-content:space-between; width:100%;">
+                    <img src="https://www.lazyfilms.in/store/images/lazy500-thumb.jpg" alt="LAZY 500" style="width:88px; height:auto; border:none; border-radius:4px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold;">LAZY 500</div>
+                        <div style="font-size:12px; color:#555;">10% OFF</div>
+                    </div>
+                    <div class="quantity-control" style="position:relative; display:inline-block;">
+                        <button type="button" class="qty-btn" data-target="upsellQtyLazy500" style="left:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">−</button>
+                        <input id="upsellQtyLazy500" type="number" value="1" min="1" style="width:72px; height:35px; border:1px solid #000; border-radius:4px; padding:0 24px; text-align:center;">
+                        <button type="button" class="qty-btn" data-target="upsellQtyLazy500" data-inc="1" style="right:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">+</button>
+                    </div>
+                    <button type="button" id="addLazy500" style="background:#000; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; white-space:nowrap;">Add</button>
+                </div>
+                <div style="flex:1; border:1px solid #000; border-radius:6px; padding:10px; background:#fff; display:flex; gap:10px; align-items:center; justify-content:space-between; width:100%;">
+                    <img src="https://www.lazyfilms.in/store/images/lazy250-thumb.jpg" alt="LAZY 250" style="width:88px; height:auto; border:none; border-radius:4px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold;">LAZY 250</div>
+                        <div style="font-size:12px; color:#555;">10% OFF</div>
+                    </div>
+                    <div class="quantity-control" style="position:relative; display:inline-block;">
+                        <button type="button" class="qty-btn" data-target="upsellQtyLazy250" style="left:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">−</button>
+                        <input id="upsellQtyLazy250" type="number" value="1" min="1" style="width:72px; height:35px; border:1px solid #000; border-radius:4px; padding:0 24px; text-align:center;">
+                        <button type="button" class="qty-btn" data-target="upsellQtyLazy250" data-inc="1" style="right:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">+</button>
+                    </div>
+                    <button type="button" id="addLazy250" style="background:#000; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; white-space:nowrap;">Add</button>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-order" id="upsellSkip">Skip for now</button>
+                <button type="button" class="confirm-order" id="upsellCheckout">Continue to checkout</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Order Form Modal -->
     <div class="modal" id="orderModal">
         <div class="modal-content">
@@ -1071,7 +1135,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                             <h4>${quantity}× ${filmName}</h4>
                             <p>${processType}${pushPull !== 'none' ? ', ' + pushPull : ''}</p>
                         </div>
-                        <span>₹${itemTotal}</span>
+                    <span>₹${itemTotal}</span>
                     </div>`;
             }
         });
@@ -1084,7 +1148,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                     <div class="cart-item-details">
                         <h4>Return Negatives</h4>
                     </div>
-                    <span>₹150</span>
+                <span>₹150</span>
                 </div>`;
         }
 
@@ -1190,6 +1254,10 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     function closeOrderModal() {
         document.getElementById('orderModal').classList.remove('active');
     }
+
+    // Upsell state
+    let pendingOrderData = null;
+    let upsellItems = [];
 
     function placeOrder() {
         const rolls = document.querySelectorAll('.roll-row');
@@ -1301,27 +1369,59 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 throw new Error('Please add at least one film roll');
             }
 
-            // Create cart with all details
-            const cart = await createShopifyCart({
+            // Store order data and show upsell modal instead of immediate redirect
+            pendingOrderData = {
                     items: items,
                 customerInfo: customerData,
                     notes: document.querySelector('textarea').value || '',
                 scans: selectedScans,
                 returnNegatives: document.getElementById('return-negatives').checked
-            });
-
-            // Redirect to checkout
-            if (cart.checkoutUrl) {
-                window.location.href = cart.checkoutUrl;
-            } else {
-                throw new Error('No checkout URL received');
-            }
+            };
+            upsellItems = [];
+            document.getElementById('orderModal').classList.remove('active');
+            document.getElementById('upsellModal').classList.add('active');
 
         } catch (error) {
             console.error('Error in order submission:', error);
             alert('Failed to create order: ' + error.message);
         }
     }
+
+    // Upsell handlers
+    document.addEventListener('click', async (e) => {
+        if (e.target && e.target.id === 'addLazy500') {
+            const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy500')?.value) || 1);
+            upsellItems.push({ variantId: VARIANT_LAZY500, quantity: qty });
+            e.target.textContent = 'Added';
+            e.target.disabled = true;
+        }
+        if (e.target && e.target.id === 'addLazy250') {
+            const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy250')?.value) || 1);
+            upsellItems.push({ variantId: VARIANT_LAZY250, quantity: qty });
+            e.target.textContent = 'Added';
+            e.target.disabled = true;
+        }
+        if (e.target && e.target.id === 'upsellSkip') {
+            document.getElementById('upsellModal').classList.remove('active');
+            const cart = await createShopifyCart(pendingOrderData, []);
+            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+        }
+        if (e.target && e.target.id === 'upsellCheckout') {
+            document.getElementById('upsellModal').classList.remove('active');
+            const cart = await createShopifyCart(pendingOrderData, upsellItems);
+            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+        }
+        // Quantity +/- inside upsell
+        if (e.target && e.target.classList.contains('qty-btn')) {
+            const targetId = e.target.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (input) {
+                const inc = e.target.getAttribute('data-inc') ? 1 : -1;
+                const next = Math.max(1, (parseInt(input.value) || 1) + inc);
+                input.value = next;
+            }
+        }
+    });
 
     // Update the getVariantId function
     function getVariantId(processType, pushPull) {
@@ -1377,7 +1477,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     }
 
     // Update the createShopifyCart function
-    async function createShopifyCart(orderData) {
+    async function createShopifyCart(orderData, extraItems = []) {
         try {
             let checkoutUrl = `https://${SHOPIFY_STORE_NAME}/cart/`;
             
@@ -1385,6 +1485,11 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             const items = orderData.items.map(item => {
                 const variantId = item.variantId.split('/').pop();
                 return `${variantId}:${item.quantity}`;
+            });
+            // Include upsell items
+            extraItems.forEach(extra => {
+                const vid = (typeof extra.variantId === 'string' ? extra.variantId : '').split('/').pop();
+                if (vid) items.push(`${vid}:${extra.quantity || 1}`);
             });
             
             if (orderData.returnNegatives) {
@@ -1414,6 +1519,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 'note': `ORDER DETAILS:\n\n${orderDetails}\n\nScans: ${orderData.scans.join(', ')}\nNotes: ${orderData.notes}`
             });
 
+            // Append parameters (no discount code appended)
             checkoutUrl += '?' + params.toString();
 
             return { checkoutUrl };
