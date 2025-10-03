@@ -346,6 +346,10 @@
             letter-spacing: 1px;
         }
 
+        #buyFilm {
+            cursor: pointer;
+        }
+
         .lab-description .body-text {
             font-family: 'Lucida Console', Courier, monospace;
             font-size: 31px;
@@ -499,7 +503,7 @@
         </div>
 
         <div class="lab-description" id="labDescription">
-            <div class="subheading">// BUY 35MM FILM</div>
+            <div class="subheading" id="buyFilm">// BUY 35MM FILM</div>
             <div class="subheading" id="developFilm">// DEVELOP FILM</div>
             <div class="body-text">Lazy Film Lab offers a range of 35mm color photography films, along with developing, scanning services, and other fun stuff.</div>
         </div>
@@ -522,16 +526,17 @@
         const cursor = document.getElementById('cursor');
         const cursorCircle = document.getElementById('cursor-circle');
         const links = document.querySelectorAll('a');
+        const clickableElements = document.querySelectorAll('a, #buyFilm, #developFilm');
 
         document.addEventListener('mousemove', (e) => {
             cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
         });
 
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => {
+        clickableElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
                 cursorCircle.classList.add('is-hovering');
             });
-            link.addEventListener('mouseleave', () => {
+            element.addEventListener('mouseleave', () => {
                 cursorCircle.classList.remove('is-hovering');
             });
         });
@@ -575,7 +580,14 @@
         });
 
         developFilmLink.addEventListener('click', function() {
-            window.open('labs/index.html', '_blank');
+            window.open('https://www.lazyfilms.in/labs', '_blank');
+        });
+
+        // Buy Film Link
+        const buyFilmLink = document.getElementById('buyFilm');
+        
+        buyFilmLink.addEventListener('click', function() {
+            window.open('https://www.lazyfilms.in/store', '_blank');
         });
 
         // Contact Description Toggle
