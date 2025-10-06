@@ -23,10 +23,15 @@
         const PRICE_PER_ROLL = 700;
         const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
         const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
-        // Variant IDs for upsell products
-        const VARIANT_LAZY500 = '43637440315491'; // upsell variant (10% off)
-        const VARIANT_LAZY250 = '43637439725667'; // upsell variant (10% off)
+        // Variant IDs for upsell products (discounted 10% variants)
+        let VARIANT_LAZY500 = '43637440315491'; // LAZY 500 10% variant
+        let VARIANT_LAZY250 = '43637439725667'; // LAZY 250 10% variant
         // No discount code used; pricing/discount handled in Shopify
+        // Express processing configuration
+        const EXPRESS_FEE_PER_ROLL = 500; // ₹500 per roll
+        // Optional: Shopify variant to charge Express per roll (hidden product recommended)
+        // Can be overridden via URL param: ?express=gid://shopify/ProductVariant/123 or 123
+        let EXPRESS_VARIANT_ID = '43760587767907';
     </script>
 </head>
 <style>
@@ -498,20 +503,6 @@
             box-sizing: border-box;
         }
 
-        /* Fix alignment of "How to pack & send your film" section */
-        .info-section p,
-        .info-section h2 {
-            padding: 0;
-            margin: 10px 0;
-        }
-
-        /* Ensure consistent container padding */
-        .container > * {
-            padding-left: 15px;
-            padding-right: 15px;
-            box-sizing: border-box;
-        }
-
         /* FAQ and How it works sections */
         .info-section:not(.label-format-box):not(.address-box) {
             max-width: 380px;
@@ -557,7 +548,7 @@
             font-size: 22px;
         }
 
-        .label-format-image {
+        .label-format image {
             width: 150px;
         }
     }
@@ -874,6 +865,13 @@
                     </label>
                 </div>
 
+                <!-- Express Processing Option -->
+                <div class="return-negatives-container">
+                    <label>
+                        <input type="checkbox" id="express-processing"> Express processing (+₹500 per roll) — next-day delivery after arrival
+                    </label>
+                </div>
+
                 <textarea placeholder="Additional notes"></textarea>
 
                 <a href="#how-it-works" 
@@ -1086,6 +1084,14 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         if (document.getElementById('return-negatives').checked) {
             total += 150;
         }
+        if (document.getElementById('express-processing')?.checked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                totalRolls += quantity;
+            });
+            total += EXPRESS_FEE_PER_ROLL * totalRolls;
+        }
         return total;
     }
 
@@ -1097,6 +1103,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     function clearForm() {
         document.getElementById('rolls-container').innerHTML = '';
         document.getElementById('return-negatives').checked = false;
+        const express = document.getElementById('express-processing');
+        if (express) express.checked = false;
         document.querySelector('textarea').value = '';
         document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
             checkbox.checked = false;
@@ -1149,6 +1157,25 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                         <h4>Return Negatives</h4>
                     </div>
                 <span>₹150</span>
+                </div>`;
+        }
+
+        // Add express processing if checked
+        const expressChecked = document.getElementById('express-processing').checked;
+        if (expressChecked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                totalRolls += quantity;
+            });
+            const expressTotal = EXPRESS_FEE_PER_ROLL * totalRolls;
+            total += expressTotal;
+            cartHtml += `
+                <div class="cart-item">
+                    <div class="cart-item-details">
+                        <h4>Express processing × ${totalRolls}</h4>
+                    </div>
+                    <span>₹${expressTotal}</span>
                 </div>`;
         }
 
@@ -1246,6 +1273,12 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         updateCartDrawer();
     });
 
+    // Add event listener for express processing checkbox
+    document.getElementById('express-processing').addEventListener('change', () => {
+        updateOrderSummary();
+        updateCartDrawer();
+    });
+
     // Modal Functions
     function showOrderModal() {
         document.getElementById('orderModal').classList.add('active');
@@ -1258,6 +1291,63 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     // Upsell state
     let pendingOrderData = null;
     let upsellItems = [];
+
+    // Resolve discounted upsell variants dynamically
+    let upsellReady = false;
+    async function resolveUpsellVariants() {
+        try {
+            // Try by known or likely handles first
+            const handles = [
+                'lazy500-10', 'lazy-500-10', 'lazy500-10-off', 'lazy-500-10-off', 'lazy500-10-percent', 'lazy-500-10-percent',
+                'lazy250-10', 'lazy-250-10', 'lazy250-10-off', 'lazy-250-10-off', 'lazy250-10-percent', 'lazy-250-10-percent'
+            ];
+
+            const byHandleQuery = (handle) => `query($handle:String!) { product(handle:$handle) { title variants(first:1) { edges { node { id availableForSale } } } } }`;
+
+            let found500 = null;
+            let found250 = null;
+
+            for (const handle of handles) {
+                const res = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                    },
+                    body: JSON.stringify({ query: byHandleQuery(handle), variables: { handle } })
+                });
+                const json = await res.json();
+                const product = json.data?.product;
+                const title = product?.title?.toLowerCase?.() || '';
+                const variantId = product?.variants?.edges?.[0]?.node?.id || null;
+                if (!product || !variantId) continue;
+
+                if (!found500 && title.includes('lazy 500') && title.includes('10')) {
+                    found500 = variantId;
+                }
+                if (!found250 && title.includes('lazy 250') && title.includes('10')) {
+                    found250 = variantId;
+                }
+
+                if (found500 && found250) break;
+            }
+
+            // Fallback: search by titles via a collection or generic search is not available on Storefront easily.
+            // If not found, keep previous values (null) so buttons remain disabled.
+            if (found500) VARIANT_LAZY500 = found500.split('/').pop();
+            if (found250) VARIANT_LAZY250 = found250.split('/').pop();
+
+            // Enable buttons if at least one is resolved
+            const btn500 = document.getElementById('addLazy500');
+            const btn250 = document.getElementById('addLazy250');
+            if (btn500) btn500.disabled = !VARIANT_LAZY500;
+            if (btn250) btn250.disabled = !VARIANT_LAZY250;
+
+            upsellReady = !!(VARIANT_LAZY500 || VARIANT_LAZY250);
+        } catch (err) {
+            console.error('Failed to resolve upsell variants:', err);
+        }
+    }
 
     function placeOrder() {
         const rolls = document.querySelectorAll('.roll-row');
@@ -1288,6 +1378,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         }
 
         showOrderModal();
+        // Kick off resolving upsell variants in background
+        resolveUpsellVariants();
     }
 
     // Carousel Functionality
@@ -1323,7 +1415,12 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         }
         
         document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
+        const express = document.getElementById('express-processing');
+        if (express) express.addEventListener('change', updateOrderSummary);
         updateOrderSummary();
+        // Attempt to resolve upsell variants on load
+        applyUpsellOverridesFromUrl();
+        resolveUpsellVariants();
     });
 
     // Update the submitOrderForm function
@@ -1375,7 +1472,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 customerInfo: customerData,
                     notes: document.querySelector('textarea').value || '',
                 scans: selectedScans,
-                returnNegatives: document.getElementById('return-negatives').checked
+                returnNegatives: document.getElementById('return-negatives').checked,
+                expressProcessing: document.getElementById('express-processing').checked
             };
             upsellItems = [];
             document.getElementById('orderModal').classList.remove('active');
@@ -1390,12 +1488,14 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     // Upsell handlers
     document.addEventListener('click', async (e) => {
         if (e.target && e.target.id === 'addLazy500') {
+            if (!VARIANT_LAZY500) return;
             const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy500')?.value) || 1);
             upsellItems.push({ variantId: VARIANT_LAZY500, quantity: qty });
             e.target.textContent = 'Added';
             e.target.disabled = true;
         }
         if (e.target && e.target.id === 'addLazy250') {
+            if (!VARIANT_LAZY250) return;
             const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy250')?.value) || 1);
             upsellItems.push({ variantId: VARIANT_LAZY250, quantity: qty });
             e.target.textContent = 'Added';
@@ -1422,6 +1522,25 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             }
         }
     });
+
+    // Allow overriding upsell variant IDs via URL params for immediate fix
+    function applyUpsellOverridesFromUrl() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const v500 = params.get('lazy500_10');
+            const v250 = params.get('lazy250_10');
+            if (v500) VARIANT_LAZY500 = String(v500).split('/').pop();
+            if (v250) VARIANT_LAZY250 = String(v250).split('/').pop();
+            const express = params.get('express');
+            if (express) EXPRESS_VARIANT_ID = String(express).split('/').pop();
+            const btn500 = document.getElementById('addLazy500');
+            const btn250 = document.getElementById('addLazy250');
+            if (btn500) btn500.disabled = false;
+            if (btn250) btn250.disabled = false;
+        } catch (e) {
+            console.warn('Failed to apply upsell overrides from URL', e);
+        }
+    }
 
     // Update the getVariantId function
     function getVariantId(processType, pushPull) {
@@ -1483,17 +1602,26 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             
             // Add items to URL (simple version)
             const items = orderData.items.map(item => {
-                const variantId = item.variantId.split('/').pop();
+                const variantId = String(item.variantId).split('/').pop();
                 return `${variantId}:${item.quantity}`;
             });
             // Include upsell items
             extraItems.forEach(extra => {
-                const vid = (typeof extra.variantId === 'string' ? extra.variantId : '').split('/').pop();
+                const vid = String(extra.variantId).split('/').pop();
                 if (vid) items.push(`${vid}:${extra.quantity || 1}`);
             });
             
             if (orderData.returnNegatives) {
                 items.push('43199974604899:1');
+            }
+            if (orderData.expressProcessing) {
+                // Charge per roll either via variant or fallback to note only
+                let totalRolls = 0;
+                orderData.items.forEach(i => totalRolls += (i.quantity || 0));
+                if (EXPRESS_VARIANT_ID) {
+                    const vid = String(EXPRESS_VARIANT_ID).split('/').pop();
+                    if (vid && totalRolls > 0) items.push(`${vid}:${totalRolls}`);
+                }
             }
 
             // Join items with commas
@@ -1507,6 +1635,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 `  Quantity: ${item.quantity}`
             ).join('\n\n');
 
+            const expressNote = orderData.expressProcessing ? '\nExpress: YES (₹500/roll, next-day after arrival)' : '';
+
             // Add basic parameters
             const params = new URLSearchParams({
                 'checkout[email]': orderData.customerInfo.email,
@@ -1516,11 +1646,12 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 'checkout[shipping_address][zip]': orderData.customerInfo.pincode,
                 'checkout[shipping_address][country]': 'India',
                 'checkout[shipping_address][province]': 'Maharashtra',
-                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nScans: ${orderData.scans.join(', ')}\nNotes: ${orderData.notes}`
+                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nScans: ${orderData.scans.join(', ')}\nNotes: ${orderData.notes}${expressNote}`
             });
 
-            // Append parameters (no discount code appended)
             checkoutUrl += '?' + params.toString();
+
+            console.log('Checkout URL:', checkoutUrl);
 
             return { checkoutUrl };
         } catch (error) {
@@ -1604,4 +1735,6 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         }
     }
 </script>
+
+</html>
 
