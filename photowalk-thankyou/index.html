@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You - LAZY PHOTOWALKS</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and HTML */
+        body, html {
+            height: 100%;
+            font-family: 'Stratos', sans-serif;
+            background-color: white;
+            color: black;
+            cursor: none;
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        #cursor-circle {
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .is-hovering #cursor-circle {
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            opacity: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 70px;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            color: #8a2f2f;
+        }
+
+        .header p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 24px;
+            color: black;
+            opacity: 0.8;
+        }
+
+        /* Thank You Message */
+        .thank-you-container {
+            background: white;
+            border-radius: 15px;
+            padding: 60px 40px;
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .thank-you-container h2 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 48px;
+            color: #8a2f2f;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .thank-you-container p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .thank-you-container .highlight {
+            color: #8a2f2f;
+            font-weight: bold;
+        }
+
+        /* Film Support Section */
+        .film-support {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 40px;
+        }
+
+        .film-support h3 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 32px;
+            color: #8a2f2f;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .film-support p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .film-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .film-product {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .film-product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #8a2f2f;
+        }
+
+        .film-product img,
+        .product-thumbnail {
+            width: 130px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .film-product:hover img,
+        .film-product:hover .product-thumbnail {
+            box-shadow: 0 4px 8px rgba(138, 47, 47, 0.2);
+            transform: scale(1.02);
+        }
+
+        .film-product h4 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
+            color: black;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .film-product .price {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 20px;
+            color: #8a2f2f;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .film-product .description {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .film-product .buy-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #8a2f2f;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .film-product .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .film-product .qty-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: white;
+            color: black;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-family: 'Stratos', sans-serif;
+        }
+
+        .film-product .qty-btn:hover {
+            background: #f0f0f0;
+            border-color: #8a2f2f;
+        }
+
+        .film-product .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            background: white;
+            color: black;
+        }
+
+        .film-product .quantity-input:focus {
+            outline: none;
+            border-color: #8a2f2f;
+        }
+
+        .film-product .quantity-display {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 14px;
+            color: #8a2f2f;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Next Steps Section */
+        .next-steps {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .next-steps h3 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            color: #8a2f2f;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .next-steps p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .next-steps .highlight {
+            color: #8a2f2f;
+            font-weight: bold;
+        }
+
+        /* Back to Home */
+        .back-home {
+            margin-top: 40px;
+        }
+
+        .back-home a {
+            display: inline-block;
+            padding: 15px 30px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .back-home a:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 45px;
+                margin-bottom: 15px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .thank-you-container {
+                padding: 40px 20px;
+                margin: 20px 0;
+            }
+
+            .thank-you-container h2 {
+                font-size: 32px;
+                margin-bottom: 15px;
+            }
+
+            .thank-you-container p {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+            .film-support {
+                padding: 30px 20px;
+                margin: 20px 0;
+            }
+
+            .film-support h3 {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+
+            .film-support p {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+
+            .film-products {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin-top: 20px;
+            }
+
+            .film-product {
+                padding: 20px;
+            }
+
+            .film-product img,
+            .product-thumbnail {
+                width: 100px;
+                height: auto;
+            }
+
+            .film-product h4 {
+                font-size: 20px;
+            }
+
+            .film-product .price {
+                font-size: 18px;
+            }
+
+            .film-product .description {
+                font-size: 13px;
+            }
+
+            .next-steps {
+                padding: 30px 20px;
+            }
+
+            .next-steps h3 {
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+
+            .next-steps p {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            #cursor {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .thank-you-container {
+                padding: 30px 15px;
+                margin: 15px 0;
+            }
+
+            .thank-you-container h2 {
+                font-size: 28px;
+                margin-bottom: 12px;
+            }
+
+            .thank-you-container p {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            .film-support {
+                padding: 25px 15px;
+                margin: 15px 0;
+            }
+
+            .film-support h3 {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+
+            .film-support p {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            .film-products {
+                gap: 15px;
+                margin-top: 15px;
+            }
+
+            .film-product {
+                padding: 15px;
+            }
+
+            .film-product img,
+            .product-thumbnail {
+                width: 80px;
+                height: auto;
+            }
+
+            .film-product h4 {
+                font-size: 18px;
+            }
+
+            .film-product .price {
+                font-size: 16px;
+            }
+
+            .film-product .description {
+                font-size: 12px;
+            }
+
+            .film-product .quantity-controls {
+                gap: 10px;
+                margin: 15px 0;
+            }
+
+            .film-product .qty-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .film-product .quantity-input {
+                width: 50px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .next-steps {
+                padding: 25px 15px;
+            }
+
+            .next-steps h3 {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            .next-steps p {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="cursor">
+        <div id="cursor-circle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>// LAZY PHOTOWALKS</h1>
+            <p>Thank You for Registering!</p>
+        </div>
+
+        <div class="thank-you-container">
+            <h2>🎉 THANK YOU!</h2>
+            <p>Your photowalk registration has been <span class="highlight">successfully submitted</span>!</p>
+            <p>We're excited to have you join our film photography community. We'll notify you via email once we have <span class="highlight">5-15 participants</span> in your city.</p>
+            <p>If approved, you'll receive a <span class="highlight">unique coupon code</span> for free developing/scanning at Lazy Film Lab, along with a <span class="highlight">local WhatsApp group link</span> to coordinate with other participants.</p>
+        </div>
+
+        <div class="film-support">
+            <h3>// SHOW YOUR SUPPORT</h3>
+            <p>Every purchase helps us keep these photowalks free and sustainable! 🫶</p>
+            
+            <div class="film-products">
+                <div class="film-product" data-product="lazy-250" data-variant-id="43269458690147">
+                    <img src="../store/images/lazy250-thumb.jpg" alt="LAZY 250 Film" class="product-thumbnail">
+                    <h4>LAZY 250</h4>
+                    <div class="price">₹750.00</div>
+                    <div class="description">Perfect for street photography and everyday moments. High-quality film with beautiful grain and color reproduction.</div>
+                    
+                    <div class="quantity-controls">
+                        <button type="button" class="qty-btn decrement" data-product="lazy-250">-</button>
+                        <input type="number" class="quantity-input" data-product="lazy-250" value="1" min="1" max="10">
+                        <button type="button" class="qty-btn increment" data-product="lazy-250">+</button>
+                    </div>
+                    
+                    <div class="quantity-display" style="display: none;"></div>
+                    <button type="button" class="buy-btn add-to-cart-btn" data-product="lazy-250">ADD TO CART</button>
+                </div>
+                
+                <div class="film-product" data-product="lazy-500" data-variant-id="43200428507235">
+                    <img src="../store/images/lazy500-thumb.jpg" alt="LAZY 500 Film" class="product-thumbnail">
+                    <h4>LAZY 500</h4>
+                    <div class="price">₹750.00</div>
+                    <div class="description">Ideal for low-light conditions and indoor photography. Excellent for capturing mood and atmosphere.</div>
+                    
+                    <div class="quantity-controls">
+                        <button type="button" class="qty-btn decrement" data-product="lazy-500">-</button>
+                        <input type="number" class="quantity-input" data-product="lazy-500" value="1" min="1" max="10">
+                        <button type="button" class="qty-btn increment" data-product="lazy-500">+</button>
+                    </div>
+                    
+                    <div class="quantity-display" style="display: none;"></div>
+                    <button type="button" class="buy-btn add-to-cart-btn" data-product="lazy-500">ADD TO CART</button>
+                </div>
+            </div>
+            
+            <div class="view-cart-btn" id="viewCartBtn" style="display: none; margin-top: 30px; text-align: center;">
+                <div style="margin-bottom: 15px; font-family: 'Lucida Console', Courier, monospace; font-size: 14px; color: #8a2f2f;">
+                    Items added to cart: <span id="cartCounter">0</span>
+                </div>
+                <button type="button" onclick="proceedToCheckout()" style="display: inline-block; padding: 15px 30px; background: #8a2f2f; color: white; text-decoration: none; border-radius: 8px; font-family: 'Stratos', sans-serif; font-weight: 900; font-size: 16px; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer; border: none;" onmouseover="this.style.background='#6b1f1f'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#8a2f2f'; this.style.transform='translateY(0)'">
+                    VIEW CART & CHECKOUT
+                </button>
+            </div>
+        </div>
+
+        <div class="next-steps">
+            <h3>What Happens Next?</h3>
+            <p>1. We'll review registrations and <span class="highlight">count participants per city</span></p>
+            <p>2. Once we reach <span class="highlight">5-15 participants</span> in your city, you'll get an email</p>
+            <p>3. The email will include your <span class="highlight">free developing coupon</span> and WhatsApp group link</p>
+            <p>4. Coordinate with fellow photographers to decide <span class="highlight">venue, date, and time</span></p>
+            <p>5. <span class="highlight">Go shoot</span> some amazing film and share your photos!</p>
+            <p>6. Send your film back to us for <span class="highlight">free developing</span></p>
+        </div>
+
+        <div class="back-home">
+            <a href="https://lazyfilms.in">← BACK TO HOME</a>
+        </div>
+    </div>
+
+    <script>
+        // Custom Cursor Script
+        const cursor = document.getElementById('cursor');
+        const cursorCircle = document.getElementById('cursor-circle');
+        const clickableElements = document.querySelectorAll('input, textarea, select, button, a');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        clickableElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursorCircle.classList.add('is-hovering');
+            });
+            element.addEventListener('mouseleave', () => {
+                cursorCircle.classList.remove('is-hovering');
+            });
+        });
+
+        // Add some animation to the thank you message
+        document.addEventListener('DOMContentLoaded', function() {
+            const thankYouContainer = document.querySelector('.thank-you-container');
+            const filmSupport = document.querySelector('.film-support');
+            const nextSteps = document.querySelector('.next-steps');
+            
+            // Animate elements on load
+            setTimeout(() => {
+                thankYouContainer.style.opacity = '0';
+                thankYouContainer.style.transform = 'translateY(20px)';
+                thankYouContainer.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    thankYouContainer.style.opacity = '1';
+                    thankYouContainer.style.transform = 'translateY(0)';
+                }, 100);
+            }, 200);
+
+            setTimeout(() => {
+                filmSupport.style.opacity = '0';
+                filmSupport.style.transform = 'translateY(20px)';
+                filmSupport.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    filmSupport.style.opacity = '1';
+                    filmSupport.style.transform = 'translateY(0)';
+                }, 100);
+            }, 600);
+
+            setTimeout(() => {
+                nextSteps.style.opacity = '0';
+                nextSteps.style.transform = 'translateY(20px)';
+                nextSteps.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    nextSteps.style.opacity = '1';
+                    nextSteps.style.transform = 'translateY(0)';
+                }, 100);
+            }, 1000);
+
+            // Debug: Check if elements exist
+            console.log('Quantity buttons found:', document.querySelectorAll('.qty-btn').length);
+            console.log('Add to cart buttons found:', document.querySelectorAll('.add-to-cart-btn').length);
+
+            // Quantity controls functionality
+            document.querySelectorAll('.qty-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Quantity button clicked');
+                    const product = this.dataset.product;
+                    const input = document.querySelector(`input[data-product="${product}"]`);
+                    const currentValue = parseInt(input.value);
+                    
+                    // Visual feedback
+                    this.style.background = '#8a2f2f';
+                    this.style.color = 'white';
+                    
+                    if (this.classList.contains('increment')) {
+                        input.value = Math.min(currentValue + 1, 10);
+                    } else if (this.classList.contains('decrement')) {
+                        input.value = Math.max(currentValue - 1, 1);
+                    }
+                    
+                    // Reset button style after a moment
+                    setTimeout(() => {
+                        this.style.background = 'white';
+                        this.style.color = 'black';
+                    }, 200);
+                });
+            });
+
+            // Quantity input validation
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 1) this.value = 1;
+                    if (value > 10) this.value = 10;
+                });
+            });
+
+            // Add to cart functionality
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add to cart button clicked');
+                    const product = this.dataset.product;
+                    const productElement = document.querySelector(`[data-product="${product}"]`);
+                    const variantId = productElement.dataset.variantId;
+                    const quantityInput = document.querySelector(`input[data-product="${product}"]`);
+                    const quantity = parseInt(quantityInput.value);
+                    const quantityDisplay = productElement.querySelector('.quantity-display');
+                    
+                    console.log('Product:', product, 'Variant ID:', variantId, 'Quantity:', quantity);
+                    
+                    // Store items locally and add to cart when user clicks "VIEW CART"
+                    console.log('Adding to local cart:', product, variantId, quantity);
+                    
+                    // Update button to show it's working
+                    this.textContent = 'ADDING...';
+                    this.style.background = '#6b1f1f';
+                    
+                    // Simulate adding to cart
+                    setTimeout(() => {
+                        // Update button and display
+                        this.textContent = 'ADDED TO CART!';
+                        this.style.background = '#6b1f1f';
+                        quantityDisplay.style.display = 'block';
+                        quantityDisplay.textContent = `${quantity} roll(s) added`;
+                        
+                        // Disable quantity controls
+                        const controls = productElement.querySelector('.quantity-controls');
+                        controls.style.opacity = '0.5';
+                        controls.style.pointerEvents = 'none';
+                        
+                        // Show view cart button and update counter
+                        const viewCartBtn = document.getElementById('viewCartBtn');
+                        const cartCounter = document.getElementById('cartCounter');
+                        viewCartBtn.style.display = 'block';
+                        
+                        // Update cart counter
+                        const currentCount = parseInt(cartCounter.textContent) || 0;
+                        cartCounter.textContent = currentCount + quantity;
+                        
+                        // Store item in localStorage for later
+                        const cartItems = JSON.parse(localStorage.getItem('photowalkCart') || '[]');
+                        cartItems.push({
+                            variantId: variantId,
+                            quantity: quantity,
+                            product: product
+                        });
+                        localStorage.setItem('photowalkCart', JSON.stringify(cartItems));
+                        
+                        // Show subtle success feedback
+                        quantityDisplay.style.color = '#00ff00';
+                        setTimeout(() => {
+                            quantityDisplay.style.color = '#8a2f2f';
+                        }, 2000);
+                    }, 500);
+                });
+            });
+        });
+
+        // Function to proceed to checkout with all items
+        function proceedToCheckout() {
+            const cartItems = JSON.parse(localStorage.getItem('photowalkCart') || '[]');
+            
+            if (cartItems.length === 0) {
+                alert('No items in cart!');
+                return;
+            }
+            
+            // Build cart URL with all items
+            let cartUrl = 'https://rphzqx-d5.myshopify.com/cart/add?';
+            const params = [];
+            
+            cartItems.forEach(item => {
+                params.push(`items[][id]=${item.variantId}&items[][quantity]=${item.quantity}`);
+            });
+            
+            cartUrl += params.join('&');
+            
+            // Redirect to cart
+            window.location.href = cartUrl;
+        }
+
+    </script>
+</body>
+</html>
