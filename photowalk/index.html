@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAZY FILMS - Photowalk Registration</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and HTML */
+        body, html {
+            height: 100%;
+            font-family: 'Stratos', sans-serif;
+            background-color: white;
+            color: black;
+            cursor: none;
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .tab {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 18px;
+            color: #666;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: none;
+        }
+
+        .tab:hover {
+            color: #8a2f2f;
+            background: rgba(138, 47, 47, 0.1);
+        }
+
+        .tab.active {
+            color: #8a2f2f;
+            background: rgba(138, 47, 47, 0.1);
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        #cursor-circle {
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .is-hovering #cursor-circle {
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            opacity: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 70px;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            color: #8a2f2f;
+        }
+
+        .header p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 24px;
+            color: black;
+            opacity: 0.8;
+        }
+
+        .description-text {
+            margin-top: 15px;
+            max-width: 600px;
+        }
+
+        .description-text p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: black;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            color: black;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #000;
+            background: white;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+
+
+
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 18px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-message h2 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #00ff00;
+        }
+
+        .success-message p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 60px;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .how-it-works h2 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 36px;
+            color: #8a2f2f;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #8a2f2f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Terms & Conditions Section */
+        .terms-conditions {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 40px;
+            padding: 40px;
+            background: #f8f8f8;
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .terms-conditions h2 {
+            font-family: 'Stratos', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            color: #8a2f2f;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .terms-content p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .terms-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .menu {
+                top: 15px;
+                right: 15px;
+                gap: 10px;
+            }
+            
+            .menu-item {
+                font-size: 12px;
+                line-height: 1.2;
+                margin-bottom: 3px;
+            }
+
+            .header h1 {
+                font-size: 45px;
+                margin-bottom: 15px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .description-text {
+                margin-top: 15px;
+            }
+
+            .description-text p {
+                font-size: 16px;
+            }
+
+            .form-container {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .film-options {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .film-option {
+                padding: 15px;
+            }
+
+            .film-option .product-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .film-option .product-name {
+                font-size: 14px;
+            }
+
+            .film-option .product-price {
+                font-size: 12px;
+            }
+
+            .quantity-controls {
+                gap: 8px;
+            }
+
+            .qty-btn {
+                width: 25px;
+                height: 25px;
+                font-size: 14px;
+            }
+
+            .quantity-input {
+                width: 40px;
+                height: 25px;
+                font-size: 12px;
+            }
+
+            .submit-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .how-it-works {
+                padding: 20px 15px;
+                margin-top: 30px;
+            }
+
+            .how-it-works h2 {
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+            .step {
+                gap: 15px;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .step-content p {
+                font-size: 14px;
+            }
+
+            .terms-conditions {
+                padding: 20px 15px;
+                margin-top: 30px;
+            }
+
+            .terms-conditions h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .terms-content p {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            #cursor {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .menu {
+                top: 10px;
+                right: 10px;
+                gap: 8px;
+            }
+
+            .menu-item {
+                font-size: 10px;
+                line-height: 1.2;
+                margin-bottom: 2px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .description-text p {
+                font-size: 14px;
+            }
+
+            .form-container {
+                padding: 15px 10px;
+                margin: 15px 0;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .film-option {
+                padding: 12px;
+            }
+
+            .film-option .product-image {
+                width: 50px;
+                height: 50px;
+            }
+
+            .film-option .product-name {
+                font-size: 13px;
+            }
+
+            .film-option .product-price {
+                font-size: 11px;
+            }
+
+            .qty-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+            }
+
+            .quantity-input {
+                width: 35px;
+                height: 22px;
+                font-size: 11px;
+            }
+
+            .submit-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .how-it-works {
+                padding: 15px 10px;
+                margin-top: 20px;
+            }
+
+            .how-it-works h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .step {
+                gap: 12px;
+            }
+
+            .step-number {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .step-content p {
+                font-size: 13px;
+            }
+
+            .terms-conditions {
+                padding: 15px 10px;
+                margin-top: 20px;
+            }
+
+            .terms-conditions h2 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            .terms-content p {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="cursor">
+        <div id="cursor-circle"></div>
+    </div>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <a href="https://www.lazyfilms.in/store" class="tab">BUY FILM</a>
+            <a href="https://www.lazyfilms.in/labs" class="tab active">DEVELOP FILM</a>
+        </div>
+
+        <div class="header">
+            <h1>// LAZY PHOTOWALKS</h1>
+            <div class="description-text">
+                <p>Get together with your fellow comrades in your city, shoot some film, and send it for free developing.</p>
+                <p>Give us a shout-out on social media through reels, shorts, stories, or posts if possible 🫶</p>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Shopify Forms App Integration -->
+            <div style="text-align: center; padding: 40px;">
+                <h2 style="font-family: 'Stratos', sans-serif; font-weight: 900; font-size: 28px; color: #8a2f2f; margin-bottom: 20px;">
+                    REGISTER FOR PHOTOWALK
+                </h2>
+                <p style="font-family: 'Lucida Console', Courier, monospace; font-size: 16px; color: #666; margin-bottom: 30px;">
+                    Click the button below to register through our official Shopify form
+                </p>
+                
+                <a href="https://rphzqx-d5.myshopify.com/pages/lazy-photowalk" 
+                   style="display: inline-block; padding: 20px 40px; background: black; color: white; text-decoration: none; border-radius: 8px; font-family: 'Stratos', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 1px; transition: all 0.3s ease;"
+                   onmouseover="this.style.background='#333'; this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.background='black'; this.style.transform='translateY(0)'">
+                    REGISTER NOW
+                </a>
+                
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="how-it-works">
+            <h2>How It Works!</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <p>Fill out the form with your city, name, and other details. Suggest a cool spot for the photowalk in your city.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <p>(Optional, but cool) <strong>Grab a few film rolls</strong> to show us some love 🫶</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <p>Wait a bit — we need at least 5 and no more than 15 registrations for a photowalk to be on.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <p>Once we have enough people, you'll get an email with a <strong>100% off film developing coupon</strong> for the roll you'll shoot during the walk, along with a <strong>local WhatsApp group link</strong>.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <p>Get together with your fellow film comrades and decide the venue, date, and time.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <p><strong>Go shoot</strong> — all the corners of vintage cars, stone buildings, gas stations, and pastel clouds. <strong>Give us a shout-out</strong> through reels, stories, or posts if possible!!</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <p><strong>Send your film back</strong> to us for free developing!</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <p>Then do it all over again next time 🌿</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms & Conditions Section -->
+        <div class="terms-conditions">
+            <h2>Some Terms & Conditions</h2>
+            <div class="terms-content">
+                <p>We'd love for everyone who registers to actually join the photowalk — so please sign up only if you plan to go.</p>
+                
+                <p>The free coupon is meant just for the roll you shoot during the walk. Please don't use it for other rolls or share it with others. We're doing our best to make these walks possible so everyone can get together and shoot more film :) Misuse of the coupon would really hurt and discourage us.</p>
+                
+                <p>The coupon code is valid for one month after you receive it — so send in your film soon!</p>
+                
+                <p>Each code covers only one film roll (we're trying to keep this sustainable for us!).</p>
+                
+                <p>If you can't make it to the photowalk, just let us know via email. We'll happily pass your spot to someone else.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set registration date when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const registrationDateField = document.querySelector('input[name="contact[registration_date]"]');
+            if (registrationDateField) {
+                registrationDateField.value = new Date().toISOString();
+            }
+        });
+
+        // Custom Cursor Script
+        const cursor = document.getElementById('cursor');
+        const cursorCircle = document.getElementById('cursor-circle');
+        const clickableElements = document.querySelectorAll('input, textarea, select, button, a');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        clickableElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursorCircle.classList.add('is-hovering');
+            });
+            element.addEventListener('mouseleave', () => {
+                cursorCircle.classList.remove('is-hovering');
+            });
+        });
+
+        // Handle city selection
+        const citySelect = document.getElementById('city');
+        const otherCityGroup = document.getElementById('otherCityGroup');
+        const otherCityInput = document.getElementById('otherCity');
+
+        citySelect.addEventListener('change', function() {
+            if (this.value === 'Other') {
+                otherCityGroup.style.display = 'block';
+                otherCityInput.required = true;
+            } else {
+                otherCityGroup.style.display = 'none';
+                otherCityInput.required = false;
+                otherCityInput.value = '';
+            }
+        });
+
+        // Handle film option selection
+        const filmOptions = document.querySelectorAll('.film-option');
+        filmOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                // Don't toggle if clicking on quantity controls
+                if (e.target.closest('.quantity-controls')) {
+                    return;
+                }
+                
+                if (!this.classList.contains('disabled')) {
+                    // Toggle selected class
+                    this.classList.toggle('selected');
+                    
+                    // Toggle checkbox
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                }
+            });
+        });
+
+        // Handle quantity controls
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent film option toggle
+                
+                const productId = this.dataset.product;
+                const input = document.querySelector(`input[data-product="${productId}"]`);
+                const currentValue = parseInt(input.value);
+                
+                if (this.classList.contains('increment')) {
+                    input.value = Math.min(currentValue + 1, 10);
+                } else if (this.classList.contains('decrement')) {
+                    input.value = Math.max(currentValue - 1, 1);
+                }
+            });
+        });
+
+        // Handle quantity input changes
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const value = parseInt(this.value);
+                if (value < 1) this.value = 1;
+                if (value > 10) this.value = 10;
+            });
+        });
+
+        // Form submission
+        const form = document.getElementById('photowalkForm');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.querySelector('.submit-btn');
+
+        form.addEventListener('submit', function(e) {
+            // Form will submit normally to Shopify Forms app
+        });
+
+        // Contact popup functionality (from your main site)
+        const contactLink = document.getElementById('contactLink');
+        
+        if (contactLink) {
+            contactLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'mailto:enquiries@lazyfilms.in';
+            });
+        }
+
+        // Work link functionality
+        const workLink = document.getElementById('workLink');
+        
+        if (workLink) {
+            workLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://raw.githubusercontent.com/LAZYFILMS/WEB/main/LAZY.pdf', '_blank');
+            });
+        }
+    </script>
+</body>
+</html>
