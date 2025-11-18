@@ -786,8 +786,13 @@
                 font-size: 18px;
             }
 
-            /* Reset the second gallery spacing for mobile */
+            /* Reset gallery spacing for mobile */
             #sample-gallery-250 {
+                position: relative !important;
+                margin-top: 60px !important;  /* Consistent spacing between galleries */
+            }
+            
+            #sample-gallery-monochrome {
                 position: relative !important;
                 margin-top: 60px !important;  /* Consistent spacing between galleries */
             }
@@ -837,9 +842,22 @@
             padding-top: 40px;
         }
 
-        /* Spacing for second gallery */
+        /* Spacing for galleries */
+        /* Lazy 500: 9 images (3 rows × 220px) + gaps + title + padding = ~780px */
+        #sample-gallery {
+            margin-top: 0;
+        }
+        
+        /* Lazy 250: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
+        /* Start after Lazy 500 gallery ends */
         #sample-gallery-250 {
-            margin-top: 900px;  /* Original spacing */
+            margin-top: 800px;  /* Space for Lazy 500 gallery (3 rows) */
+        }
+        
+        /* Lazy Monochrome: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
+        /* Start after Lazy 250 gallery ends */
+        #sample-gallery-monochrome {
+            margin-top: 1350px;  /* Space for Lazy 500 (800) + Lazy 250 (545) + buffer */
         }
     </style>
 </head>
@@ -854,6 +872,7 @@
             <div class="carousel">
                 <img src="images/lazy500.jpg" alt="Lazy 500 Film" class="carousel-image active">
                 <img src="images/lazy250.jpg" alt="Lazy 250 Film" class="carousel-image">
+                <img src="images/lazy-monochrome.jpg" alt="Lazy Monochrome Film" class="carousel-image">
             </div>
         </div>
 
@@ -907,6 +926,31 @@
             </p>
         </div>
 
+        <div class="product-details">
+            <img src="images/lazy-monochrome-thumb.jpg" alt="Lazy Monochrome" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">LAZY MONOCHROME</h2>
+                    <p class="product-price">₹750</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazymonochrome">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazymonochrome">
+                        <button type="button" class="qty-btn increment" data-product="lazymonochrome">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="lazymonochrome" data-variant="43841780514915">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-lazymonochrome" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy Monochrome is a sharp, high-quality black and white film with insane detail, deep blacks, and excellent tonal range.</span>
+                <span class="description-full">It has strong, clean contrast that makes every frame look crisp. Its default ISO is 250, and for best results it should be developed in D96. This film works beautifully in sharp light and strong shadows, making it great for street photography, architecture, or basically any kind of photography where you want clean lines and rich monochrome depth.</span>
+                <button class="see-more-desc" data-product="lazymonochrome">See more</button>
+                <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
+            </p>
+        </div>
+
         <div class="cart-summary">
             <h3>Cart Summary</h3>
             <p>Total: ₹0</p>
@@ -948,6 +992,19 @@
             <img src="./images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
             <img src="./images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
             <img src="./images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
+        </div>
+    </div>
+
+    <!-- Lazy Monochrome Sample Photos -->
+    <div id="sample-gallery-monochrome" class="sample-photos">
+        <h3 class="gallery-title">LAZY MONOCHROME</h3>
+        <div class="gallery-grid">
+            <img src="./images/samples3/1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="./images/samples3/2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="./images/samples3/3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="./images/samples3/4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="./images/samples3/5.jpg" alt="Sample 5" class="gallery-image">
+            <img src="./images/samples3/6.jpg" alt="Sample 6" class="gallery-image">
         </div>
     </div>
 
@@ -1015,15 +1072,25 @@
         // Simple cart functionality
         const VARIANT_IDS = {
             'lazy500': '43200428507235',
-            'lazy250': '43269458690147'
+            'lazy250': '43269458690147',
+            'lazymonochrome': '43841780514915'
         };
 
         // Shopify Storefront API configuration
         const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
         const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
 
+        // Helper function to extract numeric variant ID from Shopify GraphQL ID
+        function extractVariantId(graphqlId) {
+            // GraphQL ID format: gid://shopify/ProductVariant/7924072317027
+            // Extract the numeric part
+            const match = graphqlId.match(/\/(\d+)$/);
+            return match ? match[1] : null;
+        }
+
         // Check product availability from Shopify (by handles for reliability)
         async function checkProductAvailability() {
+            // Try multiple possible handles for lazy monochrome
             const query = `
                 query {
                     lazy500: product(handle: "lazy500") {
@@ -1033,6 +1100,24 @@
                         }
                     }
                     lazy250: product(handle: "lazy-250") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome: product(handle: "lazy-monochrome") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome2: product(handle: "lazy-monochrome-film") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome3: product(id: "gid://shopify/Product/7924072317027") {
                         title
                         variants(first: 1) {
                             edges { node { id availableForSale quantityAvailable } }
@@ -1052,20 +1137,50 @@
                 });
 
                 const { data } = await response.json();
+                
+                // Find lazy monochrome product (try different handles)
+                const lazyMonochrome = data.lazymonochrome || data.lazymonochrome2 || data.lazymonochrome3;
+                
                 const results = [
                     { key: 'lazy500', node: data.lazy500 },
-                    { key: 'lazy250', node: data.lazy250 }
+                    { key: 'lazy250', node: data.lazy250 },
+                    { key: 'lazymonochrome', node: lazyMonochrome }
                 ];
 
                 results.forEach(({ key, node }) => {
+                    if (!node) {
+                        console.warn(`Product not found: ${key}`);
+                        return;
+                    }
+                    
                     const variant = node?.variants?.edges?.[0]?.node;
-                    if (variant && !variant.availableForSale) {
-                        const productActions = document.querySelector(`[data-product="${key}"]`)?.closest('.product-actions');
-                        const stockStatus = document.getElementById(`stock-status-${key}`);
-                        if (productActions && stockStatus) {
-                            productActions.classList.add('out-of-stock');
-                            stockStatus.style.display = 'block';
+                    if (variant) {
+                        // Extract and update variant ID
+                        const numericVariantId = extractVariantId(variant.id);
+                        if (numericVariantId) {
+                            // Update the button's data-variant attribute with the correct ID
+                            const addToCartButton = document.querySelector(`[data-product="${key}"].add-to-cart`);
+                            if (addToCartButton) {
+                                const oldVariantId = addToCartButton.dataset.variant;
+                                addToCartButton.dataset.variant = numericVariantId;
+                                console.log(`${key}: Updated variant ID from ${oldVariantId} to ${numericVariantId}`);
+                                
+                                // Also update VARIANT_IDS object
+                                VARIANT_IDS[key] = numericVariantId;
+                            }
                         }
+                        
+                        // Check availability
+                        if (!variant.availableForSale) {
+                            const productActions = document.querySelector(`[data-product="${key}"]`)?.closest('.product-actions');
+                            const stockStatus = document.getElementById(`stock-status-${key}`);
+                            if (productActions && stockStatus) {
+                                productActions.classList.add('out-of-stock');
+                                stockStatus.style.display = 'block';
+                            }
+                        }
+                    } else {
+                        console.warn(`No variants found for product: ${key}`);
                     }
                 });
             } catch (error) {
@@ -1089,13 +1204,26 @@
                 const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
                 const quantity = parseInt(quantityInput.value) || 1;
                 
+                // Validate variant ID
+                if (!variantId) {
+                    console.error('Variant ID missing for product:', productId);
+                    alert('Error: Product variant ID is missing. Please refresh the page.');
+                    return;
+                }
+                
                 // Disable button temporarily
                 this.disabled = true;
                 
                 // Add to universal cart
+                let productName = 'LAZY 500';
+                if (productId === 'lazy250') {
+                    productName = 'LAZY 250';
+                } else if (productId === 'lazymonochrome') {
+                    productName = 'LAZY MONOCHROME';
+                }
                 universalCart.store.items.push({
                     id: Date.now(),
-                    name: productId === 'lazy500' ? 'LAZY 500' : 'LAZY 250',
+                    name: productName,
                     price: 750 * quantity,
                     quantity: quantity,
                     variantId: variantId
@@ -1213,16 +1341,45 @@
         }
 
         function universalCheckout() {
+            // Check if cart is empty
+            const allItems = [...universalCart.store.items, ...universalCart.labs.items];
+            if (allItems.length === 0) {
+                alert('Please add items to cart first');
+                return;
+            }
+            
             // Combine items and create checkout URL
-            const storeItems = universalCart.store.items.map(item => 
-                `${item.variantId}:${item.quantity}`
-            ).join(',');
+            const storeItems = universalCart.store.items.map(item => {
+                if (!item.variantId) {
+                    console.error('Missing variant ID for item:', item);
+                }
+                return `${item.variantId}:${item.quantity}`;
+            }).join(',');
             
-            const labsItems = universalCart.labs.items.map(item =>
-                `${item.variantId}:${item.quantity}`
-            ).join(',');
+            const labsItems = universalCart.labs.items.map(item => {
+                if (!item.variantId) {
+                    console.error('Missing variant ID for item:', item);
+                }
+                return `${item.variantId}:${item.quantity}`;
+            }).join(',');
             
-            const checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${storeItems},${labsItems}`;
+            // Build URL properly - only include labs items if they exist
+            let checkoutUrl;
+            if (storeItems && labsItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${storeItems},${labsItems}`;
+            } else if (storeItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${storeItems}`;
+            } else if (labsItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${labsItems}`;
+            } else {
+                alert('Please add items to cart first');
+                return;
+            }
+            
+            console.log('Checkout URL:', checkoutUrl);
+            console.log('Store items:', universalCart.store.items);
+            console.log('Labs items:', universalCart.labs.items);
+            
             window.location.href = checkoutUrl;
         }
 
@@ -1257,6 +1414,74 @@
                 images[currentIndex].classList.add('active');
             }, 5000); // Change image every 5 seconds
         }
+
+        // Test function to verify variant ID - can be called from browser console
+        // Usage: testVariantId('7924072317027') or testVariantId('lazy-monochrome', 'handle')
+        window.testVariantId = async function(identifier, type = 'id') {
+            if (type === 'handle') {
+                // Test by product handle
+                const query = `
+                    query {
+                        product(handle: "${identifier}") {
+                            title
+                            variants(first: 10) {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        availableForSale
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `;
+                
+                try {
+                    const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                        },
+                        body: JSON.stringify({ query })
+                    });
+                    
+                    const { data, errors } = await response.json();
+                    if (errors) {
+                        console.error('GraphQL Errors:', errors);
+                        return;
+                    }
+                    
+                    if (data.product) {
+                        console.log('Product found:', data.product.title);
+                        console.log('Variants:');
+                        data.product.variants.edges.forEach((edge, index) => {
+                            const variant = edge.node;
+                            const numericId = extractVariantId(variant.id);
+                            console.log(`  Variant ${index + 1}:`, {
+                                title: variant.title,
+                                graphqlId: variant.id,
+                                numericId: numericId,
+                                available: variant.availableForSale
+                            });
+                            console.log(`  Test URL: https://rphzqx-d5.myshopify.com/cart/${numericId}:1`);
+                        });
+                    } else {
+                        console.error('Product not found with handle:', identifier);
+                    }
+                } catch (error) {
+                    console.error('Error testing variant:', error);
+                }
+            } else {
+                // Test by variant ID - try to add to cart
+                const testUrl = `https://rphzqx-d5.myshopify.com/cart/${identifier}:1`;
+                console.log('Testing variant ID:', identifier);
+                console.log('Test URL:', testUrl);
+                console.log('Opening URL in new tab...');
+                window.open(testUrl, '_blank');
+            }
+        };
 
         // Start carousel when page loads
         document.addEventListener('DOMContentLoaded', function() {
