@@ -902,6 +902,30 @@
         </div>
 
         <div class="product-details">
+            <img src="images/provia.png" alt="Fujifilm Provia 100F RDP 3" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">Fujifilm Provia 100F RDP 3 (Expired 2015)</h2>
+                    <p class="product-price">₹2100</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="fujifilmprovia">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="fujifilmprovia">
+                        <button type="button" class="qty-btn increment" data-product="fujifilmprovia">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="fujifilmprovia" data-variant="43863277437027">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-fujifilmprovia" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Often regarded as one of the finest color slide films ever made, Provia RDP III delivers legendary sharpness, natural skin tones, and beautifully balanced saturation.</span>
+                <span class="description-full">Although expired in 2015, this roll has been cold-stored, so its sensitivity remains fully intact — no exposure compensation is needed. Please note: some rolls may show minor mold on the ends, so keep that in mind before purchasing.</span>
+                <button class="see-more-desc" data-product="fujifilmprovia">See more</button>
+            </p>
+        </div>
+
+        <div class="product-details">
             <img src="images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail">
             <div class="product-info">
                 <div class="product-header-group">
@@ -986,12 +1010,12 @@
     <div id="sample-gallery-250" class="sample-photos">
         <h3 class="gallery-title">LAZY250</h3>
         <div class="gallery-grid">
-            <img src="./images/samples2/sample1.jpg" alt="Sample 1" class="gallery-image">
-            <img src="./images/samples2/sample2.jpg" alt="Sample 2" class="gallery-image">
-            <img src="./images/samples2/sample3.jpg" alt="Sample 3" class="gallery-image">
-            <img src="./images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
-            <img src="./images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
-            <img src="./images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
+            <img src="images/samples2/sample1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="images/samples2/sample2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="images/samples2/sample3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
+            <img src="images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
         </div>
     </div>
 
@@ -999,12 +1023,12 @@
     <div id="sample-gallery-monochrome" class="sample-photos">
         <h3 class="gallery-title">LAZY MONOCHROME</h3>
         <div class="gallery-grid">
-            <img src="./images/samples3/1.jpg" alt="Sample 1" class="gallery-image">
-            <img src="./images/samples3/2.jpg" alt="Sample 2" class="gallery-image">
-            <img src="./images/samples3/3.jpg" alt="Sample 3" class="gallery-image">
-            <img src="./images/samples3/4.jpg" alt="Sample 4" class="gallery-image">
-            <img src="./images/samples3/5.jpg" alt="Sample 5" class="gallery-image">
-            <img src="./images/samples3/6.jpg" alt="Sample 6" class="gallery-image">
+            <img src="images/samples3/1.JPG" alt="Sample 1" class="gallery-image">
+            <img src="images/samples3/2.JPG" alt="Sample 2" class="gallery-image">
+            <img src="images/samples3/3.JPG" alt="Sample 3" class="gallery-image">
+            <img src="images/samples3/4.JPG" alt="Sample 4" class="gallery-image">
+            <img src="images/samples3/5.JPG" alt="Sample 5" class="gallery-image">
+            <img src="images/samples3/6.JPG" alt="Sample 6" class="gallery-image">
         </div>
     </div>
 
@@ -1073,7 +1097,8 @@
         const VARIANT_IDS = {
             'lazy500': '43200428507235',
             'lazy250': '43269458690147',
-            'lazymonochrome': '43841780514915'
+            'lazymonochrome': '43841780514915',
+            'fujifilmprovia': '43863277437027'
         };
 
         // Shopify Storefront API configuration
@@ -1123,6 +1148,12 @@
                             edges { node { id availableForSale quantityAvailable } }
                         }
                     }
+                    fujifilmprovia: product(id: "gid://shopify/Product/7933145055331") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
                 }
             `;
 
@@ -1144,7 +1175,8 @@
                 const results = [
                     { key: 'lazy500', node: data.lazy500 },
                     { key: 'lazy250', node: data.lazy250 },
-                    { key: 'lazymonochrome', node: lazyMonochrome }
+                    { key: 'lazymonochrome', node: lazyMonochrome },
+                    { key: 'fujifilmprovia', node: data.fujifilmprovia }
                 ];
 
                 results.forEach(({ key, node }) => {
@@ -1216,19 +1248,25 @@
                 
                 // Add to universal cart
                 let productName = 'LAZY 500';
+                let productPrice = 750;
                 if (productId === 'lazy250') {
                     productName = 'LAZY 250';
+                    productPrice = 750;
                 } else if (productId === 'lazymonochrome') {
                     productName = 'LAZY MONOCHROME';
+                    productPrice = 750;
+                } else if (productId === 'fujifilmprovia') {
+                    productName = 'Fujifilm Provia 100F RDP 3 (Expired 2015)';
+                    productPrice = 2100;
                 }
                 universalCart.store.items.push({
                     id: Date.now(),
                     name: productName,
-                    price: 750 * quantity,
+                    price: productPrice * quantity,
                     quantity: quantity,
                     variantId: variantId
                 });
-                universalCart.store.total += 750 * quantity;
+                universalCart.store.total += productPrice * quantity;
                 
                 updateUniversalCart();
                 updateCartSummary();
@@ -1414,6 +1452,47 @@
                 images[currentIndex].classList.add('active');
             }, 5000); // Change image every 5 seconds
         }
+
+        // Simple function to get variant ID by product ID - just type: getVariantId('7933145055331')
+        window.getVariantId = async function(productId) {
+            const query = `query { product(id: "gid://shopify/Product/${productId}") { title variants(first: 10) { edges { node { id title availableForSale } } } } }`;
+            try {
+                const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN },
+                    body: JSON.stringify({ query })
+                });
+                const { data, errors } = await response.json();
+                if (errors) { 
+                    alert('Error: ' + JSON.stringify(errors));
+                    console.error('Error:', errors); 
+                    return; 
+                }
+                if (data.product) {
+                    console.log('Product:', data.product.title);
+                    let allVariants = '';
+                    data.product.variants.edges.forEach((edge, i) => {
+                        const v = edge.node;
+                        const id = v.id.match(/\/(\d+)$/)?.[1];
+                        const info = `Variant ${i+1}: ${id} - ${v.title} (Available: ${v.availableForSale})\n`;
+                        console.log(info.trim());
+                        allVariants += info;
+                    });
+                    const firstId = data.product.variants.edges[0]?.node?.id?.match(/\/(\d+)$/)?.[1];
+                    if (firstId) {
+                        console.log(`\n✅ Use this Variant ID: ${firstId}`);
+                        alert(`Variant ID Found!\n\nProduct: ${data.product.title}\n\n${allVariants}\n✅ PRIMARY VARIANT ID: ${firstId}\n\n(Also check console for details)`);
+                    } else {
+                        alert('No variants found for this product');
+                    }
+                } else {
+                    alert('Product not found');
+                }
+            } catch (error) { 
+                alert('Error: ' + error.message);
+                console.error('Error:', error); 
+            }
+        };
 
         // Test function to verify variant ID - can be called from browser console
         // Usage: testVariantId('7924072317027') or testVariantId('lazy-monochrome', 'handle')
