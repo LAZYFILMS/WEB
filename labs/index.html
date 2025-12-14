@@ -817,6 +817,184 @@
         margin-bottom: 10px;
         font-size: 16px;
     }
+
+    /* Address Change Popup Styles */
+    .address-change-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 8px;
+        padding: 25px;
+        z-index: 2000;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .address-change-popup.active {
+        display: block;
+    }
+
+    .address-change-popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .address-change-popup-header h3 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: bold;
+        font-family: 'Stratos', sans-serif;
+        text-transform: uppercase;
+        color: #ff0000;
+    }
+
+    .address-change-popup-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #000;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .address-change-popup-close:hover {
+        opacity: 0.7;
+    }
+
+    .address-change-popup-content {
+        margin-bottom: 15px;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .address-change-popup-content p {
+        margin: 10px 0;
+    }
+
+    .address-change-popup-address {
+        background: #f9f9f9;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 10px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .address-change-progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #eee;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 15px;
+    }
+
+    .address-change-progress-fill {
+        height: 100%;
+        background: #000;
+        width: 0%;
+        transition: width 0.1s linear;
+    }
+
+    @media (max-width: 768px) {
+        .address-change-popup {
+            max-width: 95%;
+            width: 95%;
+            padding: 18px 15px;
+            margin: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .address-change-popup-header {
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .address-change-popup-header h3 {
+            font-size: 16px;
+            line-height: 1.3;
+            flex: 1;
+            min-width: 0;
+            word-wrap: break-word;
+        }
+
+        .address-change-popup-close {
+            width: 32px;
+            height: 32px;
+            font-size: 28px;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .address-change-popup-content {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .address-change-popup-content p {
+            margin: 8px 0;
+        }
+
+        .address-change-popup-address {
+            font-size: 11px;
+            line-height: 1.4;
+            padding: 10px;
+            margin-top: 8px;
+            word-wrap: break-word;
+        }
+
+        .address-change-progress-bar {
+            margin-top: 12px;
+            height: 3px;
+        }
+    }
+
+    /* Extra small phones */
+    @media (max-width: 375px) {
+        .address-change-popup {
+            padding: 15px 12px;
+            max-width: 98%;
+            width: 98%;
+        }
+
+        .address-change-popup-header h3 {
+            font-size: 14px;
+        }
+
+        .address-change-popup-content {
+            font-size: 12px;
+        }
+
+        .address-change-popup-address {
+            font-size: 10px;
+            padding: 8px;
+        }
+
+        .address-change-popup-close {
+            width: 28px;
+            height: 28px;
+            font-size: 24px;
+        }
+    }
 </style>
 <body>
     <div class="container">
@@ -1000,6 +1178,26 @@
         <div class="cart-drawer-footer">
             <div class="cart-total">Total: ₹0</div>
             <button class="checkout-button" onclick="universalCheckout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Address Change Popup -->
+    <div class="address-change-popup" id="addressChangePopup">
+        <div class="address-change-popup-header">
+            <h3>Note: Address Change</h3>
+            <button class="address-change-popup-close" onclick="closeAddressChangePopup()">×</button>
+        </div>
+        <div class="address-change-popup-content">
+            <p><strong>We've shifted to a new place!</strong></p>
+            <p>Please send or drop your films to this new address:</p>
+            <div class="address-change-popup-address">
+                Lazy Film Lab<br>
+                A/32, Prem Varsha CHSL, 3rd floor, Sahar Road, Sahar P & T Colony, Near Parle Agro, Andheri East, Mumbai - 400099.<br>
+                ph - 9405143371
+            </div>
+        </div>
+        <div class="address-change-progress-bar">
+            <div class="address-change-progress-fill" id="addressChangeProgress"></div>
         </div>
     </div>
 
@@ -1402,6 +1600,34 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         }
     }
 
+    // Address Change Popup Functions
+    function showAddressChangePopup() {
+        const popup = document.getElementById('addressChangePopup');
+        const progressBar = document.getElementById('addressChangeProgress');
+        
+        popup.classList.add('active');
+        
+        // Reset progress bar
+        progressBar.style.width = '0%';
+        
+        // Animate progress bar over 7 seconds
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 1;
+            progressBar.style.width = progress + '%';
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                closeAddressChangePopup();
+            }
+        }, 70); // Update every 70ms for smooth animation (7000ms / 100 = 70ms)
+    }
+
+    function closeAddressChangePopup() {
+        const popup = document.getElementById('addressChangePopup');
+        popup.classList.remove('active');
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         // Check if images are loaded
@@ -1421,6 +1647,10 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         // Attempt to resolve upsell variants on load
         applyUpsellOverridesFromUrl();
         resolveUpsellVariants();
+        
+        // Show address change popup after 3-5 seconds (randomized between 3-5)
+        const delay = Math.random() * 2000 + 3000; // Random between 3000-5000ms
+        setTimeout(showAddressChangePopup, delay);
     });
 
     // Update the submitOrderForm function
