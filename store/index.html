@@ -268,6 +268,7 @@
             to { transform: translateY(-50%) rotate(360deg); }
         }
 
+
         .cart-count {
             background: #000;
             color: #fff;
@@ -951,6 +952,30 @@
         </div>
 
         <div class="product-details">
+            <img src="images/superia-thumb.jpg" alt="Fujifilm Superia Xtra 800" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">Fujifilm Superia Xtra 800 (Expired 2010)</h2>
+                    <p class="product-price">₹900</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="superia800">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="superia800">
+                        <button type="button" class="qty-btn increment" data-product="superia800">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="superia800" data-variant="43881964961891" id="superia800-add-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-superia800" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Fujifilm Superia X-TRA 800 is a discontinued high-speed color negative film with a very recognizable Fuji look.</span>
+                <span class="description-full">This roll expired in 2010 and was cold-stored, so the colors are largely intact, though age has introduced some characteristics. The film is particularly strong in blues and greens, which tend to come out rich and slightly cool. It has a distinct color palette that differs noticeably from current-generation color negative films. Best shot at ISO 200 (overexposing by about 2 stops helps control fog, improves shadow detail, and gives better overall color balance). Works well in daylight and evenly lit scenes. Not recommended if you are looking for clean, neutral negatives.</span>
+                <button class="see-more-desc" data-product="superia800">See more</button>
+            </p>
+        </div>
+
+        <div class="product-details">
             <img src="images/lazy-monochrome-thumb.jpg" alt="Lazy Monochrome" class="product-thumbnail">
             <div class="product-info">
                 <div class="product-header-group">
@@ -1098,7 +1123,8 @@
             'lazy500': '43200428507235',
             'lazy250': '43269458690147',
             'lazymonochrome': '43841780514915',
-            'fujifilmprovia': '43863277437027'
+            'fujifilmprovia': '43863277437027',
+            'superia800': '43881964961891'
         };
 
         // Shopify Storefront API configuration
@@ -1154,6 +1180,12 @@
                             edges { node { id availableForSale quantityAvailable } }
                         }
                     }
+                    superia800: product(id: "gid://shopify/Product/7937362067555") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
                 }
             `;
 
@@ -1176,7 +1208,8 @@
                     { key: 'lazy500', node: data.lazy500 },
                     { key: 'lazy250', node: data.lazy250 },
                     { key: 'lazymonochrome', node: lazyMonochrome },
-                    { key: 'fujifilmprovia', node: data.fujifilmprovia }
+                    { key: 'fujifilmprovia', node: data.fujifilmprovia },
+                    { key: 'superia800', node: data.superia800 }
                 ];
 
                 results.forEach(({ key, node }) => {
@@ -1258,6 +1291,9 @@
                 } else if (productId === 'fujifilmprovia') {
                     productName = 'Fujifilm Provia 100F RDP 3 (Expired 2015)';
                     productPrice = 2100;
+                } else if (productId === 'superia800') {
+                    productName = 'Fujifilm Superia Xtra 800 (Expired 2010)';
+                    productPrice = 900;
                 }
                 universalCart.store.items.push({
                     id: Date.now(),
@@ -1482,15 +1518,19 @@
                     if (firstId) {
                         console.log(`\n✅ Use this Variant ID: ${firstId}`);
                         alert(`Variant ID Found!\n\nProduct: ${data.product.title}\n\n${allVariants}\n✅ PRIMARY VARIANT ID: ${firstId}\n\n(Also check console for details)`);
+                        return firstId; // Return the variant ID
                     } else {
                         alert('No variants found for this product');
+                        return null;
                     }
                 } else {
                     alert('Product not found');
+                    return null;
                 }
             } catch (error) { 
                 alert('Error: ' + error.message);
-                console.error('Error:', error); 
+                console.error('Error:', error);
+                return null;
             }
         };
 
