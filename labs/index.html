@@ -1575,7 +1575,56 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             return;
         }
 
-        showOrderModal();
+        // Get selected scans
+        const selectedScans = getSelectedScans();
+        if (selectedScans.length === 0) {
+            alert('Please select at least one scan option');
+            return;
+        }
+
+        // Collect roll data directly
+        const items = Array.from(document.querySelectorAll('.roll-row'))
+            .map(roll => {
+                const filmName = roll.querySelector('input[type="text"]').value;
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                const processType = roll.querySelector('select:nth-of-type(1)').value;
+                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+
+                // Get variant ID based on process type and push/pull
+                const variantId = getVariantId(processType, pushPull);
+                if (!variantId) {
+                    throw new Error(`Invalid variant combination: ${processType} ${pushPull}`);
+                }
+
+                return quantity > 0 && filmName && processType ? {
+                    film_name: filmName,
+                    quantity: quantity,
+                    process_type: processType,
+                    push_pull: pushPull,
+                    variantId: variantId
+                } : null;
+            })
+            .filter(item => item !== null);
+
+        if (items.length === 0) {
+            alert('Please add at least one film roll');
+            return;
+        }
+
+        // Store order data and show upsell modal directly (skip customer form)
+        pendingOrderData = {
+            items: items,
+            customerInfo: {}, // Empty - customer will fill in Shopify checkout
+            notes: document.querySelector('textarea').value || '',
+            scans: selectedScans,
+            returnNegatives: document.getElementById('return-negatives').checked,
+            expressProcessing: document.getElementById('express-processing').checked
+        };
+        upsellItems = [];
+        
+        // Show upsell modal directly
+        document.getElementById('upsellModal').classList.add('active');
+        
         // Kick off resolving upsell variants in background
         resolveUpsellVariants();
     }
@@ -1799,7 +1848,9 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 'none': 'gid://shopify/ProductVariant/43181189628003',    // No Push/Pull
                 'push1': 'gid://shopify/ProductVariant/43181189660771',   // +1 Stop
                 'push2': 'gid://shopify/ProductVariant/43181189693539',   // +2 Stop
-                'push3': 'gid://shopify/ProductVariant/43181189726307'    // +3 Stop
+                'push3': 'gid://shopify/ProductVariant/43181189726307',   // +3 Stop
+                'pull1': 'gid://shopify/ProductVariant/43181189759075',   // -1 Stop
+                'pull2': 'gid://shopify/ProductVariant/43181189791843'    // -2 Stop
             }
         };
         
@@ -1815,8 +1866,11 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             'none': 'none',
             'push1': 'push1',
             'push2': 'push2',
+            'push3': 'push3',
             'pull1': 'pull1',
-            'pull2': 'pull2'
+            'pull2': 'pull2',
+            'pull3': 'pull3',
+            'not-sure': 'not-sure'
         };
 
         const mappedProcess = processMap[processType] || processType;
@@ -1867,17 +1921,31 @@ If you've followed this method, we'll develop it at box speed, and it should wor
 
             const expressNote = orderData.expressProcessing ? '\nExpress: YES (₹500/roll, next-day after arrival)' : '';
 
-            // Add basic parameters
+            // Add basic parameters (customer info is optional - will be filled in Shopify checkout)
             const params = new URLSearchParams({
-                'checkout[email]': orderData.customerInfo.email,
-                'checkout[shipping_address][first_name]': orderData.customerInfo.name,
-                'checkout[shipping_address][address1]': orderData.customerInfo.address,
-                'checkout[shipping_address][city]': orderData.customerInfo.city,
-                'checkout[shipping_address][zip]': orderData.customerInfo.pincode,
-                'checkout[shipping_address][country]': 'India',
-                'checkout[shipping_address][province]': 'Maharashtra',
                 'note': `ORDER DETAILS:\n\n${orderDetails}\n\nScans: ${orderData.scans.join(', ')}\nNotes: ${orderData.notes}${expressNote}`
             });
+            
+            // Only add customer info if provided (optional)
+            if (orderData.customerInfo && orderData.customerInfo.email) {
+                params.append('checkout[email]', orderData.customerInfo.email);
+            }
+            if (orderData.customerInfo && orderData.customerInfo.name) {
+                params.append('checkout[shipping_address][first_name]', orderData.customerInfo.name);
+            }
+            if (orderData.customerInfo && orderData.customerInfo.address) {
+                params.append('checkout[shipping_address][address1]', orderData.customerInfo.address);
+            }
+            if (orderData.customerInfo && orderData.customerInfo.city) {
+                params.append('checkout[shipping_address][city]', orderData.customerInfo.city);
+            }
+            if (orderData.customerInfo && orderData.customerInfo.pincode) {
+                params.append('checkout[shipping_address][zip]', orderData.customerInfo.pincode);
+            }
+            if (orderData.customerInfo && (orderData.customerInfo.city || orderData.customerInfo.address)) {
+                params.append('checkout[shipping_address][country]', 'India');
+                params.append('checkout[shipping_address][province]', 'Maharashtra');
+            }
 
             checkoutUrl += '?' + params.toString();
 
@@ -1967,4 +2035,3 @@ If you've followed this method, we'll develop it at box speed, and it should wor
 </script>
 
 </html>
-
