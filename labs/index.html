@@ -20,12 +20,24 @@
 
     <!-- Constants and Configuration -->
     <script>
-        const PRICE_PER_ROLL = 700;
+        const PROCESS_PRICES = {
+            'Ecn2': 450,
+            'c41': 450,
+            'BnW': 450,
+            'e6': 600,
+            'no-dev': 0
+        };
+        // Scanning variant IDs
+        const SCAN_VARIANTS = {
+            'high-res': '43989457567843', // High Res (₹500)
+            'high-res-borders': '43989457600611', // High Res With Borders (₹600)
+            'no-scan': '43989457633379' // No Scan (₹0)
+        };
         const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
         const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
-        // Variant IDs for upsell products (discounted 10% variants)
-        let VARIANT_LAZY500 = '43637440315491'; // LAZY 500 10% variant
-        let VARIANT_LAZY250 = '43637439725667'; // LAZY 250 10% variant
+        // Product IDs
+        const SCANNING_PRODUCT_ID = '7960229642339';
+        const FILM_PROCESSING_PRODUCT_ID = '7736258691171';
         // No discount code used; pricing/discount handled in Shopify
         // Express processing configuration
         const EXPRESS_FEE_PER_ROLL = 500; // ₹500 per roll
@@ -50,6 +62,9 @@
         padding: 30px;
         border: 2px solid #000;
         border-radius: 8px;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        overflow-y: visible; /* Allow tooltips to show outside container */
         background-color: #f9f9f9;
         min-height: auto;
     }
@@ -146,14 +161,17 @@
         margin-bottom: 20px;
     }
 
-    .roll-row {
+        .roll-row {
         display: grid;
-        grid-template-columns: 1.5fr 80px 120px 120px auto;
-        gap: 10px;
+        grid-template-columns: 0.7fr 50px 90px 1fr 90px auto; /* Film name, Qty, Process, Scan, Push/Pull, Remove */
+        gap: 6px;
         align-items: center;
         margin-bottom: 15px;
         padding: 5px 0;
         border-bottom: 1px solid #eee;
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 0; /* Allow grid items to shrink */
     }
 
     .roll-row input[type="text"],
@@ -167,7 +185,17 @@
         box-sizing: border-box;
         background: white;
         cursor: text;
+        min-width: 0; /* Allow inputs to shrink */
+        width: 100%;
     }
+    
+    .roll-row select option:disabled {
+        color: #999;
+        font-style: italic;
+    }
+    
+    
+
 
     /* Cart Summary Styles */
     .cart-summary {
@@ -224,15 +252,10 @@
         border: 2px solid #000;
         border-radius: 8px;
         width: 90%;
-        max-width: 420px; /* slightly narrower to make it taller and images more prominent */
+        max-width: 420px;
         position: relative;
     }
 
-    /* Upsell copy tuning */
-    #upsellModal .modal-content p {
-        font-size: 13px;      /* slightly smaller */
-        line-height: 1.5;     /* slightly more space between lines */
-    }
 
     .modal-buttons {
         display: flex;
@@ -271,23 +294,6 @@
         margin-top: 20px;
     }
 
-    /* Additional Elements Styles */
-    .scans {
-        margin: 20px 0;
-        padding-left: 0;
-    }
-
-    .scans h3 {
-        margin-bottom: 10px;
-        font-family: "Lucida Console", Courier, monospace;
-        font-weight: bold;
-    }
-
-    .scans-options {
-        display: flex;
-        gap: 20px;
-    }
-
     .return-negatives-container {
         margin: 20px 0;
     }
@@ -312,33 +318,29 @@
             box-sizing: border-box;
         }
 
-        /* Clear specific width for label and address boxes */
         .label-format-box,
         .address-box {
             width: 95% !important;
             margin: 15px auto;
             box-sizing: border-box;
-            padding: 15px 15px 15px 20px;  /* top right bottom left */
+            padding: 15px 15px 15px 20px;
             border: 1px solid #000;
             clear: both;
             display: block;
         }
 
-        /* Ensure content inside boxes fits properly */
         .label-format-box *,
         .address-box * {
             max-width: 100%;
             box-sizing: border-box;
         }
 
-        /* Add consistent text padding */
         p, h2, h3, label {
             padding: 0 15px;
             margin: 10px 0;
             box-sizing: border-box;
         }
 
-        /* Text size adjustments */
         .info-section p,
         .label-format-box p:not(.label-format-heading),
         .address-box p:not(.address-heading) {
@@ -352,7 +354,6 @@
             gap: 10px;
         }
 
-        /* Form elements */
         textarea, 
         .roll-row input,
         .roll-row select {
@@ -360,7 +361,6 @@
             box-sizing: border-box;
         }
 
-        /* Cart and order elements */
         .cart-summary,
         .place-order {
             width: 100%;
@@ -368,30 +368,6 @@
             margin: 15px 0;
         }
 
-        .scans {
-            margin: 10px 0;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding-left: 15px;
-        }
-
-        .scans h3 {
-            padding-left: 0;
-            margin-bottom: 8px;
-        }
-
-        .scans-options {
-            flex-direction: row;
-            justify-content: flex-start;
-            gap: 8px;
-            padding-left: 15px;
-            flex-wrap: nowrap;
-            width: auto;
-        }
-
-        /* Info sections */
         .info-sections {
             width: 100%;
             margin: 20px auto;
@@ -408,7 +384,6 @@
             margin: 15px auto 0 -30px;
         }
 
-        /* Cart Drawer Mobile Styles */
         .cart-drawer {
             width: 100%;
             right: -100%;
@@ -426,27 +401,13 @@
             max-height: calc(100vh - 180px);
         }
 
-        /* Modal Mobile Styles */
         .modal-content {
             width: 92%;
             max-width: 360px;
             max-height: 85vh;
         }
 
-        /* Upsell mobile sizing */
-        #upsellModal .modal-content img[alt="LAZY 500"],
-        #upsellModal .modal-content img[alt="LAZY 250"] {
-            width: 72px;
-        }
-        #upsellModal .modal-content .quantity-control input {
-            width: 64px;
-            height: 32px;
-        }
-        #upsellModal .modal-content .qty-btn {
-            width: 22px;
-        }
 
-        /* Footer Mobile Styles */
         footer {
             flex-wrap: wrap;
             gap: 15px;
@@ -462,7 +423,6 @@
             border-radius: 4px;
         }
 
-        /* Align return negatives checkbox */
         .return-negatives-container {
             padding-left: 15px;
             margin: 15px 0;
@@ -471,39 +431,12 @@
             gap: 4px;
         }
 
-        /* Reset any padding from general rules */
-        .scans-options label,
-        .return-negatives-container label {
-            padding: 0;
-        }
-
-        /* Control text width and wrapping in info sections */
-        .info-section p,
-        .label-format-box p,
-        .address-box p {
-            max-width: 100%;
-            word-wrap: break-word;
-            margin-left: 0;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        /* Adjust heading width */
-        .info-section h2,
-        .label-format-heading,
-        .address-heading {
-            max-width: 100%;
-            margin-left: 0;
-        }
-
-        /* Fix text alignment in info sections */
         .info-section {
             width: 100%;
             padding: 0 15px 0 22px;
             box-sizing: border-box;
         }
 
-        /* FAQ and How it works sections */
         .info-section:not(.label-format-box):not(.address-box) {
             max-width: 380px;
             margin-left: 22px;
@@ -524,21 +457,18 @@
             padding: 0;
         }
 
-        /* Make header text 80% of original size */
         .title,
         .email-link {
-            font-size: 19px;  /* Original was 24px, now 80% of original */
+            font-size: 19px;
             margin: 0;
         }
 
-        /* Adjust header spacing */
         header {
             margin-bottom: 15px;
             padding: 5px 0;
         }
     }
 
-    /* Small phones */
     @media (max-width: 375px) {
         .title, .email-link {
             font-size: 18px;
@@ -766,23 +696,6 @@
         font-size: 16px;
     }
 
-    .faq-item {
-        margin-bottom: 45px;
-    }
-
-    .faq-item h3 {
-        font-weight: normal;
-        margin-bottom: 15px;
-        margin-top: 0;
-        white-space: pre-line;
-    }
-
-    .faq-item p {
-        margin-top: 10px;
-        line-height: 2;
-        white-space: pre-line;
-    }
-
     .faq-question, .faq-answer {
         width: 100%;
         box-sizing: border-box;
@@ -923,52 +836,19 @@
             overflow-y: auto;
         }
 
-        .address-change-popup-header {
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
         .address-change-popup-header h3 {
             font-size: 16px;
-            line-height: 1.3;
-            flex: 1;
-            min-width: 0;
-            word-wrap: break-word;
-        }
-
-        .address-change-popup-close {
-            width: 32px;
-            height: 32px;
-            font-size: 28px;
-            flex-shrink: 0;
-            margin-left: 10px;
         }
 
         .address-change-popup-content {
             font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-
-        .address-change-popup-content p {
-            margin: 8px 0;
         }
 
         .address-change-popup-address {
             font-size: 11px;
-            line-height: 1.4;
-            padding: 10px;
-            margin-top: 8px;
-            word-wrap: break-word;
-        }
-
-        .address-change-progress-bar {
-            margin-top: 12px;
-            height: 3px;
         }
     }
 
-    /* Extra small phones */
     @media (max-width: 375px) {
         .address-change-popup {
             padding: 15px 12px;
@@ -1026,16 +906,6 @@
                     <!-- Rolls will be added dynamically -->
                 </div>
 
-                <!-- Scans Section -->
-                <div class="scans">
-                    <h3>Scans</h3>
-                    <div class="scans-options">
-                        <label><input type="checkbox" name="scan-option" value="RAW"> RAW</label>
-                        <label><input type="checkbox" name="scan-option" value="TIFF"> TIFF</label>
-                        <label><input type="checkbox" name="scan-option" value="JPEG"> JPEG</label>
-                    </div>
-                </div>
-
                 <!-- Return Negatives Option -->
                 <div class="return-negatives-container">
                     <label>
@@ -1046,17 +916,24 @@
                 <!-- Express Processing Option -->
                 <div class="return-negatives-container">
                     <label>
-                        <input type="checkbox" id="express-processing"> Express processing (+₹500 per roll) — next-day delivery after arrival
+                        <input type="checkbox" id="express-processing"> Express - same day delivery (+₹500 per roll)
                     </label>
                 </div>
 
                 <textarea placeholder="Additional notes"></textarea>
 
-                <a href="#how-it-works" 
-                   onclick="event.preventDefault(); document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})" 
-                   style="color: #0000EE; text-decoration: underline; font-size: 14px; display: block; margin-top: -15px; margin-bottom: 15px; cursor: pointer;">
-                   How to send films →
-                </a>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <a href="#how-it-works" 
+                       onclick="event.preventDefault(); document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})" 
+                       style="color: #0000EE; text-decoration: underline; font-size: 14px; cursor: pointer;">
+                       How to pack and send films →
+                    </a>
+                    <a href="#faq" 
+                       onclick="event.preventDefault(); document.getElementById('faq').scrollIntoView({behavior: 'smooth'})" 
+                       style="color: #0000EE; text-decoration: underline; font-size: 14px; cursor: pointer;">
+                       FAQ →
+                    </a>
+                </div>
 
                 <!-- Cart Summary -->
                 <div class="cart-summary">
@@ -1071,7 +948,21 @@
             </form>
         </div>
 
-        <!-- Add this before closing </div> of container -->
+
+        <!-- Variant IDs Modal -->
+        <div class="modal" id="variantIdsModal">
+            <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                <h2>Variant IDs</h2>
+                <div id="variantIdsContent" style="margin-top: 20px; font-family: monospace; font-size: 12px; line-height: 1.6;">
+                    <p>Loading...</p>
+                </div>
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button type="button" class="confirm-order" onclick="closeVariantIdsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
         <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
             <div style="display: flex; justify-content: center; gap: 20px; font-size: 14px;">
                 <a href="https://www.lazyfilms.in/labs/CONTACT" style="color: #000; text-decoration: none;">Contact</a>
@@ -1082,83 +973,6 @@
         </footer>
     </div>
 
-    <!-- Upsell Modal -->
-    <div class="modal" id="upsellModal">
-        <div class="modal-content">
-            <h2>Add film at 10% OFF?</h2>
-            <p style="margin-top: 10px;">You’re already sending in film—why not reload while you’re at it? Snag fresh stock now with 10% off and <span style="color:#ff0000;">zero shipping costs</span> in the same order</p>
-            <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px; align-items:stretch;">
-                <div style="flex:1; border:1px solid #000; border-radius:6px; padding:10px; background:#fff; display:flex; gap:10px; align-items:center; justify-content:space-between; width:100%;">
-                    <img src="https://www.lazyfilms.in/store/images/lazy500-thumb.jpg" alt="LAZY 500" style="width:88px; height:auto; border:none; border-radius:4px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold;">LAZY 500</div>
-                        <div style="font-size:12px; color:#555;">10% OFF</div>
-                    </div>
-                    <div class="quantity-control" style="position:relative; display:inline-block;">
-                        <button type="button" class="qty-btn" data-target="upsellQtyLazy500" style="left:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">−</button>
-                        <input id="upsellQtyLazy500" type="number" value="1" min="1" style="width:72px; height:35px; border:1px solid #000; border-radius:4px; padding:0 24px; text-align:center;">
-                        <button type="button" class="qty-btn" data-target="upsellQtyLazy500" data-inc="1" style="right:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">+</button>
-                    </div>
-                    <button type="button" id="addLazy500" style="background:#000; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; white-space:nowrap;">Add</button>
-                </div>
-                <div style="flex:1; border:1px solid #000; border-radius:6px; padding:10px; background:#fff; display:flex; gap:10px; align-items:center; justify-content:space-between; width:100%;">
-                    <img src="https://www.lazyfilms.in/store/images/lazy250-thumb.jpg" alt="LAZY 250" style="width:88px; height:auto; border:none; border-radius:4px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold;">LAZY 250</div>
-                        <div style="font-size:12px; color:#555;">10% OFF</div>
-                    </div>
-                    <div class="quantity-control" style="position:relative; display:inline-block;">
-                        <button type="button" class="qty-btn" data-target="upsellQtyLazy250" style="left:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">−</button>
-                        <input id="upsellQtyLazy250" type="number" value="1" min="1" style="width:72px; height:35px; border:1px solid #000; border-radius:4px; padding:0 24px; text-align:center;">
-                        <button type="button" class="qty-btn" data-target="upsellQtyLazy250" data-inc="1" style="right:0; position:absolute; top:0; bottom:0; width:24px; background:transparent; border:none;">+</button>
-                    </div>
-                    <button type="button" id="addLazy250" style="background:#000; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; white-space:nowrap;">Add</button>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button type="button" class="cancel-order" id="upsellSkip">Skip for now</button>
-                <button type="button" class="confirm-order" id="upsellCheckout">Continue to checkout</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Order Form Modal -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
-            <h2>Order Details</h2>
-            <form class="order-form" id="customerForm" onsubmit="submitOrderForm(event)">
-                <div class="form-group">
-                    <label>Name <span class="required">*</span></label>
-                    <input type="text" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label>Email <span class="required">*</span></label>
-                    <input type="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone <span class="required">*</span></label>
-                    <input type="tel" name="phone" pattern="[0-9]{10}" required>
-                </div>
-                <div class="form-group">
-                    <label>Address <span class="required">*</span></label>
-                    <input type="text" name="address" required>
-                </div>
-                <div class="form-group">
-                    <label>City <span class="required">*</span></label>
-                    <input type="text" name="city" required>
-                </div>
-                <div class="form-group">
-                    <label>PIN Code <span class="required">*</span></label>
-                    <input type="text" name="pincode" pattern="[0-9]{6}" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-order" onclick="closeOrderModal()">Cancel</button>
-                    <button type="submit" class="confirm-order">Proceed to Payment</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Universal Cart Button -->
     <div class="universal-cart-button" onclick="toggleCartDrawer()">
@@ -1205,11 +1019,11 @@
     <div class="info-sections">
         <div class="info-section">
             <h2 id="how-it-works">// HOW IT WORKS</h2>
-            <p>We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, and Black & White.</p>
+            <p>We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, E-6, and Black & White.</p>
 
             <p class="section-heading">How to pack & send your films :</p>
             <p>
-Select the number of rolls of ECN2/C41/BnW above. If you're not sure which process it is, refer to the FAQ section.
+Select the number of rolls of ECN2/C41/E6/BnW above. If you're not sure which process it is, refer to the FAQ section.
 Choose if you want to add push/pull process.</p>
 
             <div class="label-format-box">
@@ -1235,7 +1049,10 @@ ph - 9405143371</p>
         </div>
 
         <div class="info-section">
-            <h2>// FAQ</h2>
+            <h2 id="faq">// FAQ</h2>
+            <div class="faq-question">What is the turn-around time for digital scans?</div>
+            <div class="faq-answer">Usually it is between 1-3 days after we receive the film rolls. Express same day delivery is available as long as we receive the film before 3 pm. Please note that the lab is closed on Sundays.</div>
+
             <div class="faq-question">I don't know which process my color rolls should be developed in - ECN-2 or C-41</div>
             <div class="faq-answer">If it's a respooled motion picture film like 250D, 500T, 200T, or 50D, it's ideally processed in ECN-2 for better colors.
 Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41.
@@ -1261,22 +1078,31 @@ If you've followed this method, we'll develop it at box speed, and it should wor
 
             <div class="faq-question">I want RAW negative files of my film. Can I get them?</div>
             <div class="faq-answer">Yes, you can select the format you want your digitized photos to be delivered in, including RAW files.</div>
-
-            <div class="faq-question">Do you process Ektachrome?</div>
-            <div class="faq-answer">Yes, we process Ektachrome, but not as a slide film in E-6 chemistry. We process it in ECN-2 as a negative.</div>
-
-            <div class="faq-question">What is the turn-around time for digital scans?</div>
-            <div class="faq-answer">Usually it is between 3-7 days after we receive the film rolls.</div>
         </div>
     </div>
 </body>
 <script>
     // Core Helper Functions
     function calculateTotal() {
+        // Note: Total calculation is now approximate since Shopify handles variant pricing
+        // This is just for display - actual total will be shown in Shopify checkout
         let total = 0;
         document.querySelectorAll('.roll-row').forEach(roll => {
             const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            total += quantity * PRICE_PER_ROLL;
+            // Processing cost per roll (approximate)
+            const processType = roll.querySelector('select').value;
+            const processPrice = PROCESS_PRICES[processType] || 0;
+            total += quantity * processPrice;
+            
+            // Scan cost per roll (approximate - actual from Shopify variants)
+            const scanSelect = roll.querySelector('.scan-select');
+            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
+            if (scanType === 'high-res') {
+                total += quantity * 500; // Approximate
+            } else if (scanType === 'high-res-borders') {
+                total += quantity * 600; // Approximate
+            }
+            // No scan = 0
         });
         
         if (document.getElementById('return-negatives').checked) {
@@ -1293,20 +1119,12 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         return total;
     }
 
-    function getSelectedScans() {
-        return Array.from(document.querySelectorAll('input[name="scan-option"]:checked'))
-            .map(checkbox => checkbox.value);
-    }
-
     function clearForm() {
         document.getElementById('rolls-container').innerHTML = '';
         document.getElementById('return-negatives').checked = false;
         const express = document.getElementById('express-processing');
         if (express) express.checked = false;
         document.querySelector('textarea').value = '';
-        document.querySelectorAll('input[name="scan-option"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
         updateOrderSummary();
     }
 
@@ -1329,19 +1147,32 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         document.querySelectorAll('.roll-row').forEach(roll => {
             const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
             const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            const processType = roll.querySelector('select:nth-of-type(1)').value;
-            const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+            const processType = roll.querySelector('select').value; // Process is 1st select
+            const scanSelect = roll.querySelector('select:nth-of-type(2)');
+            const scanType = scanSelect.value || 'high-res'; // Scan is 2nd select, default to high-res
+            const pushPull = roll.querySelector('select:nth-of-type(3)').value; // Push/Pull is 3rd select
             
             if (quantity > 0) {
-                const itemTotal = quantity * PRICE_PER_ROLL;
+                const processPrice = PROCESS_PRICES[processType] || 0;
+                // Approximate scan price for display
+                let scanPrice = 0;
+                if (scanType === 'high-res') scanPrice = 500;
+                else if (scanType === 'high-res-borders') scanPrice = 600;
+                
+                const itemTotal = quantity * (processPrice + scanPrice);
                 total += itemTotal;
+                
+                const scanLabel = scanType === 'high-res' ? '(TIFF + RAW) High Res' : 
+                                 scanType === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders' : 
+                                 'No Scan';
+                
                 cartHtml += `
                     <div class="cart-item">
                         <div class="cart-item-details">
                             <h4>${quantity}× ${filmName}</h4>
-                            <p>${processType}${pushPull !== 'none' ? ', ' + pushPull : ''}</p>
+                            <p>${processType} | ${scanLabel}${pushPull !== 'none' ? ' | ' + pushPull : ''}</p>
                         </div>
-                    <span>₹${itemTotal}</span>
+                        <span>₹${itemTotal}</span>
                     </div>`;
             }
         });
@@ -1354,7 +1185,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                     <div class="cart-item-details">
                         <h4>Return Negatives</h4>
                     </div>
-                <span>₹150</span>
+                    <span>₹150</span>
                 </div>`;
         }
 
@@ -1371,7 +1202,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             cartHtml += `
                 <div class="cart-item">
                     <div class="cart-item-details">
-                        <h4>Express processing × ${totalRolls}</h4>
+                        <h4>Express - same day delivery × ${totalRolls}</h4>
                     </div>
                     <span>₹${expressTotal}</span>
                 </div>`;
@@ -1382,10 +1213,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     }
 
     function universalCheckout() {
-        // Close cart drawer
         toggleCartDrawer();
-        // Show order modal
-        showOrderModal();
+        placeOrder();
     }
 
     // Cart Functionality
@@ -1393,13 +1222,21 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         return `
             <div class="roll-row">
             <input type="text" placeholder="Film name" required>
-            <input type="number" placeholder="Qty" min="1" max="30" required>
+            <input type="number" placeholder="Qty" min="1" max="30" value="1" required>
             <select required>
                 <option value="" disabled selected>Process</option>
-                    <option value="Ecn2">ECN-2</option>
-                    <option value="c41">C41</option>
-                    <option value="BnW">Black & White</option>
+                <option value="Ecn2">ECN-2 - ₹450</option>
+                <option value="c41">C41 - ₹450</option>
+                <option value="BnW">Black & White - ₹450</option>
+                <option value="e6">E-6 - ₹600</option>
+                <option value="no-dev">No Dev - ₹0</option>
             </select>
+             <select required class="scan-select">
+                 <option value="" disabled selected>Scanning (TIFF + RAW)</option>
+                 <option value="high-res">High Res - ₹500</option>
+                 <option value="high-res-borders" disabled style="color: #999; font-style: italic;">High Res + Borders (very cool) - ₹600 - Coming Soon</option>
+                 <option value="no-scan">No Scan - ₹0</option>
+             </select>
             <select required>
                 <option value="none" selected>No Push/Pull</option>
                 <option value="push1">+1 Stop</option>
@@ -1410,7 +1247,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 <option value="pull3">-3 Stop</option>
                 <option value="not-sure">Not sure</option>
             </select>
-                <button type="button" class="remove-roll" onclick="removeRoll(this)">×</button>
+            <button type="button" class="remove-roll" onclick="removeRoll(this)">×</button>
             </div>
         `;
     }
@@ -1443,6 +1280,59 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         const total = calculateTotal();
         document.getElementById('total-price').textContent = total;
         updateCartCount();
+        
+        // Update cart items list
+        const cartItems = document.getElementById('cart-items');
+        cartItems.innerHTML = '';
+        document.querySelectorAll('.roll-row').forEach(roll => {
+            const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
+            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            const processType = roll.querySelector('select').value;
+            const scanSelect = roll.querySelector('.scan-select');
+            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
+            const pushPull = roll.querySelector('select:nth-of-type(3)').value;
+            
+            if (quantity > 0) {
+                const processPrice = PROCESS_PRICES[processType] || 0;
+                let scanPrice = 0;
+                if (scanType === 'high-res') scanPrice = 500;
+                else if (scanType === 'high-res-borders') scanPrice = 600;
+                
+                const itemTotal = quantity * (processPrice + scanPrice);
+                
+                const scanLabel = scanType === 'high-res' ? '(TIFF + RAW) High Res - ₹500' : 
+                                 scanType === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders (very cool) - ₹600' : 
+                                 'No Scan - ₹0';
+                
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <span>${quantity}× ${filmName} - ${processType} | ${scanLabel}${pushPull !== 'none' ? ' | ' + pushPull : ''}</span>
+                    <span>₹${itemTotal}</span>
+                `;
+                cartItems.appendChild(li);
+            }
+        });
+        
+        if (document.getElementById('return-negatives').checked) {
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = '<span>Return Negatives</span><span>₹150</span>';
+            cartItems.appendChild(li);
+        }
+        
+        if (document.getElementById('express-processing')?.checked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
+                totalRolls += quantity;
+            });
+            const expressTotal = EXPRESS_FEE_PER_ROLL * totalRolls;
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = `<span>Express - same day delivery × ${totalRolls}</span><span>₹${expressTotal}</span>`;
+            cartItems.appendChild(li);
+        }
     }
 
     function updateCartCount() {
@@ -1450,7 +1340,6 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         const cartCountBubble = document.querySelector('.cart-count-bubble');
         cartCountBubble.textContent = rollCount;
         
-        // Hide bubble if no items
         if (rollCount === 0) {
             cartCountBubble.style.display = 'none';
         } else {
@@ -1477,75 +1366,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         updateCartDrawer();
     });
 
-    // Modal Functions
-    function showOrderModal() {
-        document.getElementById('orderModal').classList.add('active');
-    }
-
-    function closeOrderModal() {
-        document.getElementById('orderModal').classList.remove('active');
-    }
-
-    // Upsell state
+    // Order state
     let pendingOrderData = null;
-    let upsellItems = [];
-
-    // Resolve discounted upsell variants dynamically
-    let upsellReady = false;
-    async function resolveUpsellVariants() {
-        try {
-            // Try by known or likely handles first
-            const handles = [
-                'lazy500-10', 'lazy-500-10', 'lazy500-10-off', 'lazy-500-10-off', 'lazy500-10-percent', 'lazy-500-10-percent',
-                'lazy250-10', 'lazy-250-10', 'lazy250-10-off', 'lazy-250-10-off', 'lazy250-10-percent', 'lazy-250-10-percent'
-            ];
-
-            const byHandleQuery = (handle) => `query($handle:String!) { product(handle:$handle) { title variants(first:1) { edges { node { id availableForSale } } } } }`;
-
-            let found500 = null;
-            let found250 = null;
-
-            for (const handle of handles) {
-                const res = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
-                    },
-                    body: JSON.stringify({ query: byHandleQuery(handle), variables: { handle } })
-                });
-                const json = await res.json();
-                const product = json.data?.product;
-                const title = product?.title?.toLowerCase?.() || '';
-                const variantId = product?.variants?.edges?.[0]?.node?.id || null;
-                if (!product || !variantId) continue;
-
-                if (!found500 && title.includes('lazy 500') && title.includes('10')) {
-                    found500 = variantId;
-                }
-                if (!found250 && title.includes('lazy 250') && title.includes('10')) {
-                    found250 = variantId;
-                }
-
-                if (found500 && found250) break;
-            }
-
-            // Fallback: search by titles via a collection or generic search is not available on Storefront easily.
-            // If not found, keep previous values (null) so buttons remain disabled.
-            if (found500) VARIANT_LAZY500 = found500.split('/').pop();
-            if (found250) VARIANT_LAZY250 = found250.split('/').pop();
-
-            // Enable buttons if at least one is resolved
-            const btn500 = document.getElementById('addLazy500');
-            const btn250 = document.getElementById('addLazy250');
-            if (btn500) btn500.disabled = !VARIANT_LAZY500;
-            if (btn250) btn250.disabled = !VARIANT_LAZY250;
-
-            upsellReady = !!(VARIANT_LAZY500 || VARIANT_LAZY250);
-        } catch (err) {
-            console.error('Failed to resolve upsell variants:', err);
-        }
-    }
 
     function placeOrder() {
         const rolls = document.querySelectorAll('.roll-row');
@@ -1555,11 +1377,13 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         rolls.forEach(roll => {
             const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
             const filmName = roll.querySelector('input[type="text"]').value;
-            const processType = roll.querySelector('select:nth-of-type(1)').value;
+            const processType = roll.querySelector('select').value;
+            const scanSelect = roll.querySelector('.scan-select');
+            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
 
             if (quantity > 0) {
                 hasItems = true;
-                if (!filmName || !processType) {
+                if (!filmName || !processType || !scanType) {
                     isValid = false;
                 }
             }
@@ -1575,33 +1399,38 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             return;
         }
 
-        // Get selected scans
-        const selectedScans = getSelectedScans();
-        if (selectedScans.length === 0) {
-            alert('Please select at least one scan option');
-            return;
-        }
-
         // Collect roll data directly
         const items = Array.from(document.querySelectorAll('.roll-row'))
             .map(roll => {
                 const filmName = roll.querySelector('input[type="text"]').value;
                 const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                const processType = roll.querySelector('select:nth-of-type(1)').value;
-                const pushPull = roll.querySelector('select:nth-of-type(2)').value;
+                const processType = roll.querySelector('select').value;
+                const scanSelect = roll.querySelector('.scan-select');
+                const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
+                const pushPull = roll.querySelector('select:nth-of-type(3)').value;
 
                 // Get variant ID based on process type and push/pull
                 const variantId = getVariantId(processType, pushPull);
+                // Allow placeholder IDs (user will update with actual IDs)
+                // Only throw error if variantId is null/undefined and it's not a placeholder
                 if (!variantId) {
                     throw new Error(`Invalid variant combination: ${processType} ${pushPull}`);
                 }
 
-                return quantity > 0 && filmName && processType ? {
+                // Get scan variant ID
+                const scanVariantId = SCAN_VARIANTS[scanType];
+                if (!scanVariantId) {
+                    throw new Error(`Invalid scan type: ${scanType}`);
+                }
+
+                return quantity > 0 && filmName && processType && scanType ? {
                     film_name: filmName,
                     quantity: quantity,
                     process_type: processType,
+                    scan_type: scanType,
                     push_pull: pushPull,
-                    variantId: variantId
+                    variantId: variantId || null,
+                    scanVariantId: scanVariantId
                 } : null;
             })
             .filter(item => item !== null);
@@ -1614,19 +1443,16 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         // Store order data and show upsell modal directly (skip customer form)
         pendingOrderData = {
             items: items,
-            customerInfo: {}, // Empty - customer will fill in Shopify checkout
+            customerInfo: {},
             notes: document.querySelector('textarea').value || '',
-            scans: selectedScans,
             returnNegatives: document.getElementById('return-negatives').checked,
             expressProcessing: document.getElementById('express-processing').checked
         };
-        upsellItems = [];
         
-        // Show upsell modal directly
-        document.getElementById('upsellModal').classList.add('active');
-        
-        // Kick off resolving upsell variants in background
-        resolveUpsellVariants();
+        // Go directly to Shopify checkout
+        createShopifyCart(pendingOrderData, []).then(cart => {
+            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+        });
     }
 
     // Carousel Functionality
@@ -1656,10 +1482,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         
         popup.classList.add('active');
         
-        // Reset progress bar
         progressBar.style.width = '0%';
         
-        // Animate progress bar over 7 seconds
         let progress = 0;
         const interval = setInterval(() => {
             progress += 1;
@@ -1669,7 +1493,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 clearInterval(interval);
                 closeAddressChangePopup();
             }
-        }, 70); // Update every 70ms for smooth animation (7000ms / 100 = 70ms)
+        }, 70);
     }
 
     function closeAddressChangePopup() {
@@ -1678,12 +1502,15 @@ If you've followed this method, we'll develop it at box speed, and it should wor
     }
 
     // Initialize
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Check if images are loaded
+        // Add first roll by default
+        addNewRoll();
+        
         const images = document.querySelectorAll('.carousel img');
         if (images.length > 0) {
             console.log('Found', images.length, 'carousel images');
-            images[0].classList.add('active'); // Ensure first image is visible
+            images[0].classList.add('active');
             setInterval(showNextImage, 6000);
         } else {
             console.error('No carousel images found on load');
@@ -1693,175 +1520,75 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         const express = document.getElementById('express-processing');
         if (express) express.addEventListener('change', updateOrderSummary);
         updateOrderSummary();
-        // Attempt to resolve upsell variants on load
-        applyUpsellOverridesFromUrl();
-        resolveUpsellVariants();
         
-        // Show address change popup after 3-5 seconds (randomized between 3-5)
-        const delay = Math.random() * 2000 + 3000; // Random between 3000-5000ms
+        const delay = Math.random() * 2000 + 3000;
         setTimeout(showAddressChangePopup, delay);
     });
 
-    // Update the submitOrderForm function
-    async function submitOrderForm(event) {
-        event.preventDefault();
-        
-        try {
-            const form = event.target;
-            const formData = new FormData(form);
-            const customerData = Object.fromEntries(formData.entries());
-
-            // Get selected scans
-            const selectedScans = getSelectedScans();
-            if (selectedScans.length === 0) {
-                throw new Error('Please select at least one scan option');
-            }
-
-            // Collect roll data
-            const items = Array.from(document.querySelectorAll('.roll-row'))
-                .map(roll => {
-                    const filmName = roll.querySelector('input[type="text"]').value;
-                    const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                    const processType = roll.querySelector('select:nth-of-type(1)').value;
-                    const pushPull = roll.querySelector('select:nth-of-type(2)').value;
-
-                    // Get variant ID based on process type and push/pull
-                    const variantId = getVariantId(processType, pushPull);
-                    if (!variantId) {
-                        throw new Error(`Invalid variant combination: ${processType} ${pushPull}`);
-                    }
-
-                    return quantity > 0 && filmName && processType ? {
-                        film_name: filmName,
-                        quantity: quantity,
-                        process_type: processType,
-                        push_pull: pushPull,
-                        variantId: variantId
-                    } : null;
-                })
-                .filter(item => item !== null);
-
-            if (items.length === 0) {
-                throw new Error('Please add at least one film roll');
-            }
-
-            // Store order data and show upsell modal instead of immediate redirect
-            pendingOrderData = {
-                    items: items,
-                customerInfo: customerData,
-                    notes: document.querySelector('textarea').value || '',
-                scans: selectedScans,
-                returnNegatives: document.getElementById('return-negatives').checked,
-                expressProcessing: document.getElementById('express-processing').checked
-            };
-            upsellItems = [];
-            document.getElementById('orderModal').classList.remove('active');
-            document.getElementById('upsellModal').classList.add('active');
-
-        } catch (error) {
-            console.error('Error in order submission:', error);
-            alert('Failed to create order: ' + error.message);
-        }
-    }
-
-    // Upsell handlers
-    document.addEventListener('click', async (e) => {
-        if (e.target && e.target.id === 'addLazy500') {
-            if (!VARIANT_LAZY500) return;
-            const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy500')?.value) || 1);
-            upsellItems.push({ variantId: VARIANT_LAZY500, quantity: qty });
-            e.target.textContent = 'Added';
-            e.target.disabled = true;
-        }
-        if (e.target && e.target.id === 'addLazy250') {
-            if (!VARIANT_LAZY250) return;
-            const qty = Math.max(1, parseInt(document.getElementById('upsellQtyLazy250')?.value) || 1);
-            upsellItems.push({ variantId: VARIANT_LAZY250, quantity: qty });
-            e.target.textContent = 'Added';
-            e.target.disabled = true;
-        }
-        if (e.target && e.target.id === 'upsellSkip') {
-            document.getElementById('upsellModal').classList.remove('active');
-            const cart = await createShopifyCart(pendingOrderData, []);
-            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
-        }
-        if (e.target && e.target.id === 'upsellCheckout') {
-            document.getElementById('upsellModal').classList.remove('active');
-            const cart = await createShopifyCart(pendingOrderData, upsellItems);
-            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
-        }
-        // Quantity +/- inside upsell
-        if (e.target && e.target.classList.contains('qty-btn')) {
-            const targetId = e.target.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            if (input) {
-                const inc = e.target.getAttribute('data-inc') ? 1 : -1;
-                const next = Math.max(1, (parseInt(input.value) || 1) + inc);
-                input.value = next;
-            }
-        }
-    });
-
-    // Allow overriding upsell variant IDs via URL params for immediate fix
-    function applyUpsellOverridesFromUrl() {
-        try {
-            const params = new URLSearchParams(window.location.search);
-            const v500 = params.get('lazy500_10');
-            const v250 = params.get('lazy250_10');
-            if (v500) VARIANT_LAZY500 = String(v500).split('/').pop();
-            if (v250) VARIANT_LAZY250 = String(v250).split('/').pop();
-            const express = params.get('express');
-            if (express) EXPRESS_VARIANT_ID = String(express).split('/').pop();
-            const btn500 = document.getElementById('addLazy500');
-            const btn250 = document.getElementById('addLazy250');
-            if (btn500) btn500.disabled = false;
-            if (btn250) btn250.disabled = false;
-        } catch (e) {
-            console.warn('Failed to apply upsell overrides from URL', e);
-        }
-    }
 
     // Update the getVariantId function
     function getVariantId(processType, pushPull) {
         const variantMap = {
             'ECN-2': {
-                'none': 'gid://shopify/ProductVariant/43181189103715',    // No Push/Pull
-                'push1': 'gid://shopify/ProductVariant/43181189136483',   // +1 Stop
-                'push2': 'gid://shopify/ProductVariant/43181189169251',   // +2 Stop
-                'push3': 'gid://shopify/ProductVariant/43181189202019',   // +3 Stop
-                'pull1': 'gid://shopify/ProductVariant/43181189234787',   // -1 Stop
-                'pull2': 'gid://shopify/ProductVariant/43181189267555',   // -2 Stop
-                'pull3': 'gid://shopify/ProductVariant/43181189300323',   // -3 Stop
-                'not-sure': 'gid://shopify/ProductVariant/43181189333091' // Not sure
+                'none': 'gid://shopify/ProductVariant/43181189103715',
+                'push1': 'gid://shopify/ProductVariant/43181189136483',
+                'push2': 'gid://shopify/ProductVariant/43181189169251',
+                'push3': 'gid://shopify/ProductVariant/43181189202019',
+                'pull1': 'gid://shopify/ProductVariant/43181189234787',
+                'pull2': 'gid://shopify/ProductVariant/43181189267555',
+                'pull3': 'gid://shopify/ProductVariant/43181189300323',
+                'not-sure': 'gid://shopify/ProductVariant/43181189333091'
             },
             'C41': {
-                'none': 'gid://shopify/ProductVariant/43181189365859',    // No Push/Pull
-                'push1': 'gid://shopify/ProductVariant/43181189398627',   // +1 Stop
-                'push2': 'gid://shopify/ProductVariant/43181189431395',   // +2 Stop
-                'push3': 'gid://shopify/ProductVariant/43181189464163',   // +3 Stop
-                'pull1': 'gid://shopify/ProductVariant/43181189496931',   // -1 Stop
-                'pull2': 'gid://shopify/ProductVariant/43181189529699',   // -2 Stop
-                'pull3': 'gid://shopify/ProductVariant/43181189562467',   // -3 Stop
-                'not-sure': 'gid://shopify/ProductVariant/43181189595235' // Not sure
+                'none': 'gid://shopify/ProductVariant/43181189365859',
+                'push1': 'gid://shopify/ProductVariant/43181189398627',
+                'push2': 'gid://shopify/ProductVariant/43181189431395',
+                'push3': 'gid://shopify/ProductVariant/43181189464163',
+                'pull1': 'gid://shopify/ProductVariant/43181189496931',
+                'pull2': 'gid://shopify/ProductVariant/43181189529699',
+                'pull3': 'gid://shopify/ProductVariant/43181189562467',
+                'not-sure': 'gid://shopify/ProductVariant/43181189595235'
             },
             'B&W': {
-                'none': 'gid://shopify/ProductVariant/43181189628003',    // No Push/Pull
-                'push1': 'gid://shopify/ProductVariant/43181189660771',   // +1 Stop
-                'push2': 'gid://shopify/ProductVariant/43181189693539',   // +2 Stop
-                'push3': 'gid://shopify/ProductVariant/43181189726307',   // +3 Stop
-                'pull1': 'gid://shopify/ProductVariant/43181189759075',   // -1 Stop
-                'pull2': 'gid://shopify/ProductVariant/43181189791843'    // -2 Stop
+                'none': 'gid://shopify/ProductVariant/43181189628003',
+                'push1': 'gid://shopify/ProductVariant/43181189660771',
+                'push2': 'gid://shopify/ProductVariant/43181189693539',
+                'push3': 'gid://shopify/ProductVariant/43181189726307',
+                'pull1': 'gid://shopify/ProductVariant/43181189759075',
+                'pull2': 'gid://shopify/ProductVariant/43181189791843',
+                'pull3': 'gid://shopify/ProductVariant/43181189824611',
+                'not-sure': 'gid://shopify/ProductVariant/43181189857379'
+            },
+            'E-6': {
+                'none': 'gid://shopify/ProductVariant/43989455765603',
+                'push1': 'gid://shopify/ProductVariant/43989455798371',
+                'push2': 'gid://shopify/ProductVariant/43989455831139',
+                'push3': 'gid://shopify/ProductVariant/43989455863907',
+                'pull1': 'gid://shopify/ProductVariant/43989455896675',
+                'pull2': 'gid://shopify/ProductVariant/43989455929443',
+                'pull3': 'gid://shopify/ProductVariant/43989455962211',
+                'not-sure': 'gid://shopify/ProductVariant/43989455994979'
+            },
+            'No Dev': {
+                'none': 'gid://shopify/ProductVariant/43989456027747',
+                'push1': 'gid://shopify/ProductVariant/43989456060515',
+                'push2': 'gid://shopify/ProductVariant/43989456093283',
+                'push3': 'gid://shopify/ProductVariant/43989456126051',
+                'pull1': 'gid://shopify/ProductVariant/43989456158819',
+                'pull2': 'gid://shopify/ProductVariant/43989456191587',
+                'pull3': 'gid://shopify/ProductVariant/43989456224355',
+                'not-sure': 'gid://shopify/ProductVariant/43989456257123'
             }
         };
         
-        // Convert process type to match Shopify variants
         const processMap = {
             'Ecn2': 'ECN-2',
             'c41': 'C41',
-            'BnW': 'B&W'
+            'BnW': 'B&W',
+            'e6': 'E-6',
+            'no-dev': 'No Dev'
         };
 
-        // Convert push/pull to match variant names
         const pushPullMap = {
             'none': 'none',
             'push1': 'push1',
@@ -1884,22 +1611,35 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         try {
             let checkoutUrl = `https://${SHOPIFY_STORE_NAME}/cart/`;
             
-            // Add items to URL (simple version)
-            const items = orderData.items.map(item => {
-                const variantId = String(item.variantId).split('/').pop();
-                return `${variantId}:${item.quantity}`;
+            // Add items to URL
+            const items = [];
+            
+            orderData.items.forEach(item => {
+                // Add process variant (if exists)
+                if (item.variantId) {
+                    const variantId = String(item.variantId).includes('/') 
+                        ? String(item.variantId).split('/').pop() 
+                        : String(item.variantId);
+                    items.push(`${variantId}:${item.quantity || 1}`);
+                }
+                
+                // Add scan variant for each roll
+                const scanVariantId = String(item.scanVariantId);
+                items.push(`${scanVariantId}:${item.quantity || 1}`);
             });
+            
             // Include upsell items
             extraItems.forEach(extra => {
                 const vid = String(extra.variantId).split('/').pop();
                 if (vid) items.push(`${vid}:${extra.quantity || 1}`);
             });
             
+            // Scan variants are added to cart above
+            
             if (orderData.returnNegatives) {
                 items.push('43199974604899:1');
             }
             if (orderData.expressProcessing) {
-                // Charge per roll either via variant or fallback to note only
                 let totalRolls = 0;
                 orderData.items.forEach(i => totalRolls += (i.quantity || 0));
                 if (EXPRESS_VARIANT_ID) {
@@ -1908,44 +1648,25 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                 }
             }
 
-            // Join items with commas
             checkoutUrl += items.join(',');
 
             // Create detailed order notes
-            const orderDetails = orderData.items.map(item => 
-                `• Film: ${item.film_name}\n` +
-                `  Process: ${item.process_type}\n` +
-                `  Push/Pull: ${item.push_pull}\n` +
-                `  Quantity: ${item.quantity}`
-            ).join('\n\n');
+            const orderDetails = orderData.items.map(item => {
+                const scanLabel = item.scan_type === 'high-res' ? '(TIFF + RAW) High Res - ₹500' : 
+                                 item.scan_type === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders (very cool) - ₹600' : 
+                                 'No Scan - ₹0';
+                return `• Film: ${item.film_name}\n` +
+                       `  Quantity: ${item.quantity || 1}\n` +
+                       `  Process: ${item.process_type}\n` +
+                       `  Scan: ${scanLabel}\n` +
+                       `  Push/Pull: ${item.push_pull}`;
+            }).join('\n\n');
 
-            const expressNote = orderData.expressProcessing ? '\nExpress: YES (₹500/roll, next-day after arrival)' : '';
+            const expressNote = orderData.expressProcessing ? '\nExpress: YES - same day delivery (₹500/roll)' : '';
 
-            // Add basic parameters (customer info is optional - will be filled in Shopify checkout)
             const params = new URLSearchParams({
-                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nScans: ${orderData.scans.join(', ')}\nNotes: ${orderData.notes}${expressNote}`
+                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nNotes: ${orderData.notes}${expressNote}`
             });
-            
-            // Only add customer info if provided (optional)
-            if (orderData.customerInfo && orderData.customerInfo.email) {
-                params.append('checkout[email]', orderData.customerInfo.email);
-            }
-            if (orderData.customerInfo && orderData.customerInfo.name) {
-                params.append('checkout[shipping_address][first_name]', orderData.customerInfo.name);
-            }
-            if (orderData.customerInfo && orderData.customerInfo.address) {
-                params.append('checkout[shipping_address][address1]', orderData.customerInfo.address);
-            }
-            if (orderData.customerInfo && orderData.customerInfo.city) {
-                params.append('checkout[shipping_address][city]', orderData.customerInfo.city);
-            }
-            if (orderData.customerInfo && orderData.customerInfo.pincode) {
-                params.append('checkout[shipping_address][zip]', orderData.customerInfo.pincode);
-            }
-            if (orderData.customerInfo && (orderData.customerInfo.city || orderData.customerInfo.address)) {
-                params.append('checkout[shipping_address][country]', 'India');
-                params.append('checkout[shipping_address][province]', 'Maharashtra');
-            }
 
             checkoutUrl += '?' + params.toString();
 
@@ -1958,79 +1679,222 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         }
     }
 
-    // Update the getProductVariants function to check inventory
-    async function getProductVariants() {
+    // Function to get all variant IDs
+    async function getAllVariantIds() {
+        const modal = document.getElementById('variantIdsModal');
+        const content = document.getElementById('variantIdsContent');
+        
+        modal.classList.add('active');
+        content.innerHTML = '<p>Fetching variant IDs...</p>';
+        
         try {
-            const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
-                },
-                body: JSON.stringify({
-                    query: `{
-                        product(handle: "film-processing") {
-                            title
-                            variants(first: 20) {
-                                edges {
-                                    node {
-                                        id
-                                        title
-                                        availableForSale
-                                        quantityAvailable
+            // Query for Scanning product variants
+            const scanningQuery = `
+                query {
+                    product(id: "gid://shopify/Product/${SCANNING_PRODUCT_ID}") {
+                        title
+                        variants(first: 10) {
+                            edges {
+                                node {
+                                    id
+                                    title
+                                    price {
+                                        amount
+                                        currencyCode
                                     }
                                 }
                             }
                         }
-                    }`
+                    }
+                }
+            `;
+            
+            // Query for Film Processing product variants
+            const processingQuery = `
+                query {
+                    product(id: "gid://shopify/Product/${FILM_PROCESSING_PRODUCT_ID}") {
+                        title
+                        variants(first: 50) {
+                            edges {
+                                node {
+                                    id
+                                    title
+                                    price {
+                                        amount
+                                        currencyCode
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+            
+            // Fetch both products
+            const [scanningRes, processingRes] = await Promise.all([
+                fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                    },
+                    body: JSON.stringify({ query: scanningQuery })
+                }),
+                fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                    },
+                    body: JSON.stringify({ query: processingQuery })
                 })
-            });
-
-            const data = await response.json();
-            console.log('Product Data:', data);
-            return data;
+            ]);
+            
+            const scanningData = await scanningRes.json();
+            const processingData = await processingRes.json();
+            
+            let html = '<div style="margin-bottom: 30px;">';
+            
+            // Display Scanning variants
+            html += '<h3 style="color: #000; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px;">📸 SCANNING PRODUCT VARIANTS</h3>';
+            if (scanningData.data?.product) {
+                html += `<p><strong>Product:</strong> ${scanningData.data.product.title}</p>`;
+                html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-top: 10px;">';
+                html += '<pre style="margin: 0; white-space: pre-wrap; font-size: 11px;">';
+                html += 'const SCAN_VARIANTS = {\n';
+                
+                scanningData.data.product.variants.edges.forEach((edge, index) => {
+                    const variant = edge.node;
+                    const numericId = variant.id.split('/').pop();
+                    const title = variant.title.toLowerCase();
+                    
+                    let key = '';
+                    if (title.includes('high') && (title.includes('border') || title.includes('with'))) {
+                        key = "'high-res-borders'";
+                    } else if (title.includes('high') || title.includes('res')) {
+                        key = "'high-res'";
+                    } else if (title.includes('no') || !title.includes('scan')) {
+                        key = "'no-scan'";
+                    } else {
+                        key = `'variant-${index + 1}'`;
+                    }
+                    
+                    const price = variant.price ? parseFloat(variant.price.amount).toFixed(0) : '0';
+                    html += `    ${key}: '${numericId}', // ${variant.title} (₹${price})\n`;
+                });
+                
+                html += '};\n';
+                html += '</pre></div>';
+            } else {
+                html += '<p style="color: red;">Error fetching scanning variants</p>';
+                if (scanningData.errors) {
+                    html += `<p style="color: red;">${JSON.stringify(scanningData.errors, null, 2)}</p>`;
+                }
+            }
+            
+            html += '</div>';
+            
+            // Display Film Processing variants
+            html += '<div style="margin-top: 30px;">';
+            html += '<h3 style="color: #000; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px;">🎞️ FILM PROCESSING PRODUCT VARIANTS</h3>';
+            if (processingData.data?.product) {
+                html += `<p><strong>Product:</strong> ${processingData.data.product.title}</p>`;
+                html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-top: 10px; max-height: 400px; overflow-y: auto;">';
+                html += '<pre style="margin: 0; white-space: pre-wrap; font-size: 11px;">';
+                
+                // Group by process type
+                const variantsByProcess = {};
+                processingData.data.product.variants.edges.forEach(edge => {
+                    const variant = edge.node;
+                    const numericId = variant.id.split('/').pop();
+                    const title = variant.title;
+                    
+                    // Try to identify process type from title
+                    let processType = 'UNKNOWN';
+                    if (title.includes('ECN-2') || title.includes('ECN2') || title.includes('Ecn2')) {
+                        processType = 'ECN-2';
+                    } else if (title.includes('C41') || title.includes('C-41') || title.includes('c41')) {
+                        processType = 'C41';
+                    } else if (title.includes('B&W') || title.includes('Black') || title.includes('White') || title.includes('Monochrome') || title.includes('BnW')) {
+                        processType = 'B&W';
+                    } else if (title.includes('E-6') || title.includes('E6') || title.includes('e6')) {
+                        processType = 'E-6';
+                    } else if (title.includes('No Dev') || title.includes('no-dev') || title.includes('No Dev')) {
+                        processType = 'No Dev';
+                    }
+                    
+                    if (!variantsByProcess[processType]) {
+                        variantsByProcess[processType] = [];
+                    }
+                    
+                    const price = variant.price ? parseFloat(variant.price.amount).toFixed(0) : '0';
+                    variantsByProcess[processType].push({
+                        id: numericId,
+                        title: title,
+                        price: price
+                    });
+                });
+                
+                // Display grouped by process
+                Object.keys(variantsByProcess).forEach(process => {
+                    html += `\n// ${process} Variants:\n`;
+                    variantsByProcess[process].forEach(variant => {
+                        // Try to identify push/pull
+                        let pushPull = 'none';
+                        if (variant.title.includes('+1') || variant.title.includes('Push 1') || variant.title.includes('push1')) pushPull = 'push1';
+                        else if (variant.title.includes('+2') || variant.title.includes('Push 2') || variant.title.includes('push2')) pushPull = 'push2';
+                        else if (variant.title.includes('+3') || variant.title.includes('Push 3') || variant.title.includes('push3')) pushPull = 'push3';
+                        else if (variant.title.includes('-1') || variant.title.includes('Pull 1') || variant.title.includes('pull1')) pushPull = 'pull1';
+                        else if (variant.title.includes('-2') || variant.title.includes('Pull 2') || variant.title.includes('pull2')) pushPull = 'pull2';
+                        else if (variant.title.includes('-3') || variant.title.includes('Pull 3') || variant.title.includes('pull3')) pushPull = 'pull3';
+                        else if (variant.title.includes('Not sure') || variant.title.includes('Not Sure') || variant.title.includes('not-sure')) pushPull = 'not-sure';
+                        
+                        html += `    '${pushPull}': 'gid://shopify/ProductVariant/${variant.id}', // ${variant.title} (₹${variant.price})\n`;
+                    });
+                });
+                
+                html += '</pre></div>';
+            } else {
+                html += '<p style="color: red;">Error fetching processing variants</p>';
+                if (processingData.errors) {
+                    html += `<p style="color: red;">${JSON.stringify(processingData.errors, null, 2)}</p>`;
+                }
+            }
+            
+            html += '</div>';
+            
+            // Add copy button
+            html += '<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">';
+            html += '<button onclick="copyVariantIds()" style="background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px;">Copy All to Clipboard</button>';
+            html += '</div>';
+            
+            content.innerHTML = html;
+            
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error fetching variants:', error);
+            content.innerHTML = `<p style="color: red;">Error: ${error.message}</p><pre>${error.stack}</pre>`;
         }
     }
-
-    // Update the testCartCreation function
-    async function testCartCreation() {
-        try {
-            // Sample order data
-            const testOrder = {
-            items: [{
-                film_name: "Test Film",
-                quantity: 1,
-                    process_type: "ECN-2",
-                push_pull: "none",
-                    variantId: "gid://shopify/ProductVariant/43181189103715"
-                }],
-                customerInfo: {
-                    name: "Test User",
-                    email: "test@example.com",
-                    phone: "+911234567890", // Add country code
-                    address: "Test Address, Mumbai",
-                    city: "Mumbai",
-                    pincode: "400001",
-                    country: "India"
-                },
-                notes: "Test order",
-            scans: ["JPEG"]
-        };
-
-            // Create cart
-            const cart = await createShopifyCart(testOrder);
-            console.log('Cart created:', cart);
-            
-            if (cart.checkoutUrl) {
-                // Open in same window for better payment flow
-                window.location.href = cart.checkoutUrl;
-            }
-        } catch (error) {
-            console.error('Test cart creation failed:', error);
-            alert('Cart creation failed: ' + error.message);
-        }
+    
+    function closeVariantIdsModal() {
+        document.getElementById('variantIdsModal').classList.remove('active');
+    }
+    
+    function copyVariantIds() {
+        const content = document.getElementById('variantIdsContent');
+        const text = content.innerText || content.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Variant IDs copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            // Fallback: select text
+            const range = document.createRange();
+            range.selectNode(content);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            alert('Please copy manually (text selected)');
+        });
     }
 </script>
 
