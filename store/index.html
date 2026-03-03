@@ -64,18 +64,37 @@
             margin-bottom: 15px;
         }
 
-        .product-details {
-            margin-top: 10px;
+        /* NEW: wrapper to lay products out in a grid, while keeping each card's internal layout the same */
+        .products-grid {
             display: flex;
-            gap: 25px;
-            margin-bottom: 20px;
-            align-items: flex-start;
             flex-wrap: wrap;
-            padding-top: 10px;
-            width: 100%;
+            gap: 20px;
             padding: 0 15px;
             box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        .products-grid .product-details {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            /* two cards per row on most screens */
+            flex: 0 0 calc(50% - 10px);
+            max-width: calc(50% - 10px);
             margin: 0;
+            padding: 10px 0;
+        }
+
+        /* On very small screens, fall back to one per row so proportions stay readable */
+        @media (max-width: 480px) {
+            .products-grid {
+                gap: 16px;
+            }
+            .products-grid .product-details {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
         }
 
         .product-thumbnail {
@@ -877,6 +896,9 @@
             </div>
         </div>
 
+        <!-- NEW: wrap all product cards in a grid container (keeps original card layout intact) -->
+        <div class="products-grid">
+
         <div class="product-details">
             <img src="images/lazy500-thumb.jpg" alt="Lazy 500" class="product-thumbnail">
             <div class="product-info">
@@ -999,6 +1021,8 @@
                 <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
             </p>
         </div>
+
+        </div> <!-- end .products-grid -->
 
         <div class="cart-summary">
             <h3>Cart Summary</h3>
