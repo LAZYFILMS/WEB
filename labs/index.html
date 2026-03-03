@@ -3,976 +3,1088 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAZY FILM LAB</title>
-
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <title>LAZY FILM STORE</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet" as="style">
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-    <!-- Constants and Configuration -->
-    <script>
-        const PROCESS_PRICES = {
-            'Ecn2': 450,
-            'c41': 450,
-            'BnW': 450,
-            'e6': 600,
-            'no-dev': 0
-        };
-        // Scanning variant IDs
-        const SCAN_VARIANTS = {
-            'high-res': '43989457567843', // High Res (₹500)
-            'high-res-borders': '43989457600611', // High Res With Borders (₹600)
-            'no-scan': '43989457633379' // No Scan (₹0)
-        };
-        const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
-        const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
-        // Product IDs
-        const SCANNING_PRODUCT_ID = '7960229642339';
-        const FILM_PROCESSING_PRODUCT_ID = '7736258691171';
-        // No discount code used; pricing/discount handled in Shopify
-        // Express processing configuration
-        const EXPRESS_FEE_PER_ROLL = 500; // ₹500 per roll
-        // Optional: Shopify variant to charge Express per roll (hidden product recommended)
-        // Can be overridden via URL param: ?express=gid://shopify/ProductVariant/123 or 123
-        let EXPRESS_VARIANT_ID = '43760587767907';
-    </script>
-</head>
-<style>
-    /* General Styles */
-    body {
-        font-family: "Lucida Console", Courier, monospace;
-        margin: 0;
-        padding: 0;
-        background: #fff;
-        color: #000;
-    }
-
-    .container {
-        max-width: 650px;
-        margin: 20px auto;
-        padding: 30px;
-        border: 2px solid #000;
-        border-radius: 8px;
-        box-sizing: border-box;
-        overflow-x: hidden;
-        overflow-y: visible; /* Allow tooltips to show outside container */
-        background-color: #f9f9f9;
-        min-height: auto;
-    }
-
-    /* Header Styles */
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .title {
-        font-family: 'Stratos', sans-serif;
-        font-size: 24px;
-        margin: 0;
-        font-weight: bold;
-    }
-
-    .email-link {
-        font-family: 'Stratos', sans-serif;
-        text-decoration: none;
-        color: #000;
-        font-size: 24px;
-        font-weight: bold;
-        text-decoration: underline;
-    }
-
-    /* Carousel Styles */
-    .carousel {
-        position: relative;
-        width: 100%;
-        padding-bottom: 66.67%;  /* This creates a 3:2 aspect ratio */
-        overflow: hidden;
-        border: 1px solid #000;
-        border-radius: 6px;
-        margin: 15px 0;
-    }
-
-    .carousel img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: none;
-        object-fit: cover;
-    }
-
-    .carousel img.active {
-        display: block;
-    }
-
-    /* Form and Input Styles */
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #000;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-    /* Order Box Styles */
-    .order-box {
-        margin-top: 20px;
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        padding: 32px;
-    }
-
-    .add-roll-btn {
-        background: #000;
-        color: #fff;
-        padding: 8px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        height: 36px;
-        min-width: 100px;
-        margin-bottom: 20px;
-    }
-
-        .roll-row {
-        display: grid;
-        grid-template-columns: 0.7fr 50px 90px 1fr 90px auto; /* Film name, Qty, Process, Scan, Push/Pull, Remove */
-        gap: 6px;
-        align-items: center;
-        margin-bottom: 15px;
-        padding: 5px 0;
-        border-bottom: 1px solid #eee;
-        width: 100%;
-        box-sizing: border-box;
-        min-width: 0; /* Allow grid items to shrink */
-    }
-
-    .roll-row input[type="text"],
-    .roll-row input[type="number"],
-    .roll-row select {
-        padding: 8px;
-        font-size: 14px;
-        height: 36px;
-        border: 1px solid #000;
-        border-radius: 4px;
-        box-sizing: border-box;
-        background: white;
-        cursor: text;
-        min-width: 0; /* Allow inputs to shrink */
-        width: 100%;
-    }
-    
-    .roll-row select option:disabled {
-        color: #999;
-        font-style: italic;
-    }
-    
-    
-
-
-    /* Cart Summary Styles */
-    .cart-summary {
-        margin: 25px 0;
-        padding: 20px;
-        border: 2px solid #000;
-        border-radius: 8px;
-    }
-
-    .cart-items {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .cart-item {
-        font-size: 14px;
-        padding: 6px 0;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .cart-total {
-        font-size: 18px;
-        font-weight: bold;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 2px solid #000;
-    }
-
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal.active {
-        display: flex;
-    }
-
-    .modal-content {
-        background-color: #f9f9f9;
-        padding: 30px;
-        border: 2px solid #000;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 420px;
-        position: relative;
-    }
-
-
-    .modal-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .modal-buttons button {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .confirm-order {
-        background: #000;
-        color: #fff;
-    }
-
-    .cancel-order {
-        background: #f1f1f1;
-    }
-
-    .place-order {
-        display: block;
-        width: 100%;
-        padding: 15px;
-        background: #000;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-top: 20px;
-    }
-
-    .return-negatives-container {
-        margin: 20px 0;
-    }
-
-    textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #000;
-        border-radius: 4px;
-        margin: 20px 0;
-        min-height: 100px;
-        font-family: inherit;
-        box-sizing: border-box;
-    }
-
-    /* Mobile Responsive Styles */
-    @media (max-width: 768px) {
-        .container {
-            width: 90%;
-            margin: 10px auto;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .label-format-box,
-        .address-box {
-            width: 95% !important;
-            margin: 15px auto;
-            box-sizing: border-box;
-            padding: 15px 15px 15px 20px;
-            border: 1px solid #000;
-            clear: both;
-            display: block;
-        }
-
-        .label-format-box *,
-        .address-box * {
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        p, h2, h3, label {
-            padding: 0 15px;
-            margin: 10px 0;
-            box-sizing: border-box;
-        }
-
-        .info-section p,
-        .label-format-box p:not(.label-format-heading),
-        .address-box p:not(.address-heading) {
-            font-size: 14px;
-            line-height: 1.4;
-            padding: 0 10px;
-        }
-
-        .roll-row {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-
-        textarea, 
-        .roll-row input,
-        .roll-row select {
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .cart-summary,
-        .place-order {
-            width: 100%;
-            box-sizing: border-box;
-            margin: 15px 0;
-        }
-
-        .info-sections {
-            width: 100%;
-            margin: 20px auto;
+    <link href="https://use.typekit.net/[your-kit-code].css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "stratos", monospace;
+            margin: 0;
             padding: 0;
+            background: #fff;
+            position: relative;
+            min-height: 100vh;
         }
 
-        .info-section h2 {
+        .container {
+            width: 600px;
+            padding: 30px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            background-color: #fff;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-family: "stratos-black", sans-serif;
             font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .develop-link {
+            font-family: "stratos-black", sans-serif;
+            text-decoration: none;
+            color: #000;
+            font-size: 24px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .product-header {
+            margin-bottom: 20px;
+        }
+
+        .product-header img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #000;
             margin-bottom: 15px;
         }
 
-        .label-format-image {
-            width: 180px;
-            margin: 15px auto 0 -30px;
+        /* NEW: wrapper to lay products out in a grid, while keeping each card's internal layout the same */
+        .products-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 0 15px;
+            box-sizing: border-box;
+            margin-top: 10px;
         }
 
-        .cart-drawer {
+        .products-grid .product-details {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            /* two cards per row on most screens */
+            flex: 0 0 calc(50% - 10px);
+            max-width: calc(50% - 10px);
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        /* On very small screens, fall back to one per row so proportions stay readable */
+        @media (max-width: 480px) {
+            .products-grid {
+                gap: 16px;
+            }
+            .products-grid .product-details {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        .product-thumbnail {
+            width: 112px;
+            height: auto;
+            margin-right: 5px;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+            padding-right: 8px;
+            margin: 0;
+        }
+
+        .product-header-group {
+            flex: 1;
+            margin-bottom: 5px;
+        }
+
+        .product-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 35px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            text-align: center;
+            font-family: "stratos", monospace;
+            font-size: 14px;
+        }
+
+        /* Hide native number spinners */
+        .quantity-input::-webkit-outer-spin-button,
+        .quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .quantity-input { -moz-appearance: textfield; }
+
+        /* Quantity control with +/- buttons inside the input (keeps same size) */
+        .quantity-control { position: relative; display: inline-block; }
+        .quantity-control .quantity-input {
+            width: 72px;
+            height: 35px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            padding: 0 24px; /* room for +/- */
+            box-sizing: border-box;
+        }
+        .qty-btn {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 24px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        .qty-btn.decrement { left: 0; }
+        .qty-btn.increment { right: 0; }
+
+        /* Out of stock styling */
+        .out-of-stock {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .out-of-stock .quantity-control,
+        .out-of-stock .add-to-cart {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .stock-status {
+            color: #ff0000;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: right;
+            margin-right: 8px;
+            display: block;
+            clear: both;
             width: 100%;
-            right: -100%;
+            position: relative;
+            left: 0;
+        }
+
+        .product-title {
+            display: block;
+            font-family: "stratos-black", sans-serif;
+            font-size: 20px;
+            margin: 0;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            display: block;
+            font-family: "stratos-black", sans-serif;
+            font-size: 16px;
+            margin: 0 0 15px 0;
+            font-weight: 500;
+        }
+
+        .product-description {
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 25px 0 15px 0;
+            width: 100%;
+            flex-basis: 100%;
+            order: 3;
+        }
+
+        .description-preview {
+            display: block;
+        }
+
+        .description-full {
+            display: none;
+        }
+
+        .description-full.show {
+            display: inline;
+        }
+
+        .see-more-desc {
+            background: none;
+            border: none;
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-top: 5px;
+        }
+
+        .see-samples {
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            display: block;
+            margin-top: 15px;
+        }
+
+        .add-to-cart {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: "stratos-black", sans-serif;
+            font-size: 16px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .add-to-cart.loading {
+            opacity: 0.7;
+            cursor: wait;
+            position: relative;
+        }
+
+        .add-to-cart.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+
+        .cart-count {
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .cart-summary {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .cart-summary h3 {
+            font-family: "stratos-black", sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 15px 0;
+        }
+
+        .place-order {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: "stratos-black", sans-serif;
+            font-size: 18px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        footer a {
+            font-family: "stratos", sans-serif;
+            font-size: 12px;
+            color: #000;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        /* Base gallery styles */
+        .sample-photos {
+            position: absolute;  /* Keep absolute positioning */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            margin-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .gallery-title {
+            font-family: "stratos-black", sans-serif;
+            font-size: 18px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            align-items: start;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.02);
+            z-index: 1;
+        }
+
+        /* Adjust heights and crop positions for all images */
+        .gallery-image:nth-child(1) {
+            height: 220px;
+            object-position: center 20%;
+        }
+
+        .gallery-image:nth-child(2) {
+            height: 220px;
+            object-position: center 60%;
+        }
+
+        .gallery-image:nth-child(3) {
+            height: 220px;
+            object-position: center 25%;
+        }
+
+        .gallery-image:nth-child(4) {
+            height: 220px;
+            object-position: center top;
+        }
+
+        .gallery-image:nth-child(5) {
+            height: 220px;
+            object-position: center 45%;
+        }
+
+        .gallery-image:nth-child(6) {
+            height: 220px;
+            object-position: center 35%;
+        }
+
+        /* Adjust last three images */
+        .gallery-image:nth-child(7) {
+            height: 220px;
+            object-position: center 55%;
+        }
+
+        .gallery-image:nth-child(8) {
+            height: 220px;
+            object-position: center 40%;
+        }
+
+        .gallery-image:nth-child(9) {
+            height: 220px;
+            object-position: center 50%;
+        }
+
+        /* Modal styles for full-size images */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: none;
+            box-shadow: none;
+        }
+
+        .image-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .gallery-image {
+            cursor: pointer;
+        }
+
+        /* Universal Cart Styles */
+        .universal-cart-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #000;
+            color: #fff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        .universal-cart-button:hover {
+            transform: scale(1.05);
+        }
+
+        .cart-count-bubble {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff0000;
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Cart Drawer Styles */
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: right 0.3s;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .cart-drawer.active {
             right: 0;
         }
 
-        .cart-drawer-header h3 {
-            font-size: 20px;
+        .cart-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
 
         .cart-items-container {
-            max-height: calc(100vh - 180px);
-        }
-
-        .modal-content {
-            width: 92%;
-            max-width: 360px;
-            max-height: 85vh;
-        }
-
-
-        footer {
-            flex-wrap: wrap;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        footer a {
-            font-size: 11px;
-        }
-
-        .carousel {
-            margin: 10px 0;
-            border-radius: 4px;
-        }
-
-        .return-negatives-container {
-            padding-left: 15px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .info-section {
-            width: 100%;
-            padding: 0 15px 0 22px;
-            box-sizing: border-box;
-        }
-
-        .info-section:not(.label-format-box):not(.address-box) {
-            max-width: 380px;
-            margin-left: 22px;
-        }
-
-        .info-section:not(.label-format-box):not(.address-box) p {
-            max-width: 380px;
-            word-wrap: break-word;
-            margin: 10px 0;
-            padding: 0;
-            line-height: 1.4;
-        }
-
-        .info-section:not(.label-format-box):not(.address-box) h2 {
-            max-width: 380px;
-            word-wrap: break-word;
-            margin: 15px 0;
-            padding: 0;
-        }
-
-        .title,
-        .email-link {
-            font-size: 19px;
-            margin: 0;
-        }
-
-        header {
-            margin-bottom: 15px;
-            padding: 5px 0;
-        }
-    }
-
-    @media (max-width: 375px) {
-        .title, .email-link {
-            font-size: 18px;
-        }
-
-        .info-section h2 {
-            font-size: 22px;
-        }
-
-        .label-format image {
-            width: 150px;
-        }
-    }
-
-    /* Universal Cart Styles */
-    .universal-cart-button {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #000;
-        color: #fff;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 1000;
-        transition: transform 0.2s;
-    }
-
-    .universal-cart-button:hover {
-        transform: scale(1.05);
-    }
-
-    .cart-count-bubble {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #ff0000;
-        color: #fff;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    /* Cart Drawer Styles */
-    .cart-drawer {
-        position: fixed;
-        top: 0;
-        right: -400px;
-        width: 400px;
-        height: 100vh;
-        background: #fff;
-        box-shadow: -4px 0 12px rgba(0,0,0,0.1);
-        z-index: 1001;
-        transition: right 0.3s;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-    .cart-drawer.active {
-        right: 0;
-    }
-
-    .cart-drawer-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .cart-items-container {
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
-    }
-
-    .cart-item {
-        display: flex;
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .cart-item-details {
-        flex: 1;
-        margin-right: 15px;
-    }
-
-    .cart-item-details h4 {
-        font-family: "stratos-black", sans-serif;
-        font-size: 16px;
-        margin: 0 0 5px 0;
-    }
-
-    .cart-item-details p {
-        font-size: 14px;
-        margin: 0;
-        color: #666;
-    }
-
-    .cart-item button {
-        background: #fff;
-        color: #ff0000;
-        border: 1px solid #ff0000;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 12px;
-        transition: all 0.2s;
-    }
-
-    .cart-item button:hover {
-        background: #ff0000;
-        color: #fff;
-    }
-
-    .cart-drawer-footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 20px;
-        background: #fff;
-        border-top: 1px solid #eee;
-    }
-
-    .cart-total {
-        font-family: "stratos-black", sans-serif;
-        font-size: 18px;
-        margin-bottom: 15px;
-    }
-
-    .checkout-button {
-        width: 100%;
-        background: #000;
-        color: #fff;
-        border: none;
-        padding: 12px;
-        border-radius: 4px;
-        font-family: "stratos-black", sans-serif;
-        font-size: 16px;
-        cursor: pointer;
-        transition: opacity 0.2s;
-    }
-
-    .checkout-button:hover {
-        opacity: 0.9;
-    }
-
-    /* How It Works & FAQ Sections */
-    .info-sections {
-        width: 650px;
-        margin: 20px auto;
-        padding: 0;
-        font-family: "Lucida Console", Courier, monospace;
-        white-space: pre-line;
-        line-height: 1.4;
-    }
-
-    .info-section {
-        padding: 0;
-        margin-bottom: 40px;
-        width: 100%;
-    }
-
-    .info-section h2 {
-        font-family: "Lucida Console", Courier, monospace;
-        font-size: 32px;
-        margin-bottom: 20px;
-        font-weight: bold;
-    }
-
-    .info-section p {
-        margin-bottom: 0;
-        white-space: pre-line;
-        line-height: 1.2;
-        width: 100%;
-    }
-
-    .section-heading {
-        font-weight: bold;
-        font-size: 16px;
-        margin: 20px 0 10px 0;
-    }
-
-    .label-format-box {
-        background: #f9f9f9;
-        padding: 15px;
-        border: 1px solid #000;
-        margin: 15px 0;
-        border-radius: 4px;
-        line-height: 1.2;
-        width: 650px;
-        box-sizing: border-box;
-        margin-left: -2px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .label-format-content {
-        flex: 1;
-    }
-
-    .label-format-image {
-        width: 180px;
-        margin: 15px auto 0 -30px;
-        object-fit: contain;
-    }
-
-    .label-format-heading {
-        font-weight: bold;
-        margin-bottom: 10px;
-        font-size: 16px;
-    }
-
-    .faq-question, .faq-answer {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .faq-question {
-        font-weight: bold;
-        margin-bottom: 5px;
-        font-size: 16px;
-    }
-
-    .faq-answer {
-        margin-bottom: 25px;
-        font-size: 14px;
-        line-height: 1.2;
-    }
-
-    .address-box {
-        background: #f9f9f9;
-        padding: 15px;
-        border: 1px solid #000;
-        margin: 15px 0;
-        border-radius: 4px;
-        line-height: 1.2;
-        width: 650px;
-        box-sizing: border-box;
-        margin-left: -2px;
-    }
-
-    .address-heading {
-        font-weight: bold;
-        margin-bottom: 10px;
-        font-size: 16px;
-    }
-
-    /* Address Change Popup Styles */
-    .address-change-popup {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #fff;
-        border: 2px solid #000;
-        border-radius: 8px;
-        padding: 25px;
-        z-index: 2000;
-        max-width: 500px;
-        width: 90%;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .address-change-popup.active {
-        display: block;
-    }
-
-    .address-change-popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .address-change-popup-header h3 {
-        margin: 0;
-        font-size: 22px;
-        font-weight: bold;
-        font-family: 'Stratos', sans-serif;
-        text-transform: uppercase;
-        color: #ff0000;
-    }
-
-    .address-change-popup-close {
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: #000;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
-
-    .address-change-popup-close:hover {
-        opacity: 0.7;
-    }
-
-    .address-change-popup-content {
-        margin-bottom: 15px;
-        line-height: 1.6;
-        font-size: 14px;
-    }
-
-    .address-change-popup-content p {
-        margin: 10px 0;
-    }
-
-    .address-change-popup-address {
-        background: #f9f9f9;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-top: 10px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .address-change-progress-bar {
-        width: 100%;
-        height: 4px;
-        background: #eee;
-        border-radius: 2px;
-        overflow: hidden;
-        margin-top: 15px;
-    }
-
-    .address-change-progress-fill {
-        height: 100%;
-        background: #000;
-        width: 0%;
-        transition: width 0.1s linear;
-    }
-
-    @media (max-width: 768px) {
-        .address-change-popup {
-            max-width: 95%;
-            width: 95%;
-            padding: 18px 15px;
-            margin: 10px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-height: 90vh;
+            max-height: calc(100vh - 200px);
             overflow-y: auto;
         }
 
-        .address-change-popup-header h3 {
+        .cart-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-details {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .cart-item-details h4 {
+            font-family: "stratos-black", sans-serif;
             font-size: 16px;
+            margin: 0 0 5px 0;
         }
 
-        .address-change-popup-content {
-            font-size: 13px;
-        }
-
-        .address-change-popup-address {
-            font-size: 11px;
-        }
-    }
-
-    @media (max-width: 375px) {
-        .address-change-popup {
-            padding: 15px 12px;
-            max-width: 98%;
-            width: 98%;
-        }
-
-        .address-change-popup-header h3 {
+        .cart-item-details p {
             font-size: 14px;
+            margin: 0;
+            color: #666;
         }
 
-        .address-change-popup-content {
+        .cart-item button {
+            background: #fff;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
             font-size: 12px;
+            transition: all 0.2s;
         }
 
-        .address-change-popup-address {
-            font-size: 10px;
-            padding: 8px;
+        .cart-item button:hover {
+            background: #ff0000;
+            color: #fff;
         }
 
-        .address-change-popup-close {
-            width: 28px;
-            height: 28px;
-            font-size: 24px;
+        .cart-drawer-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid #eee;
         }
-    }
-</style>
+
+        .cart-total {
+            font-family: "stratos-black", sans-serif;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .checkout-button {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: "stratos-black", sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .checkout-button:hover {
+            opacity: 0.9;
+        }
+
+        /* Add mobile responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                margin: 10px auto;
+                padding: 15px;
+                border-width: 1px;
+            }
+
+            /* Carousel styles */
+            .carousel {
+                position: relative;
+                width: 100%;
+                height: 250px;
+                overflow: hidden;
+                margin-bottom: 0px;  /* Negative margin to remove gap */
+            }
+
+            /* Product details container */
+            .product-details {
+                margin-top: -100px;  /* Keep the negative margin for first product */
+                padding: 0;
+                gap: 10px;
+                display: flex;
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            /* Spacing for second product only */
+            .product-details + .product-details {
+                margin-top: 50px;  /* Increased spacing to prevent overlap */
+                padding-top: 30px;
+                border-top: 1px solid #eee;
+                position: relative;  /* Ensure proper stacking */
+                z-index: 1;  /* Ensure it stays above first product */
+            }
+
+            /* Product thumbnail */
+            .product-thumbnail {
+                width: 130px;
+                height: auto;
+                margin-right: 5px;
+                margin-top: 0;
+                display: block;
+            }
+
+            /* Remove any extra spacing */
+            .product-header {
+                margin: 0;
+                padding: 0;
+                font-size: 0;  /* Remove any font spacing */
+                line-height: 0;  /* Remove line height spacing */
+            }
+
+            /* Header adjustments */
+            header {
+                margin-bottom: 15px;
+                padding: 5px 0;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            /* Develop film link adjustment */
+            .develop-link {
+                font-size: 19px;
+                text-decoration: underline;
+            }
+
+            /* Product header adjustments */
+            .product-header {
+                margin: 0;
+            }
+
+            /* Product header image */
+            .product-header img {
+                width: 100%;
+                height: auto;
+                margin-bottom: 15px;
+            }
+
+            /* Product info adjustments */
+            .product-info {
+                min-width: unset;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end;
+                padding-right: 8px;
+            }
+
+            /* Product header-group adjustments */
+            .product-header-group {
+                margin-bottom: 5px;
+                text-align: right;
+                margin-right: 2px;  /* Slight adjustment for text alignment */
+            }
+
+            .product-title {
+                font-size: 20px;
+                font-weight: 600;
+                margin: 0 0 4px 0;
+            }
+
+            .product-price {
+                font-size: 18px;
+                margin: 0;
+                font-weight: bold;
+            }
+
+            .product-actions {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-right: 2px;  /* Align with text above */
+                width: 100%;  /* Ensure full width for better touch targets */
+            }
+
+            .quantity-input {
+                width: 60px;
+                height: 36px;
+                -webkit-appearance: none;  /* Fix for iOS */
+                appearance: none;
+                margin: 0;
+                padding: 0 5px;
+                text-align: center;
+                pointer-events: auto !important;  /* Force enable interaction */
+                z-index: 2;  /* Ensure it's above other elements */
+            }
+
+            .add-to-cart {
+                padding: 8px 15px;
+                font-size: 14px;
+                pointer-events: auto !important;  /* Force enable interaction */
+                z-index: 2;  /* Ensure it's above other elements */
+                position: relative;  /* Ensure proper stacking */
+            }
+
+            /* Fix stacking context */
+            .product-info {
+                position: relative;
+                z-index: 1;
+            }
+
+            /* Description text */
+            .product-description {
+                margin: 10px 0;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            /* Cart summary adjustments */
+            .cart-summary {
+                width: 100%;
+                margin: 15px auto;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+
+            /* Sample photos grid */
+            .sample-photos {
+                position: relative !important;  /* Override absolute positioning */
+                left: 0 !important;  /* Reset left position */
+                transform: none !important;  /* Remove transform */
+                width: 90% !important;  /* Set width relative to viewport */
+                margin: 20px auto !important;  /* Center align with consistent spacing */
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .gallery-image {
+                height: 160px;
+            }
+
+            .gallery-title {
+                font-size: 18px;
+            }
+
+            /* Reset gallery spacing for mobile */
+            #sample-gallery-250 {
+                position: relative !important;
+                margin-top: 60px !important;  /* Consistent spacing between galleries */
+            }
+            
+            #sample-gallery-monochrome {
+                position: relative !important;
+                margin-top: 60px !important;  /* Consistent spacing between galleries */
+            }
+
+            .carousel {
+                height: 250px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .carousel-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .carousel-image.active {
+            opacity: 1;
+        }
+
+        .see-more-btn {
+            background: none;
+            border: none;
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-right: 15px;
+        }
+
+        /* Separator between galleries */
+        .sample-photos + .sample-photos {
+            margin-top: 80px;
+            border-top: 1px solid #eee;
+            padding-top: 40px;
+        }
+
+        /* Spacing for galleries */
+        /* Lazy 500: 9 images (3 rows × 220px) + gaps + title + padding = ~780px */
+        #sample-gallery {
+            margin-top: 0;
+        }
+        
+        /* Lazy 250: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
+        /* Start after Lazy 500 gallery ends */
+        #sample-gallery-250 {
+            margin-top: 800px;  /* Space for Lazy 500 gallery (3 rows) */
+        }
+        
+        /* Lazy Monochrome: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
+        /* Start after Lazy 250 gallery ends */
+        #sample-gallery-monochrome {
+            margin-top: 1350px;  /* Space for Lazy 500 (800) + Lazy 250 (545) + buffer */
+        }
+    </style>
+</head>
 <body>
     <div class="container">
         <header>
-            <h1 class="title">LAZY FILM LAB</h1>
-            <a href="https://lazyfilms.in/store" class="email-link">BUY FILM</a>
+            <span class="title">LAZY FILM STORE</span>
+            <a href="https://lazyfilms.in/labs" class="develop-link">DEVELOP FILM</a>
         </header>
-        
-        <!-- Carousel Section -->
-        <div class="carousel">
-            <img src="1.jpg" alt="1" class="active">
-            <img src="2.jpg" alt="2">
-            <img src="3.jpg" alt="3">
-            <img src="4.jpg" alt="4">
-            <img src="5.jpg" alt="5">
-            <img src="6.jpg" alt="6">
-            <img src="7.jpg" alt="7">
-            <img src="8.jpg" alt="8">
+
+        <div class="product-header">
+            <div class="carousel">
+                <img src="/images/lazy500.jpg" alt="Lazy 500 Film" class="carousel-image active">
+                <img src="/images/lazy250.jpg" alt="Lazy 250 Film" class="carousel-image">
+                <img src="/images/lazy-monochrome.jpg" alt="Lazy Monochrome Film" class="carousel-image">
+            </div>
         </div>
 
-        <!-- Order Form Section -->
-        <div class="order-box">
-            <button type="button" class="add-roll-btn" onclick="addNewRoll()">
-                Add Roll
-            </button>
-            
-            <form id="order-form">
-                <div id="rolls-container">
-                    <!-- Rolls will be added dynamically -->
+        <!-- NEW: wrap all product cards in a grid container (keeps original card layout intact) -->
+        <div class="products-grid">
+
+        <div class="product-details">
+            <img src="/images/lazy500-thumb.jpg" alt="Lazy 500" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">LAZY 500</h2>
+                    <p class="product-price">₹750</p>
                 </div>
-
-                <!-- Return Negatives Option -->
-                <div class="return-negatives-container">
-                    <label>
-                        <input type="checkbox" id="return-negatives"> Return my negatives (+₹150)
-                    </label>
-                </div>
-
-                <!-- Express Processing Option -->
-                <div class="return-negatives-container">
-                    <label>
-                        <input type="checkbox" id="express-processing"> Express - same day delivery (+₹500 per roll)
-                    </label>
-                </div>
-
-                <textarea placeholder="Additional notes"></textarea>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <a href="#how-it-works" 
-                       onclick="event.preventDefault(); document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})" 
-                       style="color: #0000EE; text-decoration: underline; font-size: 14px; cursor: pointer;">
-                       How to pack and send films →
-                    </a>
-                    <a href="#faq" 
-                       onclick="event.preventDefault(); document.getElementById('faq').scrollIntoView({behavior: 'smooth'})" 
-                       style="color: #0000EE; text-decoration: underline; font-size: 14px; cursor: pointer;">
-                       FAQ →
-                    </a>
-                </div>
-
-                <!-- Cart Summary -->
-                <div class="cart-summary">
-                    <h3>Cart Summary</h3>
-                    <ul id="cart-items" class="cart-items"></ul>
-                    <div class="cart-total">
-                        Total: ₹<span id="total-price">0</span>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazy500">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy500">
+                        <button type="button" class="qty-btn increment" data-product="lazy500">+</button>
                     </div>
-                </div>
-
-                <button type="button" class="place-order" onclick="placeOrder()">Place Order</button>
-            </form>
-        </div>
-
-
-        <!-- Variant IDs Modal -->
-        <div class="modal" id="variantIdsModal">
-            <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-                <h2>Variant IDs</h2>
-                <div id="variantIdsContent" style="margin-top: 20px; font-family: monospace; font-size: 12px; line-height: 1.6;">
-                    <p>Loading...</p>
-                </div>
-                <div class="modal-buttons" style="margin-top: 20px;">
-                    <button type="button" class="confirm-order" onclick="closeVariantIdsModal()">Close</button>
+                    <button class="add-to-cart" data-product="lazy500" data-variant="43200428507235">Add to Cart</button>
                 </div>
             </div>
+            <div class="stock-status" id="stock-status-lazy500" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues.</span>
+                <span class="description-full">Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.</span>
+                <button class="see-more-desc" data-product="lazy500">See more</button>
+                <a href="#sample-gallery" class="see-samples">See Sample photos</a>
+            </p>
         </div>
 
-        <!-- Footer -->
-        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-            <div style="display: flex; justify-content: center; gap: 20px; font-size: 14px;">
-                <a href="https://www.lazyfilms.in/labs/CONTACT" style="color: #000; text-decoration: none;">Contact</a>
-                <a href="https://www.lazyfilms.in/labs/REFUND" style="color: #000; text-decoration: none;">Refund Policy</a>
-                <a href="https://www.lazyfilms.in/labs/T&C" style="color: #000; text-decoration: none;">Terms & Conditions</a>
-                <a href="https://www.lazyfilms.in/labs/PRIVACY_POLICY" style="color: #000; text-decoration: none;">Privacy Policy</a>
+        <div class="product-details">
+            <img src="/images/provia.png" alt="Fujifilm Provia 100F RDP 3" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">Fujifilm Provia 100F RDP 3 (Expired 2015)</h2>
+                    <p class="product-price">₹2100</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="fujifilmprovia">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="fujifilmprovia">
+                        <button type="button" class="qty-btn increment" data-product="fujifilmprovia">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="fujifilmprovia" data-variant="43863277437027">Add to Cart</button>
+                </div>
             </div>
+            <div class="stock-status" id="stock-status-fujifilmprovia" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Often regarded as one of the finest color slide films ever made, Provia RDP III delivers legendary sharpness, natural skin tones, and beautifully balanced saturation.</span>
+                <span class="description-full">Although expired in 2015, this roll has been cold-stored, so its sensitivity remains fully intact — no exposure compensation is needed. Please note: some rolls may show minor mold on the ends, so keep that in mind before purchasing.</span>
+                <button class="see-more-desc" data-product="fujifilmprovia">See more</button>
+            </p>
+        </div>
+
+        <div class="product-details">
+            <img src="/images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">LAZY 250</h2>
+                    <p class="product-price">₹750</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazy250">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy250">
+                        <button type="button" class="qty-btn increment" data-product="lazy250">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="lazy250" data-variant="43269458690147">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-lazy250" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude.</span>
+                <span class="description-full">Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision. Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast. Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.</span>
+                <button class="see-more-desc" data-product="lazy250">See more</button>
+                <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
+            </p>
+        </div>
+
+        <div class="product-details">
+            <img src="/images/superia-thumb.jpg" alt="Fujifilm Superia Xtra 800" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">Fujifilm Superia Xtra 800 (Expired 2010)</h2>
+                    <p class="product-price">₹900</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="superia800">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="superia800">
+                        <button type="button" class="qty-btn increment" data-product="superia800">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="superia800" data-variant="43881964961891" id="superia800-add-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-superia800" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Fujifilm Superia X-TRA 800 is a discontinued high-speed color negative film with a very recognizable Fuji look.</span>
+                <span class="description-full">This roll expired in 2010 and was cold-stored, so the colors are largely intact, though age has introduced some characteristics. The film is particularly strong in blues and greens, which tend to come out rich and slightly cool. It has a distinct color palette that differs noticeably from current-generation color negative films. Best shot at ISO 200 (overexposing by about 2 stops helps control fog, improves shadow detail, and gives better overall color balance). Works well in daylight and evenly lit scenes. Not recommended if you are looking for clean, neutral negatives.</span>
+                <button class="see-more-desc" data-product="superia800">See more</button>
+            </p>
+        </div>
+
+        <div class="product-details">
+            <img src="/images/lazy-monochrome-thumb.jpg" alt="Lazy Monochrome" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title">LAZY MONOCHROME</h2>
+                    <p class="product-price">₹750</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazymonochrome">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazymonochrome">
+                        <button type="button" class="qty-btn increment" data-product="lazymonochrome">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="lazymonochrome" data-variant="43841780514915">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-lazymonochrome" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy Monochrome is a sharp, high-quality black and white film with insane detail, deep blacks, and excellent tonal range.</span>
+                <span class="description-full">It has strong, clean contrast that makes every frame look crisp. Its default ISO is 250, and for best results it should be developed in D96. This film works beautifully in sharp light and strong shadows, making it great for street photography, architecture, or basically any kind of photography where you want clean lines and rich monochrome depth.</span>
+                <button class="see-more-desc" data-product="lazymonochrome">See more</button>
+                <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
+            </p>
+        </div>
+
+        </div> <!-- end .products-grid -->
+
+        <div class="cart-summary">
+            <h3>Cart Summary</h3>
+            <p>Total: ₹0</p>
+        </div>
+
+        <button class="place-order">Place Order</button>
+
+        <footer>
+            <a href="https://www.lazyfilms.in/labs/CONTACT">Contact</a>
+            <a href="https://www.lazyfilms.in/labs/REFUND">Refund Policy</a>
+            <a href="https://www.lazyfilms.in/labs/T&C">Terms & Conditions</a>
+            <a href="https://www.lazyfilms.in/labs/PRIVACY_POLICY">Privacy Policy</a>
         </footer>
     </div>
 
+    <!-- Sample Photos outside container -->
+    <div id="sample-gallery" class="sample-photos">
+        <h3 class="gallery-title">LAZY500</h3>
+        <div class="gallery-grid">
+            <img src="/images/samples/sample7.jpg" alt="Sample 7" class="gallery-image">
+            <img src="/images/samples/sample1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="/images/samples/sample2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="/images/samples/sample3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="/images/samples/sample4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="/images/samples/sample8.jpg" alt="Sample 8" class="gallery-image">
+            <img src="/images/samples/sample9.jpg" alt="Sample 9" class="gallery-image">
+            <img src="/images/samples/sample6.jpg" alt="Sample 6" class="gallery-image">
+            <img src="/images/samples/sample5.jpg" alt="Sample 5" class="gallery-image">
+        </div>
+    </div>
+
+    <!-- Lazy 250 Sample Photos -->
+    <div id="sample-gallery-250" class="sample-photos">
+        <h3 class="gallery-title">LAZY250</h3>
+        <div class="gallery-grid">
+            <img src="/images/samples2/sample1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="/images/samples2/sample2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="/images/samples2/sample3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="/images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="/images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
+            <img src="/images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
+        </div>
+    </div>
+
+    <!-- Lazy Monochrome Sample Photos -->
+    <div id="sample-gallery-monochrome" class="sample-photos">
+        <h3 class="gallery-title">LAZY MONOCHROME</h3>
+        <div class="gallery-grid">
+            <img src="/images/samples3/1.jpg" alt="Sample 1" class="gallery-image">
+            <img src="/images/samples3/2.jpg" alt="Sample 2" class="gallery-image">
+            <img src="/images/samples3/3.jpg" alt="Sample 3" class="gallery-image">
+            <img src="/images/samples3/4.jpg" alt="Sample 4" class="gallery-image">
+            <img src="/images/samples3/5.jpg" alt="Sample 5" class="gallery-image">
+            <img src="/images/samples3/6.jpg" alt="Sample 6" class="gallery-image">
+        </div>
+    </div>
+
+    <!-- Modal for full-size images -->
+    <div class="image-modal" onclick="closeModal()">
+        <img class="modal-content" src="" alt="Full size image">
+    </div>
 
     <!-- Universal Cart Button -->
     <div class="universal-cart-button" onclick="toggleCartDrawer()">
@@ -995,907 +1107,548 @@
         </div>
     </div>
 
-    <!-- Address Change Popup -->
-    <div class="address-change-popup" id="addressChangePopup">
-        <div class="address-change-popup-header">
-            <h3>Note: Address Change</h3>
-            <button class="address-change-popup-close" onclick="closeAddressChangePopup()">×</button>
-        </div>
-        <div class="address-change-popup-content">
-            <p><strong>We've shifted to a new place!</strong></p>
-            <p>Please send or drop your films to this new address:</p>
-            <div class="address-change-popup-address">
-                Lazy Film Lab<br>
-                A/32, Prem Varsha CHSL, 3rd floor, Sahar Road, Sahar P & T Colony, Near Parle Agro, Andheri East, Mumbai - 400099.<br>
-                ph - 9405143371
-            </div>
-        </div>
-        <div class="address-change-progress-bar">
-            <div class="address-change-progress-fill" id="addressChangeProgress"></div>
-        </div>
-    </div>
-
-    <!-- After the container div -->
-    <div class="info-sections">
-        <div class="info-section">
-            <h2 id="how-it-works">// HOW IT WORKS</h2>
-            <p>We offer high-quality 35mm and 120 film developing and scanning services at affordable rates. Our processing options include ECN-2, C-41, E-6, and Black & White.</p>
-
-            <p class="section-heading">How to pack & send your films :</p>
-            <p>
-Select the number of rolls of ECN2/C41/E6/BnW above. If you're not sure which process it is, refer to the FAQ section.
-Choose if you want to add push/pull process.</p>
-
-            <div class="label-format-box">
-                <div class="label-format-content">
-                    <p class="label-format-heading">Label your rolls in this format :</p>
-                    <p>
-"YOUR_NAME_____"
-"FILM_NAME_____"
-"ISO_YOU_SHOT_ON_____"
-"PROCESS_____" (Leave Blank if you're not sure)</p>
-                </div>
-                <img src="images/film-label.png" alt="Film Label Format" class="label-format-image">
-            </div>
-
-            <p>Wrap them in well in packaging material and ship it to the address below.</p>
-
-            <div class="address-box">
-                <p class="address-heading">Address :</p>
-                <p>Lazy Film Lab
-A/32, Prem Varsha CHSL, 3rd floor, Sahar Road, Sahar P & T Colony, Near Parle Agro,  Andheri East, Mumbai - 400099. 
-ph - 9405143371</p>
-            </div>
-        </div>
-
-        <div class="info-section">
-            <h2 id="faq">// FAQ</h2>
-            <div class="faq-question">What is the turn-around time for digital scans?</div>
-            <div class="faq-answer">Usually it is between 1-3 days after we receive the film rolls. Express same day delivery is available as long as we receive the film before 3 pm. Please note that the lab is closed on Sundays.</div>
-
-            <div class="faq-question">I don't know which process my color rolls should be developed in - ECN-2 or C-41</div>
-            <div class="faq-answer">If it's a respooled motion picture film like 250D, 500T, 200T, or 50D, it's ideally processed in ECN-2 for better colors.
-Photo films like Kodak Gold, Kodak Portra, or Fujifilms should be processed in C-41.
-If you're still unsure about the process, just write the ISO you shot on and send it in.</div>
-
-            <div class="faq-question">My films have Remjet. Is that okay?</div>
-            <div class="faq-answer">Yes, it's perfectly okay to send a Remjet-backed motion picture film. We remove the Remjet and process the film in ECN-2.</div>
-
-            <div class="faq-question">What scanning resolution will I get?</div>
-            <div class="faq-answer">We scan with a full-frame mirrorless camera, which approximates a resolution of 6000 x 4000 pixels.
-It's very high resolution and suitable for large prints.</div>
-
-            <div class="faq-question">How do I get my negatives back?</div>
-            <div class="faq-answer">You can check the "return my negatives" box, and we'll ship them back to your address for an additional courier charge.</div>
-
-            <div class="faq-question">How should I label my rolls?</div>
-            <div class="faq-answer">Simply mention your name, the film name, the ISO you shot on, and the process.For example: lazy-500T-800-ECN2. Check how to label your rolls.</div>
-
-            <div class="faq-question">I have shot expired film. How should I proceed with processing?</div>
-            <div class="faq-answer">The best way to use expired film is to overexpose it by +1 stop for every decade it's expired.
-For example, a 200 ISO film expired in 2015 should be shot at 100 ISO.
-If you've followed this method, we'll develop it at box speed, and it should work fine. Otherwise, you can shoot at box speed and let us know the year it expired.</div>
-
-            <div class="faq-question">I want RAW negative files of my film. Can I get them?</div>
-            <div class="faq-answer">Yes, you can select the format you want your digitized photos to be delivered in, including RAW files.</div>
-        </div>
-    </div>
-</body>
-<script>
-    // Core Helper Functions
-    function calculateTotal() {
-        // Note: Total calculation is now approximate since Shopify handles variant pricing
-        // This is just for display - actual total will be shown in Shopify checkout
-        let total = 0;
-        document.querySelectorAll('.roll-row').forEach(roll => {
-            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            // Processing cost per roll (approximate)
-            const processType = roll.querySelector('select').value;
-            const processPrice = PROCESS_PRICES[processType] || 0;
-            total += quantity * processPrice;
-            
-            // Scan cost per roll (approximate - actual from Shopify variants)
-            const scanSelect = roll.querySelector('.scan-select');
-            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
-            if (scanType === 'high-res') {
-                total += quantity * 500; // Approximate
-            } else if (scanType === 'high-res-borders') {
-                total += quantity * 600; // Approximate
-            }
-            // No scan = 0
-        });
-        
-        if (document.getElementById('return-negatives').checked) {
-            total += 150;
-        }
-        if (document.getElementById('express-processing')?.checked) {
-            let totalRolls = 0;
-            document.querySelectorAll('.roll-row').forEach(roll => {
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                totalRolls += quantity;
-            });
-            total += EXPRESS_FEE_PER_ROLL * totalRolls;
-        }
-        return total;
-    }
-
-    function clearForm() {
-        document.getElementById('rolls-container').innerHTML = '';
-        document.getElementById('return-negatives').checked = false;
-        const express = document.getElementById('express-processing');
-        if (express) express.checked = false;
-        document.querySelector('textarea').value = '';
-        updateOrderSummary();
-    }
-
-    // Cart Functionality
-    function toggleCartDrawer() {
-        const drawer = document.querySelector('.cart-drawer');
-        drawer.classList.toggle('active');
-        if (drawer.classList.contains('active')) {
-            updateCartDrawer();
-        }
-    }
-
-    function updateCartDrawer() {
-        const cartItemsContainer = document.querySelector('.cart-items-container');
-        const cartTotal = document.querySelector('.cart-drawer-footer .cart-total');
-        let total = 0;
-        let cartHtml = '';
-
-        // Add film processing items
-        document.querySelectorAll('.roll-row').forEach(roll => {
-            const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
-            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            const processType = roll.querySelector('select').value; // Process is 1st select
-            const scanSelect = roll.querySelector('select:nth-of-type(2)');
-            const scanType = scanSelect.value || 'high-res'; // Scan is 2nd select, default to high-res
-            const pushPull = roll.querySelector('select:nth-of-type(3)').value; // Push/Pull is 3rd select
-            
-            if (quantity > 0) {
-                const processPrice = PROCESS_PRICES[processType] || 0;
-                // Approximate scan price for display
-                let scanPrice = 0;
-                if (scanType === 'high-res') scanPrice = 500;
-                else if (scanType === 'high-res-borders') scanPrice = 600;
-                
-                const itemTotal = quantity * (processPrice + scanPrice);
-                total += itemTotal;
-                
-                const scanLabel = scanType === 'high-res' ? '(TIFF + RAW) High Res' : 
-                                 scanType === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders' : 
-                                 'No Scan';
-                
-                cartHtml += `
-                    <div class="cart-item">
-                        <div class="cart-item-details">
-                            <h4>${quantity}× ${filmName}</h4>
-                            <p>${processType} | ${scanLabel}${pushPull !== 'none' ? ' | ' + pushPull : ''}</p>
-                        </div>
-                        <span>₹${itemTotal}</span>
-                    </div>`;
-            }
-        });
-
-        // Add return negatives if checked
-        if (document.getElementById('return-negatives').checked) {
-            total += 150;
-            cartHtml += `
-                <div class="cart-item">
-                    <div class="cart-item-details">
-                        <h4>Return Negatives</h4>
-                    </div>
-                    <span>₹150</span>
-                </div>`;
-        }
-
-        // Add express processing if checked
-        const expressChecked = document.getElementById('express-processing').checked;
-        if (expressChecked) {
-            let totalRolls = 0;
-            document.querySelectorAll('.roll-row').forEach(roll => {
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                totalRolls += quantity;
-            });
-            const expressTotal = EXPRESS_FEE_PER_ROLL * totalRolls;
-            total += expressTotal;
-            cartHtml += `
-                <div class="cart-item">
-                    <div class="cart-item-details">
-                        <h4>Express - same day delivery × ${totalRolls}</h4>
-                    </div>
-                    <span>₹${expressTotal}</span>
-                </div>`;
-        }
-
-        cartItemsContainer.innerHTML = cartHtml;
-        cartTotal.textContent = `Total: ₹${total}`;
-    }
-
-    function universalCheckout() {
-        toggleCartDrawer();
-        placeOrder();
-    }
-
-    // Cart Functionality
-    function createRollHtml(rollCount) {
-        return `
-            <div class="roll-row">
-            <input type="text" placeholder="Film name" required>
-            <input type="number" placeholder="Qty" min="1" max="30" value="1" required>
-            <select required>
-                <option value="" disabled selected>Process</option>
-                <option value="Ecn2">ECN-2 - ₹450</option>
-                <option value="c41">C41 - ₹450</option>
-                <option value="BnW">Black & White - ₹450</option>
-                <option value="e6">E-6 - ₹600</option>
-                <option value="no-dev">No Dev - ₹0</option>
-            </select>
-             <select required class="scan-select">
-                 <option value="" disabled selected>Scanning (TIFF + RAW)</option>
-                 <option value="high-res">High Res - ₹500</option>
-                 <option value="high-res-borders">High Res + Borders (very cool) - ₹600</option>
-                 <option value="no-scan">No Scan - ₹0</option>
-             </select>
-            <select required>
-                <option value="none" selected>No Push/Pull</option>
-                <option value="push1">+1 Stop</option>
-                <option value="push2">+2 Stop</option>
-                <option value="push3">+3 Stop</option>
-                <option value="pull1">-1 Stop</option>
-                <option value="pull2">-2 Stop</option>
-                <option value="pull3">-3 Stop</option>
-                <option value="not-sure">Not sure</option>
-            </select>
-            <button type="button" class="remove-roll" onclick="removeRoll(this)">×</button>
-            </div>
-        `;
-    }
-
-    function addNewRoll() {
-        const rollsContainer = document.getElementById('rolls-container');
-        const rollCount = rollsContainer.children.length + 1;
-        
-        const rollHtml = createRollHtml(rollCount);
-        rollsContainer.insertAdjacentHTML('beforeend', rollHtml);
-        
-        const newRoll = rollsContainer.lastElementChild;
-        newRoll.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('change', () => {
-                updateOrderSummary();
-                updateCartDrawer();
-            });
-            input.addEventListener('input', () => {
-                updateOrderSummary();
-                updateCartDrawer();
+    <script>
+        // Add smooth scrolling for both galleries
+        document.querySelectorAll('.see-samples').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
             });
         });
-        
-        updateOrderSummary();
-        updateCartDrawer();
-        updateCartCount();
-    }
 
-    function updateOrderSummary() {
-        const total = calculateTotal();
-        document.getElementById('total-price').textContent = total;
-        updateCartCount();
-        
-        // Update cart items list
-        const cartItems = document.getElementById('cart-items');
-        cartItems.innerHTML = '';
-        document.querySelectorAll('.roll-row').forEach(roll => {
-            const filmName = roll.querySelector('input[type="text"]').value || 'Untitled Film';
-            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            const processType = roll.querySelector('select').value;
-            const scanSelect = roll.querySelector('.scan-select');
-            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
-            const pushPull = roll.querySelector('select:nth-of-type(3)').value;
-            
-            if (quantity > 0) {
-                const processPrice = PROCESS_PRICES[processType] || 0;
-                let scanPrice = 0;
-                if (scanType === 'high-res') scanPrice = 500;
-                else if (scanType === 'high-res-borders') scanPrice = 600;
-                
-                const itemTotal = quantity * (processPrice + scanPrice);
-                
-                const scanLabel = scanType === 'high-res' ? '(TIFF + RAW) High Res - ₹500' : 
-                                 scanType === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders (very cool) - ₹600' : 
-                                 'No Scan - ₹0';
-                
-                const li = document.createElement('li');
-                li.className = 'cart-item';
-                li.innerHTML = `
-                    <span>${quantity}× ${filmName} - ${processType} | ${scanLabel}${pushPull !== 'none' ? ' | ' + pushPull : ''}</span>
-                    <span>₹${itemTotal}</span>
-                `;
-                cartItems.appendChild(li);
-            }
-        });
-        
-        if (document.getElementById('return-negatives').checked) {
-            const li = document.createElement('li');
-            li.className = 'cart-item';
-            li.innerHTML = '<span>Return Negatives</span><span>₹150</span>';
-            cartItems.appendChild(li);
-        }
-        
-        if (document.getElementById('express-processing')?.checked) {
-            let totalRolls = 0;
-            document.querySelectorAll('.roll-row').forEach(roll => {
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                totalRolls += quantity;
+        // Quantity input and button handlers
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const val = parseInt(this.value) || 1;
+                this.value = val < 1 ? 1 : val;
             });
-            const expressTotal = EXPRESS_FEE_PER_ROLL * totalRolls;
-            const li = document.createElement('li');
-            li.className = 'cart-item';
-            li.innerHTML = `<span>Express - same day delivery × ${totalRolls}</span><span>₹${expressTotal}</span>`;
-            cartItems.appendChild(li);
-        }
-    }
+        });
 
-    function updateCartCount() {
-        const rollCount = document.querySelectorAll('.roll-row').length;
-        const cartCountBubble = document.querySelector('.cart-count-bubble');
-        cartCountBubble.textContent = rollCount;
-        
-        if (rollCount === 0) {
-            cartCountBubble.style.display = 'none';
-        } else {
-            cartCountBubble.style.display = 'flex';
-        }
-    }
-
-    function removeRoll(button) {
-        button.closest('.roll-row').remove();
-        updateOrderSummary();
-        updateCartDrawer();
-        updateCartCount();
-    }
-
-    // Add event listener for return negatives checkbox
-    document.getElementById('return-negatives').addEventListener('change', () => {
-        updateOrderSummary();
-        updateCartDrawer();
-    });
-
-    // Add event listener for express processing checkbox
-    document.getElementById('express-processing').addEventListener('change', () => {
-        updateOrderSummary();
-        updateCartDrawer();
-    });
-
-    // Order state
-    let pendingOrderData = null;
-
-    function placeOrder() {
-        const rolls = document.querySelectorAll('.roll-row');
-        let hasItems = false;
-        let isValid = true;
-
-        rolls.forEach(roll => {
-            const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-            const filmName = roll.querySelector('input[type="text"]').value;
-            const processType = roll.querySelector('select').value;
-            const scanSelect = roll.querySelector('.scan-select');
-            const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
-
-            if (quantity > 0) {
-                hasItems = true;
-                if (!filmName || !processType || !scanType) {
-                    isValid = false;
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const product = this.dataset.product;
+                const wrapper = this.closest('.quantity-control');
+                const input = wrapper.querySelector('.quantity-input[data-product="' + product + '"]');
+                let current = parseInt(input.value) || 1;
+                if (this.classList.contains('decrement')) {
+                    current = Math.max(1, current - 1);
+                } else {
+                    current = current + 1;
                 }
-            }
+                input.value = current;
+            });
         });
 
-        if (!hasItems) {
-            alert('Please add at least one roll to proceed.');
-            return;
-        }
-
-        if (!isValid) {
-            alert('Please fill in all required fields for each roll.');
-            return;
-        }
-
-        // Collect roll data directly
-        const items = Array.from(document.querySelectorAll('.roll-row'))
-            .map(roll => {
-                const filmName = roll.querySelector('input[type="text"]').value;
-                const quantity = parseInt(roll.querySelector('input[type="number"]').value) || 0;
-                const processType = roll.querySelector('select').value;
-                const scanSelect = roll.querySelector('.scan-select');
-                const scanType = scanSelect ? (scanSelect.value || 'high-res') : 'high-res'; // Default to high-res if empty
-                const pushPull = roll.querySelector('select:nth-of-type(3)').value;
-
-                // Get variant ID based on process type and push/pull
-                const variantId = getVariantId(processType, pushPull);
-                // Allow placeholder IDs (user will update with actual IDs)
-                // Only throw error if variantId is null/undefined and it's not a placeholder
-                if (!variantId) {
-                    throw new Error(`Invalid variant combination: ${processType} ${pushPull}`);
-                }
-
-                // Get scan variant ID
-                const scanVariantId = SCAN_VARIANTS[scanType];
-                if (!scanVariantId) {
-                    throw new Error(`Invalid scan type: ${scanType}`);
-                }
-
-                return quantity > 0 && filmName && processType && scanType ? {
-                    film_name: filmName,
-                    quantity: quantity,
-                    process_type: processType,
-                    scan_type: scanType,
-                    push_pull: pushPull,
-                    variantId: variantId || null,
-                    scanVariantId: scanVariantId
-                } : null;
-            })
-            .filter(item => item !== null);
-
-        if (items.length === 0) {
-            alert('Please add at least one film roll');
-            return;
-        }
-
-        // Store order data and show upsell modal directly (skip customer form)
-        pendingOrderData = {
-            items: items,
-            customerInfo: {},
-            notes: document.querySelector('textarea').value || '',
-            returnNegatives: document.getElementById('return-negatives').checked,
-            expressProcessing: document.getElementById('express-processing').checked
+        // Simple cart functionality
+        const VARIANT_IDS = {
+            'lazy500': '43200428507235',
+            'lazy250': '43269458690147',
+            'lazymonochrome': '43841780514915',
+            'fujifilmprovia': '43863277437027',
+            'superia800': '43881964961891'
         };
-        
-        // Go directly to Shopify checkout
-        createShopifyCart(pendingOrderData, []).then(cart => {
-            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
-        });
-    }
 
-    // Carousel Functionality
-    let currentIndex = 0;
-    
-    function showNextImage() {
-        try {
-            const images = document.querySelectorAll('.carousel img');
-            if (images.length === 0) {
-                console.error('No carousel images found');
+        // Shopify Storefront API configuration
+        const SHOPIFY_STORE_NAME = 'rphzqx-d5.myshopify.com';
+        const STOREFRONT_ACCESS_TOKEN = 'b7434c05596772a5b7b847ac6beb9aba';
+
+        // Helper function to extract numeric variant ID from Shopify GraphQL ID
+        function extractVariantId(graphqlId) {
+            // GraphQL ID format: gid://shopify/ProductVariant/7924072317027
+            // Extract the numeric part
+            const match = graphqlId.match(/\/(\d+)$/);
+            return match ? match[1] : null;
+        }
+
+        // Check product availability from Shopify (by handles for reliability)
+        async function checkProductAvailability() {
+            // Try multiple possible handles for lazy monochrome
+            const query = `
+                query {
+                    lazy500: product(handle: "lazy500") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazy250: product(handle: "lazy-250") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome: product(handle: "lazy-monochrome") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome2: product(handle: "lazy-monochrome-film") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    lazymonochrome3: product(id: "gid://shopify/Product/7924072317027") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    fujifilmprovia: product(id: "gid://shopify/Product/7933145055331") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                    superia800: product(id: "gid://shopify/Product/7937362067555") {
+                        title
+                        variants(first: 1) {
+                            edges { node { id availableForSale quantityAvailable } }
+                        }
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const { data } = await response.json();
+                
+                // Find lazy monochrome product (try different handles)
+                const lazyMonochrome = data.lazymonochrome || data.lazymonochrome2 || data.lazymonochrome3;
+                
+                const results = [
+                    { key: 'lazy500', node: data.lazy500 },
+                    { key: 'lazy250', node: data.lazy250 },
+                    { key: 'lazymonochrome', node: lazyMonochrome },
+                    { key: 'fujifilmprovia', node: data.fujifilmprovia },
+                    { key: 'superia800', node: data.superia800 }
+                ];
+
+                results.forEach(({ key, node }) => {
+                    if (!node) {
+                        console.warn(`Product not found: ${key}`);
+                        return;
+                    }
+                    
+                    const variant = node?.variants?.edges?.[0]?.node;
+                    if (variant) {
+                        // Extract and update variant ID
+                        const numericVariantId = extractVariantId(variant.id);
+                        if (numericVariantId) {
+                            // Update the button's data-variant attribute with the correct ID
+                            const addToCartButton = document.querySelector(`[data-product="${key}"].add-to-cart`);
+                            if (addToCartButton) {
+                                const oldVariantId = addToCartButton.dataset.variant;
+                                addToCartButton.dataset.variant = numericVariantId;
+                                console.log(`${key}: Updated variant ID from ${oldVariantId} to ${numericVariantId}`);
+                                
+                                // Also update VARIANT_IDS object
+                                VARIANT_IDS[key] = numericVariantId;
+                            }
+                        }
+                        
+                        // Check availability
+                        if (!variant.availableForSale) {
+                            const productActions = document.querySelector(`[data-product="${key}"]`)?.closest('.product-actions');
+                            const stockStatus = document.getElementById(`stock-status-${key}`);
+                            if (productActions && stockStatus) {
+                                productActions.classList.add('out-of-stock');
+                                stockStatus.style.display = 'block';
+                            }
+                        }
+                    } else {
+                        console.warn(`No variants found for product: ${key}`);
+                    }
+                });
+            } catch (error) {
+                console.error('Error checking product availability:', error);
+            }
+        }
+
+        function updateCartSummary() {
+            const total = universalCart.store.total;
+            document.querySelector('.cart-summary').innerHTML = `
+                <h3>Cart Summary</h3>
+                <p>Total: ₹${total}</p>
+            `;
+        }
+
+        // Add to cart functionality for all products
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.product;
+                const variantId = this.dataset.variant;
+                const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
+                const quantity = parseInt(quantityInput.value) || 1;
+                
+                // Validate variant ID
+                if (!variantId) {
+                    console.error('Variant ID missing for product:', productId);
+                    alert('Error: Product variant ID is missing. Please refresh the page.');
+                    return;
+                }
+                
+                // Disable button temporarily
+                this.disabled = true;
+                
+                // Add to universal cart
+                let productName = 'LAZY 500';
+                let productPrice = 750;
+                if (productId === 'lazy250') {
+                    productName = 'LAZY 250';
+                    productPrice = 750;
+                } else if (productId === 'lazymonochrome') {
+                    productName = 'LAZY MONOCHROME';
+                    productPrice = 750;
+                } else if (productId === 'fujifilmprovia') {
+                    productName = 'Fujifilm Provia 100F RDP 3 (Expired 2015)';
+                    productPrice = 2100;
+                } else if (productId === 'superia800') {
+                    productName = 'Fujifilm Superia Xtra 800 (Expired 2010)';
+                    productPrice = 900;
+                }
+                universalCart.store.items.push({
+                    id: Date.now(),
+                    name: productName,
+                    price: productPrice * quantity,
+                    quantity: quantity,
+                    variantId: variantId
+                });
+                universalCart.store.total += productPrice * quantity;
+                
+                updateUniversalCart();
+                updateCartSummary();
+                
+                // Show success state
+                this.textContent = 'Added!';
+                setTimeout(() => {
+                    this.textContent = 'Add to Cart';
+                    this.disabled = false;
+                }, 1000);
+            });
+        });
+
+        // Ensure quantity inputs only accept positive numbers
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.value < 1) this.value = 1;
+            });
+        });
+
+        // Update Place order functionality
+        document.querySelector('.place-order').addEventListener('click', function() {
+            if (universalCart.store.items.length > 0) {
+                const items = universalCart.store.items.map(item => 
+                    `${item.variantId}:${item.quantity}`
+                ).join(',');
+                const shopifyCartUrl = `https://rphzqx-d5.myshopify.com/cart/${items}`;
+                window.location.href = shopifyCartUrl;
+            } else {
+                alert('Please add items to cart first');
+            }
+        });
+
+        // Image modal functionality
+        const modal = document.querySelector('.image-modal');
+        const modalImg = document.querySelector('.modal-content');
+        
+        // Add click listeners to all gallery images
+        document.querySelectorAll('.gallery-image').forEach(img => {
+            img.addEventListener('click', function() {
+                modal.classList.add('active');
+                modalImg.src = this.src;
+            });
+        });
+        
+        // Close modal function
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Universal Cart Management
+        let universalCart = {
+            store: {
+                items: [],
+                total: 0
+            },
+            labs: {
+                items: [],
+                total: 0
+            }
+        };
+
+        function toggleCartDrawer() {
+            document.querySelector('.cart-drawer').classList.toggle('active');
+        }
+
+        function updateUniversalCart() {
+            const totalItems = universalCart.store.items.length + universalCart.labs.items.length;
+            const totalPrice = universalCart.store.total + universalCart.labs.total;
+            
+            // Update cart bubble
+            document.querySelector('.cart-count-bubble').textContent = totalItems;
+            
+            // Update cart drawer
+            const itemsContainer = document.querySelector('.cart-items-container');
+            itemsContainer.innerHTML = '';
+            
+            // Add store items
+            universalCart.store.items.forEach(item => {
+                itemsContainer.appendChild(createCartItemElement(item, 'store'));
+            });
+            
+            // Add lab items
+            universalCart.labs.items.forEach(item => {
+                itemsContainer.appendChild(createCartItemElement(item, 'labs'));
+            });
+            
+            // Update total
+            document.querySelector('.cart-total').textContent = `Total: ₹${totalPrice}`;
+        }
+
+        function createCartItemElement(item, type) {
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <div class="cart-item-details">
+                    <h4>${item.name}</h4>
+                    <p>₹${item.price}</p>
+                </div>
+                <button onclick="removeFromCart('${type}', ${item.id})">Remove</button>
+            `;
+            return div;
+        }
+
+        function universalCheckout() {
+            // Check if cart is empty
+            const allItems = [...universalCart.store.items, ...universalCart.labs.items];
+            if (allItems.length === 0) {
+                alert('Please add items to cart first');
                 return;
             }
             
-            images[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex + 1) % images.length;
-            images[currentIndex].classList.add('active');
-            console.log('Carousel updated to image:', currentIndex + 1);
-        } catch (error) {
-            console.error('Error in carousel:', error);
-        }
-    }
-
-    // Address Change Popup Functions
-    function showAddressChangePopup() {
-        const popup = document.getElementById('addressChangePopup');
-        const progressBar = document.getElementById('addressChangeProgress');
-        
-        popup.classList.add('active');
-        
-        progressBar.style.width = '0%';
-        
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 1;
-            progressBar.style.width = progress + '%';
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                closeAddressChangePopup();
-            }
-        }, 70);
-    }
-
-    function closeAddressChangePopup() {
-        const popup = document.getElementById('addressChangePopup');
-        popup.classList.remove('active');
-    }
-
-    // Initialize
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add first roll by default
-        addNewRoll();
-        
-        const images = document.querySelectorAll('.carousel img');
-        if (images.length > 0) {
-            console.log('Found', images.length, 'carousel images');
-            images[0].classList.add('active');
-            setInterval(showNextImage, 6000);
-        } else {
-            console.error('No carousel images found on load');
-        }
-        
-        document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
-        const express = document.getElementById('express-processing');
-        if (express) express.addEventListener('change', updateOrderSummary);
-        updateOrderSummary();
-        
-        const delay = Math.random() * 2000 + 3000;
-        setTimeout(showAddressChangePopup, delay);
-    });
-
-
-    // Update the getVariantId function
-    function getVariantId(processType, pushPull) {
-        const variantMap = {
-            'ECN-2': {
-                'none': 'gid://shopify/ProductVariant/43181189103715',
-                'push1': 'gid://shopify/ProductVariant/43181189136483',
-                'push2': 'gid://shopify/ProductVariant/43181189169251',
-                'push3': 'gid://shopify/ProductVariant/43181189202019',
-                'pull1': 'gid://shopify/ProductVariant/43181189234787',
-                'pull2': 'gid://shopify/ProductVariant/43181189267555',
-                'pull3': 'gid://shopify/ProductVariant/43181189300323',
-                'not-sure': 'gid://shopify/ProductVariant/43181189333091'
-            },
-            'C41': {
-                'none': 'gid://shopify/ProductVariant/43181189365859',
-                'push1': 'gid://shopify/ProductVariant/43181189398627',
-                'push2': 'gid://shopify/ProductVariant/43181189431395',
-                'push3': 'gid://shopify/ProductVariant/43181189464163',
-                'pull1': 'gid://shopify/ProductVariant/43181189496931',
-                'pull2': 'gid://shopify/ProductVariant/43181189529699',
-                'pull3': 'gid://shopify/ProductVariant/43181189562467',
-                'not-sure': 'gid://shopify/ProductVariant/43181189595235'
-            },
-            'B&W': {
-                'none': 'gid://shopify/ProductVariant/43181189628003',
-                'push1': 'gid://shopify/ProductVariant/43181189660771',
-                'push2': 'gid://shopify/ProductVariant/43181189693539',
-                'push3': 'gid://shopify/ProductVariant/43181189726307',
-                'pull1': 'gid://shopify/ProductVariant/43181189759075',
-                'pull2': 'gid://shopify/ProductVariant/43181189791843',
-                'pull3': 'gid://shopify/ProductVariant/43181189824611',
-                'not-sure': 'gid://shopify/ProductVariant/43181189857379'
-            },
-            'E-6': {
-                'none': 'gid://shopify/ProductVariant/43989455765603',
-                'push1': 'gid://shopify/ProductVariant/43989455798371',
-                'push2': 'gid://shopify/ProductVariant/43989455831139',
-                'push3': 'gid://shopify/ProductVariant/43989455863907',
-                'pull1': 'gid://shopify/ProductVariant/43989455896675',
-                'pull2': 'gid://shopify/ProductVariant/43989455929443',
-                'pull3': 'gid://shopify/ProductVariant/43989455962211',
-                'not-sure': 'gid://shopify/ProductVariant/43989455994979'
-            },
-            'No Dev': {
-                'none': 'gid://shopify/ProductVariant/43989456027747',
-                'push1': 'gid://shopify/ProductVariant/43989456060515',
-                'push2': 'gid://shopify/ProductVariant/43989456093283',
-                'push3': 'gid://shopify/ProductVariant/43989456126051',
-                'pull1': 'gid://shopify/ProductVariant/43989456158819',
-                'pull2': 'gid://shopify/ProductVariant/43989456191587',
-                'pull3': 'gid://shopify/ProductVariant/43989456224355',
-                'not-sure': 'gid://shopify/ProductVariant/43989456257123'
-            }
-        };
-        
-        const processMap = {
-            'Ecn2': 'ECN-2',
-            'c41': 'C41',
-            'BnW': 'B&W',
-            'e6': 'E-6',
-            'no-dev': 'No Dev'
-        };
-
-        const pushPullMap = {
-            'none': 'none',
-            'push1': 'push1',
-            'push2': 'push2',
-            'push3': 'push3',
-            'pull1': 'pull1',
-            'pull2': 'pull2',
-            'pull3': 'pull3',
-            'not-sure': 'not-sure'
-        };
-
-        const mappedProcess = processMap[processType] || processType;
-        const mappedPushPull = pushPullMap[pushPull] || pushPull;
-
-        return variantMap[mappedProcess]?.[mappedPushPull] || null;
-    }
-
-    // Update the createShopifyCart function
-    async function createShopifyCart(orderData, extraItems = []) {
-        try {
-            let checkoutUrl = `https://${SHOPIFY_STORE_NAME}/cart/`;
-            
-            // Add items to URL
-            const items = [];
-            
-            orderData.items.forEach(item => {
-                // Add process variant (if exists)
-                if (item.variantId) {
-                    const variantId = String(item.variantId).includes('/') 
-                        ? String(item.variantId).split('/').pop() 
-                        : String(item.variantId);
-                    items.push(`${variantId}:${item.quantity || 1}`);
+            // Combine items and create checkout URL
+            const storeItems = universalCart.store.items.map(item => {
+                if (!item.variantId) {
+                    console.error('Missing variant ID for item:', item);
                 }
-                
-                // Add scan variant for each roll
-                const scanVariantId = String(item.scanVariantId);
-                items.push(`${scanVariantId}:${item.quantity || 1}`);
-            });
+                return `${item.variantId}:${item.quantity}`;
+            }).join(',');
             
-            // Include upsell items
-            extraItems.forEach(extra => {
-                const vid = String(extra.variantId).split('/').pop();
-                if (vid) items.push(`${vid}:${extra.quantity || 1}`);
-            });
-            
-            // Scan variants are added to cart above
-            
-            if (orderData.returnNegatives) {
-                items.push('43199974604899:1');
-            }
-            if (orderData.expressProcessing) {
-                let totalRolls = 0;
-                orderData.items.forEach(i => totalRolls += (i.quantity || 0));
-                if (EXPRESS_VARIANT_ID) {
-                    const vid = String(EXPRESS_VARIANT_ID).split('/').pop();
-                    if (vid && totalRolls > 0) items.push(`${vid}:${totalRolls}`);
+            const labsItems = universalCart.labs.items.map(item => {
+                if (!item.variantId) {
+                    console.error('Missing variant ID for item:', item);
                 }
+                return `${item.variantId}:${item.quantity}`;
+            }).join(',');
+            
+            // Build URL properly - only include labs items if they exist
+            let checkoutUrl;
+            if (storeItems && labsItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${storeItems},${labsItems}`;
+            } else if (storeItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${storeItems}`;
+            } else if (labsItems) {
+                checkoutUrl = `https://rphzqx-d5.myshopify.com/cart/${labsItems}`;
+            } else {
+                alert('Please add items to cart first');
+                return;
             }
-
-            checkoutUrl += items.join(',');
-
-            // Create detailed order notes
-            const orderDetails = orderData.items.map(item => {
-                const scanLabel = item.scan_type === 'high-res' ? '(TIFF + RAW) High Res - ₹500' : 
-                                 item.scan_type === 'high-res-borders' ? '(TIFF + RAW) High Res + Borders (very cool) - ₹600' : 
-                                 'No Scan - ₹0';
-                return `• Film: ${item.film_name}\n` +
-                       `  Quantity: ${item.quantity || 1}\n` +
-                       `  Process: ${item.process_type}\n` +
-                       `  Scan: ${scanLabel}\n` +
-                       `  Push/Pull: ${item.push_pull}`;
-            }).join('\n\n');
-
-            const expressNote = orderData.expressProcessing ? '\nExpress: YES - same day delivery (₹500/roll)' : '';
-
-            const params = new URLSearchParams({
-                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nNotes: ${orderData.notes}${expressNote}`
-            });
-
-            checkoutUrl += '?' + params.toString();
-
+            
             console.log('Checkout URL:', checkoutUrl);
-
-            return { checkoutUrl };
-        } catch (error) {
-            console.error('Cart creation error:', error);
-            throw error;
+            console.log('Store items:', universalCart.store.items);
+            console.log('Labs items:', universalCart.labs.items);
+            
+            window.location.href = checkoutUrl;
         }
-    }
 
-    // Function to get all variant IDs
-    async function getAllVariantIds() {
-        const modal = document.getElementById('variantIdsModal');
-        const content = document.getElementById('variantIdsContent');
-        
-        modal.classList.add('active');
-        content.innerHTML = '<p>Fetching variant IDs...</p>';
-        
-        try {
-            // Query for Scanning product variants
-            const scanningQuery = `
-                query {
-                    product(id: "gid://shopify/Product/${SCANNING_PRODUCT_ID}") {
-                        title
-                        variants(first: 10) {
-                            edges {
-                                node {
-                                    id
-                                    title
-                                    price {
-                                        amount
-                                        currencyCode
-                                    }
-                                }
-                            }
-                        }
-                    }
+        // Update removeFromCart function
+        function removeFromCart(type, itemId) {
+            if (type === 'store') {
+                const index = universalCart.store.items.findIndex(item => item.id === itemId);
+                if (index !== -1) {
+                    universalCart.store.total -= universalCart.store.items[index].price;
+                    universalCart.store.items.splice(index, 1);
                 }
-            `;
-            
-            // Query for Film Processing product variants
-            const processingQuery = `
-                query {
-                    product(id: "gid://shopify/Product/${FILM_PROCESSING_PRODUCT_ID}") {
-                        title
-                        variants(first: 50) {
-                            edges {
-                                node {
-                                    id
-                                    title
-                                    price {
-                                        amount
-                                        currencyCode
-                                    }
-                                }
-                            }
-                        }
-                    }
+            } else if (type === 'labs') {
+                const index = universalCart.labs.items.findIndex(item => item.id === itemId);
+                if (index !== -1) {
+                    universalCart.labs.total -= universalCart.labs.items[index].price;
+                    universalCart.labs.items.splice(index, 1);
                 }
-            `;
+            }
             
-            // Fetch both products
-            const [scanningRes, processingRes] = await Promise.all([
-                fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+            updateUniversalCart();
+            updateCartSummary();
+        }
+
+        // Add carousel functionality
+        function startCarousel() {
+            const images = document.querySelectorAll('.carousel-image');
+            let currentIndex = 0;
+
+            setInterval(() => {
+                images[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % images.length;
+                images[currentIndex].classList.add('active');
+            }, 5000); // Change image every 5 seconds
+        }
+
+        // Simple function to get variant ID by product ID - just type: getVariantId('7933145055331')
+        window.getVariantId = async function(productId) {
+            const query = `query { product(id: "gid://shopify/Product/${productId}") { title variants(first: 10) { edges { node { id title availableForSale } } } } }`;
+            try {
+                const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
-                    },
-                    body: JSON.stringify({ query: scanningQuery })
-                }),
-                fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
-                    },
-                    body: JSON.stringify({ query: processingQuery })
-                })
-            ]);
-            
-            const scanningData = await scanningRes.json();
-            const processingData = await processingRes.json();
-            
-            let html = '<div style="margin-bottom: 30px;">';
-            
-            // Display Scanning variants
-            html += '<h3 style="color: #000; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px;">📸 SCANNING PRODUCT VARIANTS</h3>';
-            if (scanningData.data?.product) {
-                html += `<p><strong>Product:</strong> ${scanningData.data.product.title}</p>`;
-                html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-top: 10px;">';
-                html += '<pre style="margin: 0; white-space: pre-wrap; font-size: 11px;">';
-                html += 'const SCAN_VARIANTS = {\n';
-                
-                scanningData.data.product.variants.edges.forEach((edge, index) => {
-                    const variant = edge.node;
-                    const numericId = variant.id.split('/').pop();
-                    const title = variant.title.toLowerCase();
-                    
-                    let key = '';
-                    if (title.includes('high') && (title.includes('border') || title.includes('with'))) {
-                        key = "'high-res-borders'";
-                    } else if (title.includes('high') || title.includes('res')) {
-                        key = "'high-res'";
-                    } else if (title.includes('no') || !title.includes('scan')) {
-                        key = "'no-scan'";
+                    headers: { 'Content-Type': 'application/json', 'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN },
+                    body: JSON.stringify({ query })
+                });
+                const { data, errors } = await response.json();
+                if (errors) { 
+                    alert('Error: ' + JSON.stringify(errors));
+                    console.error('Error:', errors); 
+                    return; 
+                }
+                if (data.product) {
+                    console.log('Product:', data.product.title);
+                    let allVariants = '';
+                    data.product.variants.edges.forEach((edge, i) => {
+                        const v = edge.node;
+                        const id = v.id.match(/\/(\d+)$/)?.[1];
+                        const info = `Variant ${i+1}: ${id} - ${v.title} (Available: ${v.availableForSale})\n`;
+                        console.log(info.trim());
+                        allVariants += info;
+                    });
+                    const firstId = data.product.variants.edges[0]?.node?.id?.match(/\/(\d+)$/)?.[1];
+                    if (firstId) {
+                        console.log(`\n✅ Use this Variant ID: ${firstId}`);
+                        alert(`Variant ID Found!\n\nProduct: ${data.product.title}\n\n${allVariants}\n✅ PRIMARY VARIANT ID: ${firstId}\n\n(Also check console for details)`);
+                        return firstId; // Return the variant ID
                     } else {
-                        key = `'variant-${index + 1}'`;
+                        alert('No variants found for this product');
+                        return null;
                     }
-                    
-                    const price = variant.price ? parseFloat(variant.price.amount).toFixed(0) : '0';
-                    html += `    ${key}: '${numericId}', // ${variant.title} (₹${price})\n`;
-                });
-                
-                html += '};\n';
-                html += '</pre></div>';
-            } else {
-                html += '<p style="color: red;">Error fetching scanning variants</p>';
-                if (scanningData.errors) {
-                    html += `<p style="color: red;">${JSON.stringify(scanningData.errors, null, 2)}</p>`;
+                } else {
+                    alert('Product not found');
+                    return null;
                 }
+            } catch (error) { 
+                alert('Error: ' + error.message);
+                console.error('Error:', error);
+                return null;
             }
-            
-            html += '</div>';
-            
-            // Display Film Processing variants
-            html += '<div style="margin-top: 30px;">';
-            html += '<h3 style="color: #000; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px;">🎞️ FILM PROCESSING PRODUCT VARIANTS</h3>';
-            if (processingData.data?.product) {
-                html += `<p><strong>Product:</strong> ${processingData.data.product.title}</p>`;
-                html += '<div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin-top: 10px; max-height: 400px; overflow-y: auto;">';
-                html += '<pre style="margin: 0; white-space: pre-wrap; font-size: 11px;">';
-                
-                // Group by process type
-                const variantsByProcess = {};
-                processingData.data.product.variants.edges.forEach(edge => {
-                    const variant = edge.node;
-                    const numericId = variant.id.split('/').pop();
-                    const title = variant.title;
-                    
-                    // Try to identify process type from title
-                    let processType = 'UNKNOWN';
-                    if (title.includes('ECN-2') || title.includes('ECN2') || title.includes('Ecn2')) {
-                        processType = 'ECN-2';
-                    } else if (title.includes('C41') || title.includes('C-41') || title.includes('c41')) {
-                        processType = 'C41';
-                    } else if (title.includes('B&W') || title.includes('Black') || title.includes('White') || title.includes('Monochrome') || title.includes('BnW')) {
-                        processType = 'B&W';
-                    } else if (title.includes('E-6') || title.includes('E6') || title.includes('e6')) {
-                        processType = 'E-6';
-                    } else if (title.includes('No Dev') || title.includes('no-dev') || title.includes('No Dev')) {
-                        processType = 'No Dev';
-                    }
-                    
-                    if (!variantsByProcess[processType]) {
-                        variantsByProcess[processType] = [];
-                    }
-                    
-                    const price = variant.price ? parseFloat(variant.price.amount).toFixed(0) : '0';
-                    variantsByProcess[processType].push({
-                        id: numericId,
-                        title: title,
-                        price: price
-                    });
-                });
-                
-                // Display grouped by process
-                Object.keys(variantsByProcess).forEach(process => {
-                    html += `\n// ${process} Variants:\n`;
-                    variantsByProcess[process].forEach(variant => {
-                        // Try to identify push/pull
-                        let pushPull = 'none';
-                        if (variant.title.includes('+1') || variant.title.includes('Push 1') || variant.title.includes('push1')) pushPull = 'push1';
-                        else if (variant.title.includes('+2') || variant.title.includes('Push 2') || variant.title.includes('push2')) pushPull = 'push2';
-                        else if (variant.title.includes('+3') || variant.title.includes('Push 3') || variant.title.includes('push3')) pushPull = 'push3';
-                        else if (variant.title.includes('-1') || variant.title.includes('Pull 1') || variant.title.includes('pull1')) pushPull = 'pull1';
-                        else if (variant.title.includes('-2') || variant.title.includes('Pull 2') || variant.title.includes('pull2')) pushPull = 'pull2';
-                        else if (variant.title.includes('-3') || variant.title.includes('Pull 3') || variant.title.includes('pull3')) pushPull = 'pull3';
-                        else if (variant.title.includes('Not sure') || variant.title.includes('Not Sure') || variant.title.includes('not-sure')) pushPull = 'not-sure';
-                        
-                        html += `    '${pushPull}': 'gid://shopify/ProductVariant/${variant.id}', // ${variant.title} (₹${variant.price})\n`;
-                    });
-                });
-                
-                html += '</pre></div>';
-            } else {
-                html += '<p style="color: red;">Error fetching processing variants</p>';
-                if (processingData.errors) {
-                    html += `<p style="color: red;">${JSON.stringify(processingData.errors, null, 2)}</p>`;
-                }
-            }
-            
-            html += '</div>';
-            
-            // Add copy button
-            html += '<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">';
-            html += '<button onclick="copyVariantIds()" style="background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px;">Copy All to Clipboard</button>';
-            html += '</div>';
-            
-            content.innerHTML = html;
-            
-        } catch (error) {
-            console.error('Error fetching variants:', error);
-            content.innerHTML = `<p style="color: red;">Error: ${error.message}</p><pre>${error.stack}</pre>`;
-        }
-    }
-    
-    function closeVariantIdsModal() {
-        document.getElementById('variantIdsModal').classList.remove('active');
-    }
-    
-    function copyVariantIds() {
-        const content = document.getElementById('variantIdsContent');
-        const text = content.innerText || content.textContent;
-        
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Variant IDs copied to clipboard!');
-        }).catch(err => {
-            console.error('Failed to copy:', err);
-            // Fallback: select text
-            const range = document.createRange();
-            range.selectNode(content);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            alert('Please copy manually (text selected)');
-        });
-    }
-</script>
+        };
 
+        // Test function to verify variant ID - can be called from browser console
+        // Usage: testVariantId('7924072317027') or testVariantId('lazy-monochrome', 'handle')
+        window.testVariantId = async function(identifier, type = 'id') {
+            if (type === 'handle') {
+                // Test by product handle
+                const query = `
+                    query {
+                        product(handle: "${identifier}") {
+                            title
+                            variants(first: 10) {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        availableForSale
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `;
+                
+                try {
+                    const response = await fetch(`https://${SHOPIFY_STORE_NAME}/api/2024-01/graphql.json`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                        },
+                        body: JSON.stringify({ query })
+                    });
+                    
+                    const { data, errors } = await response.json();
+                    if (errors) {
+                        console.error('GraphQL Errors:', errors);
+                        return;
+                    }
+                    
+                    if (data.product) {
+                        console.log('Product found:', data.product.title);
+                        console.log('Variants:');
+                        data.product.variants.edges.forEach((edge, index) => {
+                            const variant = edge.node;
+                            const numericId = extractVariantId(variant.id);
+                            console.log(`  Variant ${index + 1}:`, {
+                                title: variant.title,
+                                graphqlId: variant.id,
+                                numericId: numericId,
+                                available: variant.availableForSale
+                            });
+                            console.log(`  Test URL: https://rphzqx-d5.myshopify.com/cart/${numericId}:1`);
+                        });
+                    } else {
+                        console.error('Product not found with handle:', identifier);
+                    }
+                } catch (error) {
+                    console.error('Error testing variant:', error);
+                }
+            } else {
+                // Test by variant ID - try to add to cart
+                const testUrl = `https://rphzqx-d5.myshopify.com/cart/${identifier}:1`;
+                console.log('Testing variant ID:', identifier);
+                console.log('Test URL:', testUrl);
+                console.log('Opening URL in new tab...');
+                window.open(testUrl, '_blank');
+            }
+        };
+
+        // Start carousel when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            startCarousel();
+            checkProductAvailability(); // Check stock status on page load
+        });
+
+        // Add see more functionality for descriptions
+        document.querySelectorAll('.see-more-desc').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productId = this.dataset.product;
+                const description = this.closest('.product-description');
+                const fullText = description.querySelector('.description-full');
+                const previewText = description.querySelector('.description-preview');
+                
+                if (fullText.classList.contains('show')) {
+                    fullText.classList.remove('show');
+                    this.textContent = 'See more';
+                } else {
+                    fullText.classList.add('show');
+                    this.textContent = 'See less';
+                }
+            });
+        });
+    </script>
+</body>
 </html>
