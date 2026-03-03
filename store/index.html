@@ -1340,6 +1340,20 @@
         const modal = document.querySelector('.image-modal');
         const modalImg = document.querySelector('.modal-content');
         
+        // Fallback for servers with case-sensitive image filenames (.jpg vs .JPG)
+        // If an image fails to load, automatically retry with the opposite extension case once.
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', function() {
+                const src = this.getAttribute('src');
+                if (!src) return;
+                if (src.endsWith('.jpg')) {
+                    this.src = src.replace(/\.jpg$/, '.JPG');
+                } else if (src.endsWith('.JPG')) {
+                    this.src = src.replace(/\.JPG$/, '.jpg');
+                }
+            }, { once: true });
+        });
+        
         // Add click listeners to all gallery images
         document.querySelectorAll('.gallery-image').forEach(img => {
             img.addEventListener('click', function() {
