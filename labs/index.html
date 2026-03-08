@@ -40,7 +40,7 @@
         const FILM_PROCESSING_PRODUCT_ID = '7736258691171';
         // No discount code used; pricing/discount handled in Shopify
         // Express processing configuration
-        const EXPRESS_FEE_PER_ROLL = 500; // ₹500 per roll
+        const EXPRESS_FEE_PER_ROLL = 200; // ₹200 per roll
         // Optional: Shopify variant to charge Express per roll (hidden product recommended)
         // Can be overridden via URL param: ?express=gid://shopify/ProductVariant/123 or 123
         let EXPRESS_VARIANT_ID = '43760587767907';
@@ -916,7 +916,7 @@
                 <!-- Express Processing Option -->
                 <div class="return-negatives-container">
                     <label>
-                        <input type="checkbox" id="express-processing"> Express - same day delivery (+₹500 per roll)
+                        <input type="checkbox" id="express-processing"> <strong><em>Express!!!</em></strong> - same day delivery (+₹200 per roll)
                     </label>
                 </div>
 
@@ -958,6 +958,23 @@
                 </div>
                 <div class="modal-buttons" style="margin-top: 20px;">
                     <button type="button" class="confirm-order" onclick="closeVariantIdsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Express Upsell Modal -->
+        <div class="modal" id="expressUpsellModal">
+            <div class="modal-content">
+                <h2>Upgrade your order to <strong style="font-weight: 800; letter-spacing: 0.03em;">EXPRESS DELIVERY!!!</strong></h2>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    Get your <strong style="color: red;">film scans the same day</strong>!!!
+                </p>
+                <p style="font-size: 12px; margin-top: 8px; color: #555;">
+                    Upgrade your order and get same-day delivery of your film scans for an extra <strong>₹200</strong> per roll, as long as your films reach us before <strong>3 pm</strong>.
+                </p>
+                <div class="modal-buttons">
+                    <button type="button" class="confirm-order" id="expressUpsellUpgrade">Yes, upgrade to EXPRESS</button>
+                    <button type="button" class="cancel-order" id="expressUpsellSkip">No, I'll wait 1–3 days</button>
                 </div>
             </div>
         </div>
@@ -1440,7 +1457,7 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             return;
         }
 
-        // Store order data and show upsell modal directly (skip customer form)
+        // Store order data so we can optionally show express upsell before checkout
         pendingOrderData = {
             items: items,
             customerInfo: {},
@@ -1448,11 +1465,26 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             returnNegatives: document.getElementById('return-negatives').checked,
             expressProcessing: document.getElementById('express-processing').checked
         };
-        
-        // Go directly to Shopify checkout
-        createShopifyCart(pendingOrderData, []).then(cart => {
-            if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
-        });
+
+        proceedToCheckoutWithExpressUpsell();
+    }
+
+    function proceedToCheckoutWithExpressUpsell() {
+        if (!pendingOrderData) return;
+
+        const expressCheckbox = document.getElementById('express-processing');
+        const expressAlreadySelected = !!expressCheckbox?.checked;
+        const upsellModal = document.getElementById('expressUpsellModal');
+
+        // If user already chose express or modal is missing, go straight to checkout
+        if (expressAlreadySelected || !upsellModal) {
+            createShopifyCart(pendingOrderData, []).then(cart => {
+                if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+            });
+            return;
+        }
+
+        upsellModal.classList.add('active');
     }
 
     // Carousel Functionality
@@ -1523,6 +1555,41 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         
         const delay = Math.random() * 2000 + 3000;
         setTimeout(showAddressChangePopup, delay);
+
+        // Express upsell modal buttons
+        const expressUpgradeBtn = document.getElementById('expressUpsellUpgrade');
+        const expressSkipBtn = document.getElementById('expressUpsellSkip');
+        const expressUpsellModal = document.getElementById('expressUpsellModal');
+
+        if (expressUpgradeBtn && expressSkipBtn && expressUpsellModal) {
+            expressUpgradeBtn.addEventListener('click', () => {
+                const expressCheckbox = document.getElementById('express-processing');
+                if (expressCheckbox) {
+                    expressCheckbox.checked = true;
+                }
+                if (pendingOrderData) {
+                    pendingOrderData.expressProcessing = true;
+                }
+                expressUpsellModal.classList.remove('active');
+                createShopifyCart(pendingOrderData, []).then(cart => {
+                    if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+                });
+            });
+
+            expressSkipBtn.addEventListener('click', () => {
+                const expressCheckbox = document.getElementById('express-processing');
+                if (expressCheckbox) {
+                    expressCheckbox.checked = false;
+                }
+                if (pendingOrderData) {
+                    pendingOrderData.expressProcessing = false;
+                }
+                expressUpsellModal.classList.remove('active');
+                createShopifyCart(pendingOrderData, []).then(cart => {
+                    if (cart.checkoutUrl) window.location.href = cart.checkoutUrl;
+                });
+            });
+        }
     });
 
 
