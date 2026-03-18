@@ -497,11 +497,13 @@
             if (isNaN(v) || v < 1) qtyInput.value = 1;
         });
 
+        // Add to shared cart
         buyBtn.addEventListener('click', () => {
             if (!variantId) return;
             const qty = parseInt(qtyInput.value, 10) || 1;
-            window.location.href = `https://${NEW_STORE}/cart/${variantId}:${qty}`;
+            window.addToCart({ name: 'LAZY 250', price: 850, quantity: qty, variantId: variantId });
         });
     </script>
+    <script src="cart.js"></script>
 </body>
 </html>
