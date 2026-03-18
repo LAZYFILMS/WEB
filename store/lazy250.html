@@ -502,6 +502,8 @@
             if (!variantId) return;
             const qty = parseInt(qtyInput.value, 10) || 1;
             window.addToCart({ name: 'LAZY 250', price: 850, quantity: qty, variantId: variantId });
+            buyBtn.textContent = 'Added!';
+            setTimeout(() => { buyBtn.textContent = 'Add to Cart'; }, 1200);
         });
     </script>
     <script src="cart.js"></script>
