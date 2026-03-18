@@ -340,6 +340,8 @@
             if (!variantId) return;
             const qty = parseInt(qtyInput.value, 10) || 1;
             window.addToCart({ name: 'Fujifilm Provia 100F RDP 3 (Exp. 2015)', price: 2100, quantity: qty, variantId: variantId });
+            buyBtn.textContent = 'Added!';
+            setTimeout(() => { buyBtn.textContent = 'Add to Cart'; }, 1200);
         });
     </script>
     <script src="cart.js"></script>
