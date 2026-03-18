@@ -456,151 +456,6 @@
             cursor: pointer;
         }
 
-        /* Universal Cart Styles */
-        .universal-cart-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #000;
-            color: #fff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: transform 0.2s;
-        }
-
-        .universal-cart-button:hover {
-            transform: scale(1.05);
-        }
-
-        .cart-count-bubble {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff0000;
-            color: #fff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* Cart Drawer Styles */
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background: #fff;
-            box-shadow: -4px 0 12px rgba(0,0,0,0.1);
-            z-index: 1001;
-            transition: right 0.3s;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .cart-drawer.active {
-            right: 0;
-        }
-
-        .cart-drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .cart-items-container {
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-
-        .cart-item {
-            display: flex;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-item-details {
-            flex: 1;
-            margin-right: 15px;
-        }
-
-        .cart-item-details h4 {
-            font-family: "stratos-black", sans-serif;
-            font-size: 16px;
-            margin: 0 0 5px 0;
-        }
-
-        .cart-item-details p {
-            font-size: 14px;
-            margin: 0;
-            color: #666;
-        }
-
-        .cart-item button {
-            background: #fff;
-            color: #ff0000;
-            border: 1px solid #ff0000;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-
-        .cart-item button:hover {
-            background: #ff0000;
-            color: #fff;
-        }
-
-        .cart-drawer-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: #fff;
-            border-top: 1px solid #eee;
-        }
-
-        .cart-total {
-            font-family: "stratos-black", sans-serif;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .checkout-button {
-            width: 100%;
-            background: #000;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 4px;
-            font-family: "stratos-black", sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .checkout-button:hover {
-            opacity: 0.9;
-        }
 
         /* Add mobile responsive styles */
         @media (max-width: 768px) {
@@ -1062,26 +917,6 @@
         <img class="modal-content" src="" alt="Full size image">
     </div>
 
-    <!-- Universal Cart Button -->
-    <div class="universal-cart-button" onclick="toggleCartDrawer()">
-        🛒
-        <span class="cart-count-bubble">0</span>
-    </div>
-
-    <!-- Cart Drawer -->
-    <div class="cart-drawer">
-        <div class="cart-drawer-header">
-            <h3>Your Cart</h3>
-            <button onclick="toggleCartDrawer()">✕</button>
-        </div>
-        <div class="cart-items-container">
-            <!-- Cart items will be dynamically added here -->
-        </div>
-        <div class="cart-drawer-footer">
-            <div class="cart-total">Total: ₹0</div>
-            <button class="checkout-button" onclick="universalCheckout()">Checkout</button>
-        </div>
-    </div>
 
     <script>
         // Add smooth scrolling for both galleries
@@ -1211,10 +1046,37 @@
 
 
         function updateCartSummary() {
-            const total = universalCart.store.total;
+            const allItems = [...universalCart.store.items, ...universalCart.labs.items];
+            const total = universalCart.store.total + universalCart.labs.total;
+
+            if (allItems.length === 0) {
+                document.querySelector('.cart-summary').innerHTML = `
+                    <h3>Cart Summary</h3>
+                    <p style="color:#999; font-size:14px;">Your cart is empty.</p>
+                `;
+                return;
+            }
+
+            const itemRows = allItems.map(item => {
+                const type = universalCart.store.items.includes(item) ? 'store' : 'labs';
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <span style="font-size:14px; font-weight:600;">${item.name}</span>
+                            <span style="font-size:13px; color:#666; margin-left:8px;">x${item.quantity}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size:14px;">₹${item.price}</span>
+                            <button onclick="removeFromCart('${type}', ${item.id})" style="background:none; border:none; color:#ff0000; cursor:pointer; font-size:12px; padding:0; text-decoration:underline;">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
             document.querySelector('.cart-summary').innerHTML = `
                 <h3>Cart Summary</h3>
-                <p>Total: ₹${total}</p>
+                ${itemRows}
+                <p style="font-weight:bold; margin-top:12px; font-size:16px;">Total: ₹${total}</p>
             `;
         }
 
@@ -1343,46 +1205,9 @@
             }
         };
 
-        function toggleCartDrawer() {
-            document.querySelector('.cart-drawer').classList.toggle('active');
-        }
 
         function updateUniversalCart() {
-            const totalItems = universalCart.store.items.length + universalCart.labs.items.length;
-            const totalPrice = universalCart.store.total + universalCart.labs.total;
-            
-            // Update cart bubble
-            document.querySelector('.cart-count-bubble').textContent = totalItems;
-            
-            // Update cart drawer
-            const itemsContainer = document.querySelector('.cart-items-container');
-            itemsContainer.innerHTML = '';
-            
-            // Add store items
-            universalCart.store.items.forEach(item => {
-                itemsContainer.appendChild(createCartItemElement(item, 'store'));
-            });
-            
-            // Add lab items
-            universalCart.labs.items.forEach(item => {
-                itemsContainer.appendChild(createCartItemElement(item, 'labs'));
-            });
-            
-            // Update total
-            document.querySelector('.cart-total').textContent = `Total: ₹${totalPrice}`;
-        }
-
-        function createCartItemElement(item, type) {
-            const div = document.createElement('div');
-            div.className = 'cart-item';
-            div.innerHTML = `
-                <div class="cart-item-details">
-                    <h4>${item.name}</h4>
-                    <p>₹${item.price}</p>
-                </div>
-                <button onclick="removeFromCart('${type}', ${item.id})">Remove</button>
-            `;
-            return div;
+            updateCartSummary();
         }
 
         function universalCheckout() {
