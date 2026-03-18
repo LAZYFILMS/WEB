@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fujifilm Provia 100F RDP 3 – LAZY FILM STORE</title>
+    <link href="https://use.typekit.net/[your-kit-code].css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "stratos", monospace;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+        .container {
+            width: 600px;
+            padding: 30px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            background-color: #fff;
+            margin: 20px auto;
+            position: relative;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-family: "stratos-black", sans-serif;
+            font-size: 24px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .develop-link {
+            font-family: "stratos-black", sans-serif;
+            text-decoration: underline;
+            color: #000;
+            font-size: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: underline;
+            color: #0000EE;
+        }
+        .product-layout {
+            margin-bottom: 25px;
+        }
+        .product-layout::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+        .product-thumb {
+            float: left;
+            width: 270px;
+            margin-right: 25px;
+            margin-bottom: 15px;
+        }
+        .product-thumb-main {
+            border: 1px solid #000;
+            width: 270px;
+            overflow: hidden;
+        }
+        .product-thumb-main img {
+            width: 270px;
+            height: 270px;
+            object-fit: cover;
+            display: block;
+        }
+        .product-header-group h1 {
+            font-family: "advercase", "stratos-black", sans-serif;
+            font-size: 26px;
+            margin: 15px 0 5px 0;
+        }
+        .product-price {
+            font-family: "stratos-black", sans-serif;
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .meta {
+            font-size: 13px;
+            margin: 0 0 15px 0;
+            padding-left: 18px;
+        }
+        .meta li {
+            margin-bottom: 2px;
+        }
+        .product-description {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .buy-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 15px 0;
+            flex-wrap: nowrap;
+        }
+        .quantity-input {
+            width: 70px;
+            height: 36px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            text-align: center;
+            font-family: "stratos", monospace;
+            font-size: 14px;
+        }
+        .quantity-input::-webkit-outer-spin-button,
+        .quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .quantity-input { -moz-appearance: textfield; }
+        .buy-button {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #000;
+            color: #fff;
+            border-radius: 4px;
+            font-family: "stratos-black", sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .section-title {
+            font-family: "stratos-black", sans-serif;
+            font-size: 16px;
+            margin: 25px 0 10px 0;
+            text-transform: uppercase;
+        }
+        .specs-list {
+            font-size: 13px;
+            margin: 0;
+            padding-left: 18px;
+        }
+        .other-products {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+        .other-products h2 {
+            font-family: "stratos-black", sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin: 0 0 15px 0;
+        }
+        .other-products-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .other-products-grid::-webkit-scrollbar { height: 6px; }
+        .other-products-grid::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        .other-product-card {
+            width: 100px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .other-product-card a { color: inherit; text-decoration: none; }
+        .other-product-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border: 1px solid #000;
+            margin-bottom: 6px;
+        }
+        .other-product-card .other-product-title {
+            font-family: "stratos-black", sans-serif;
+            font-size: 11px;
+            text-transform: uppercase;
+            line-height: 1.2;
+            margin: 0 0 2px 0;
+        }
+        .other-product-card .other-product-price { font-size: 12px; margin: 0; }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        footer a {
+            font-family: "stratos", sans-serif;
+            font-size: 12px;
+            color: #000;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        @media (max-width: 768px) {
+            .container { width: 90%; margin: 10px auto; padding: 15px; border-width: 1px; }
+            .product-thumb { float: none; width: 100%; margin-right: 0; margin-bottom: 15px; }
+            .product-thumb-main { width: 100%; }
+            .product-thumb-main img { width: 100%; height: 260px; }
+            .other-product-card { width: 90px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="title">LAZY FILM STORE</span>
+            <a href="https://lazyfilms.in/labs" class="develop-link">DEVELOP FILM</a>
+        </header>
+
+        <a href="index.html" class="back-link">← Checkout All Films</a>
+
+        <div class="product-layout">
+            <div class="product-thumb">
+                <div class="product-thumb-main">
+                    <img src="images/provia.png" alt="Fujifilm Provia 100F RDP 3">
+                </div>
+            </div>
+
+            <div class="product-main">
+                <div class="product-header-group">
+                    <h1>Fujifilm Provia 100F RDP 3 — Expired Slide Film Stock</h1>
+                    <p class="product-price">₹2100</p>
+                    <ul class="meta">
+                        <li>100 ISO</li>
+                        <li>Colour slide (E‑6)</li>
+                        <li>Expired 2015 · Cold‑stored</li>
+                    </ul>
+                </div>
+
+                <div class="buy-row">
+                    <input type="number" class="quantity-input" id="provia-qty" value="1" min="1">
+                    <button class="buy-button" id="provia-buy">Add to Cart</button>
+                </div>
+
+                <div class="product-description">
+                    <p>Provia 100F RDP III is often regarded as one of the finest slide films ever made: extremely sharp with smooth grain, neutral colour and beautiful tonality. Even as an expired, cold‑stored roll, it retains much of that character while adding a slight unpredictability and charm.</p>
+                    <p>Because this batch expired in 2015 but has been kept cold, you can generally shoot it at box speed without compensation. Expect strong detail, clean highlights and rich but not overly saturated colour — especially in skies and skin tones.</p>
+                </div>
+
+                <h2 class="section-title">Best Results</h2>
+                <ul class="specs-list">
+                    <li>Rate at EI 100; if you want extra safety, overexpose by 1/3–2/3 stop</li>
+                    <li>Process in E‑6 for true slide positives</li>
+                    <li>Works best in controlled daylight or open shade with even light</li>
+                    <li>Recommended for experienced shooters comfortable with narrow slide‑film latitude</li>
+                </ul>
+            </div>
+        </div>
+
+        <section class="other-products">
+            <h2>Other films</h2>
+            <div class="other-products-grid">
+                <div class="other-product-card">
+                    <a href="lazy500.html">
+                        <img src="images/lazy500-thumb.jpg" alt="LAZY 500">
+                        <p class="other-product-title">LAZY 500</p>
+                        <p class="other-product-price">₹850</p>
+                    </a>
+                </div>
+                <div class="other-product-card">
+                    <a href="lazy250.html">
+                        <img src="images/lazy250-thumb.jpg" alt="LAZY 250">
+                        <p class="other-product-title">LAZY 250</p>
+                        <p class="other-product-price">₹850</p>
+                    </a>
+                </div>
+                <div class="other-product-card">
+                    <a href="lazymonochrome.html">
+                        <img src="images/lazy-monochrome-thumb.jpg" alt="LAZY Monochrome">
+                        <p class="other-product-title">LAZY Monochrome</p>
+                        <p class="other-product-price">₹850</p>
+                    </a>
+                </div>
+                <div class="other-product-card">
+                    <a href="superia800.html">
+                        <img src="images/Superia-thumb.jpg" alt="Superia Xtra 800">
+                        <p class="other-product-title">Superia Xtra 800</p>
+                        <p class="other-product-price">₹900</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <a href="https://www.lazyfilms.in/labs/CONTACT">Contact</a>
+            <a href="https://www.lazyfilms.in/labs/REFUND">Refund Policy</a>
+            <a href="https://www.lazyfilms.in/labs/T&C">Terms & Conditions</a>
+            <a href="https://www.lazyfilms.in/labs/PRIVACY_POLICY">Privacy Policy</a>
+        </footer>
+    </div>
+
+    <script>
+        const NEW_STORE = 'lazy-film-store.myshopify.com';
+        const NEW_PRODUCT_ID = '9183375589603';
+        let variantId = null;
+
+        const buyBtn = document.getElementById('provia-buy');
+        const qtyInput = document.getElementById('provia-qty');
+
+        buyBtn.disabled = true;
+        buyBtn.textContent = 'Loading...';
+
+        fetch(`https://${NEW_STORE}/products.json?limit=250`)
+            .then(r => r.json())
+            .then(({ products }) => {
+                const product = products.find(p => String(p.id) === NEW_PRODUCT_ID);
+                if (product && product.variants.length) {
+                    variantId = String(product.variants[0].id);
+                    if (!product.variants[0].available) {
+                        buyBtn.textContent = 'Out of Stock';
+                    } else {
+                        buyBtn.disabled = false;
+                        buyBtn.textContent = 'Add to Cart';
+                    }
+                } else {
+                    buyBtn.textContent = 'Unavailable';
+                }
+            })
+            .catch(() => {
+                buyBtn.disabled = false;
+                buyBtn.textContent = 'Add to Cart';
+            });
+
+        qtyInput.addEventListener('input', () => {
+            let v = parseInt(qtyInput.value, 10);
+            if (isNaN(v) || v < 1) qtyInput.value = 1;
+        });
+
+        buyBtn.addEventListener('click', () => {
+            if (!variantId) return;
+            const qty = parseInt(qtyInput.value, 10) || 1;
+            window.location.href = `https://${NEW_STORE}/cart/${variantId}:${qty}`;
+        });
+    </script>
+</body>
+</html>
