@@ -24,7 +24,7 @@
         }
         saveCart(cart);
         renderCart();
-        openDrawer();
+        if (typeof window.onCartUpdate === 'function') window.onCartUpdate();
     };
 
     window.removeFromCart = function (id) {
@@ -32,6 +32,7 @@
         cart.items = cart.items.filter(function (i) { return i.id !== id; });
         saveCart(cart);
         renderCart();
+        if (typeof window.onCartUpdate === 'function') window.onCartUpdate();
     };
 
     window.checkoutCart = function () {
@@ -41,10 +42,10 @@
         window.location.href = 'https://' + STORE + '/cart/' + items;
     };
 
-    window.openCartDrawer = function () { openDrawer(); };
-
     // --- Drawer helpers ---
+    var drawerOpenAllowed = false;
     function openDrawer() {
+        if (!drawerOpenAllowed) return;
         var d = document.getElementById('lf-cart-drawer');
         var o = document.getElementById('lf-cart-overlay');
         if (d) d.classList.add('open');
@@ -102,8 +103,9 @@
             '#lf-cart-badge{position:absolute;top:-5px;right:-5px;background:#e00;color:#fff;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}',
             '#lf-cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s;}',
             '#lf-cart-overlay.open{opacity:1;pointer-events:all;}',
-            '#lf-cart-drawer{position:fixed;top:0;right:-400px;width:370px;max-width:100vw;height:100%;background:#fff;z-index:10000;display:flex;flex-direction:column;transition:right .3s ease;box-shadow:-4px 0 24px rgba(0,0,0,.15);}',
-            '#lf-cart-drawer.open{right:0;}',
+            '#lf-cart-drawer{position:fixed;top:0;right:0;width:370px;max-width:100vw;height:100%;background:#fff;z-index:10000;display:flex;flex-direction:column;transform:translateX(100%);box-shadow:-4px 0 24px rgba(0,0,0,.15);}',
+            '#lf-cart-drawer.open{transform:translateX(0);}',
+            '#lf-cart-drawer.lf-ready{transition:transform .3s ease;}',
             '.lf-drawer-header{display:flex;justify-content:space-between;align-items:center;padding:20px 20px 16px;border-bottom:2px solid #000;}',
             '.lf-drawer-title{font-family:"stratos-black","stratos",sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;margin:0;letter-spacing:.5px;}',
             '.lf-close-btn{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;padding:0;color:#000;}',
@@ -124,7 +126,7 @@
             '#lf-cart-total{font-family:"stratos-black","stratos",sans-serif;font-size:15px;font-weight:700;}',
             '.lf-checkout-btn{width:100%;background:#000;color:#fff;border:none;padding:14px;font-size:13px;font-family:"stratos-black","stratos",sans-serif;text-transform:uppercase;cursor:pointer;letter-spacing:1px;transition:background .15s;}',
             '.lf-checkout-btn:hover{background:#333;}',
-            '@media(max-width:420px){#lf-cart-drawer{width:100%;right:-100%;}}'
+            '@media(max-width:420px){#lf-cart-drawer{width:100%;}}'
         ].join('');
         document.head.appendChild(style);
 
@@ -152,11 +154,23 @@
 
         document.body.appendChild(wrap);
 
+        // Enable transition only after first paint so the drawer doesn't animate on page load
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                var drawer = document.getElementById('lf-cart-drawer');
+                if (drawer) drawer.classList.add('lf-ready');
+            });
+        });
+
         // Wire up events using IDs (safe after insertion)
         document.getElementById('lf-cart-overlay').addEventListener('click', closeDrawer);
         document.getElementById('lf-close-btn').addEventListener('click', closeDrawer);
         document.getElementById('lf-checkout-btn').addEventListener('click', window.checkoutCart);
-        document.getElementById('lf-cart-btn').addEventListener('click', openDrawer);
+        document.getElementById('lf-cart-btn').addEventListener('click', function () {
+            drawerOpenAllowed = true;
+            openDrawer();
+            drawerOpenAllowed = false;
+        });
 
         renderCart();
     }
