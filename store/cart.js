@@ -1,6 +1,6 @@
 // Shared cart for LAZY FILM STORE — persists across all pages via localStorage
 (function () {
-    const STORE = 'lazy-film-store.myshopify.com';
+    const STORE = 'https://store.lazyfilms.in';
     const KEY = 'lf_cart';
 
     // --- State helpers ---
@@ -14,13 +14,13 @@
 
     // --- Public API ---
     window.addToCart = function (item) {
-        // item: { name, price, quantity, variantId }
+        // item: { name, price, quantity, productId }
         var cart = getCart();
-        var existing = cart.items.find(function (i) { return i.variantId === item.variantId; });
+        var existing = cart.items.find(function (i) { return i.productId === item.productId; });
         if (existing) {
             existing.quantity += item.quantity;
         } else {
-            cart.items.push({ id: Date.now(), name: item.name, price: item.price, quantity: item.quantity, variantId: item.variantId });
+            cart.items.push({ id: Date.now(), name: item.name, price: item.price, quantity: item.quantity, productId: item.productId });
         }
         saveCart(cart);
         renderCart();
@@ -38,8 +38,8 @@
     window.checkoutCart = function () {
         var cart = getCart();
         if (!cart.items.length) { alert('Your cart is empty.'); return; }
-        var items = cart.items.map(function (i) { return i.variantId + ':' + i.quantity; }).join(',');
-        window.location.href = 'https://' + STORE + '/cart/' + items;
+        var items = cart.items.map(function (i) { return i.productId + ':' + i.quantity; }).join(',');
+        window.location.href = STORE + '/?lf_cart=' + items;
     };
 
     // --- Drawer helpers ---
