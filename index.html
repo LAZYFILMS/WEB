@@ -877,7 +877,6 @@
             <img src="images/samples/sample5.jpg" alt="Sample 5" class="gallery-image">
         </div>
     </div>
-
     <!-- Lazy 250 Sample Photos -->
     <div id="sample-gallery-250" class="sample-photos">
         <h3 class="gallery-title">LAZY250</h3>
@@ -945,26 +944,16 @@
             });
         });
 
-        // Simple cart functionality
-        const VARIANT_IDS = {
-            'lazy500': '43200428507235',
-            'lazy250': '43269458690147',
-            'lazymonochrome': '43841780514915',
-            'fujifilmprovia': '43863277437027',
-            'superia800': '43881964961891'
+        // WooCommerce store
+        const WC_STORE = 'https://store.lazyfilms.in';
+        const WC_PRODUCT_IDS = {
+            lazy500:        11,
+            lazy250:        20,
+            lazymonochrome: 26,
+            fujifilmprovia: 31,
+            superia800:     34
         };
 
-        // Shopify store
-        const NEW_STORE = 'lazy-film-store.myshopify.com';
-        const NEW_PRODUCT_IDS = {
-            'lazy500':       '9183375261923',
-            'lazy250':       '9183375392995',
-            'superia800':    '9183375687907',
-            'lazymonochrome':'9183375491299',
-            'fujifilmprovia':'9183375589603'
-        };
-
-        // Disable all add-to-cart buttons until variant IDs are loaded from new store
         function lockAddToCartButtons() {
             document.querySelectorAll('.add-to-cart').forEach(btn => {
                 btn.disabled = true;
@@ -973,62 +962,33 @@
             });
         }
 
-        // Re-enable a single add-to-cart button once its variant ID is ready
-        function unlockAddToCartButton(productKey) {
-            const btn = document.querySelector(`.add-to-cart[data-product="${productKey}"]`);
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = btn.dataset.originalText || 'Add to Cart';
-            }
-        }
-
-        // Fetch variant ID + check stock for one product from new store
-        async function fetchNewVariantId(productKey, productsData) {
-            const newProductId = NEW_PRODUCT_IDS[productKey];
-            if (!newProductId) return;
-
-            try {
-                const product = productsData.find(p => String(p.id) === String(newProductId));
-                if (!product || !product.variants.length) return;
-
-                const variant = product.variants[0];
-                const variantId = String(variant.id);
-
-                // Update variant ID on add-to-cart button
-                const addToCartBtn = document.querySelector(`.add-to-cart[data-product="${productKey}"]`);
-                if (addToCartBtn) addToCartBtn.dataset.variant = variantId;
-                VARIANT_IDS[productKey] = variantId;
-
-                // Check stock and grey out if unavailable
-                const stockStatus = document.getElementById(`stock-status-${productKey}`);
-                if (!variant.available) {
-                    const productActions = document.querySelector(`.add-to-cart[data-product="${productKey}"]`)
-                        ?.closest('.product-actions');
-                    if (productActions) productActions.classList.add('out-of-stock');
-                    if (stockStatus) stockStatus.style.display = 'block';
-                    // Restore button text even when out of stock (CSS handles the disabled state)
-                    unlockAddToCartButton(productKey);
-                } else {
-                    if (stockStatus) stockStatus.style.display = 'none';
-                    unlockAddToCartButton(productKey);
-                }
-            } catch (err) {
-                console.error(`Failed to sync variant for ${productKey}:`, err);
-                unlockAddToCartButton(productKey);
-            }
-        }
-
-        // Fetch all variant IDs from new store in one request, then unlock buttons
-        async function fetchAllNewVariantIds() {
+        // Fetch stock status for all products from WooCommerce Store API
+        async function fetchAllWooCommerceStock() {
             lockAddToCartButtons();
             try {
-                const response = await fetch(`https://${NEW_STORE}/products.json?limit=250`);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const { products } = await response.json();
-                await Promise.all(Object.keys(NEW_PRODUCT_IDS).map(key => fetchNewVariantId(key, products)));
+                const res = await fetch(`${WC_STORE}/wp-json/wc/store/v1/products?per_page=50`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const products = await res.json();
+
+                Object.keys(WC_PRODUCT_IDS).forEach(key => {
+                    const wcId = WC_PRODUCT_IDS[key];
+                    const product = products.find(p => p.id === wcId);
+                    const btn = document.querySelector(`.add-to-cart[data-product="${key}"]`);
+                    if (!btn) return;
+
+                    if (product && !product.is_in_stock) {
+                        const actions = btn.closest('.product-actions');
+                        if (actions) actions.classList.add('out-of-stock');
+                        const stockEl = document.getElementById(`stock-status-${key}`);
+                        if (stockEl) stockEl.style.display = 'block';
+                        btn.textContent = 'Out of Stock';
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = btn.dataset.originalText || 'Add to Cart';
+                    }
+                });
             } catch (err) {
-                console.error('Failed to fetch products from new store:', err);
-                // On failure, unlock buttons so store still works (falls back to old variant IDs)
+                console.error('Failed to fetch WooCommerce stock:', err);
                 document.querySelectorAll('.add-to-cart').forEach(btn => {
                     btn.disabled = false;
                     btn.textContent = btn.dataset.originalText || 'Add to Cart';
@@ -1048,18 +1008,18 @@
 
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
-                const productId = this.dataset.product;
-                const variantId = this.dataset.variant;
+                const productKey = this.dataset.product;
+                const wcProductId = WC_PRODUCT_IDS[productKey];
                 const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
                 const quantity = parseInt(quantityInput.value) || 1;
 
-                if (!variantId) {
+                if (!wcProductId) {
                     alert('Product not ready yet. Please wait a moment and try again.');
                     return;
                 }
 
-                const info = PRODUCT_CATALOGUE[productId] || { name: productId, price: 0 };
-                window.addToCart({ name: info.name, price: info.price, quantity: quantity, variantId: variantId });
+                const info = PRODUCT_CATALOGUE[productKey] || { name: productKey, price: 0 };
+                window.addToCart({ name: info.name, price: info.price, quantity: quantity, productId: wcProductId });
 
                 this.textContent = 'Added!';
                 const btn = this;
@@ -1163,8 +1123,8 @@
         // Start carousel when page loads
         document.addEventListener('DOMContentLoaded', function() {
             startCarousel();
-            fetchAllNewVariantIds();
-            window.onCartUpdate(); // Render any cart items already in localStorage
+            fetchAllWooCommerceStock();
+            window.onCartUpdate();
         });
 
         // Add see more functionality for descriptions
