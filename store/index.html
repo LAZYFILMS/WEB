@@ -151,13 +151,14 @@
 
         /* Out of stock styling */
         .out-of-stock {
-            opacity: 0.6;
+            opacity: 0.45;
+        }
+        .out-of-stock .product-actions {
             pointer-events: none;
         }
-        .out-of-stock .quantity-control,
         .out-of-stock .add-to-cart {
-            opacity: 0.5;
-            pointer-events: none;
+            background: #999;
+            cursor: not-allowed;
         }
         .stock-status {
             color: #ff0000;
@@ -977,8 +978,8 @@
                     if (!btn) return;
 
                     if (product && !product.is_in_stock) {
-                        const actions = btn.closest('.product-actions');
-                        if (actions) actions.classList.add('out-of-stock');
+                        const card = btn.closest('.product-details');
+                        if (card) card.classList.add('out-of-stock');
                         const stockEl = document.getElementById(`stock-status-${key}`);
                         if (stockEl) stockEl.style.display = 'block';
                         btn.textContent = 'Out of Stock';
