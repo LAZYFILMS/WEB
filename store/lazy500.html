@@ -165,6 +165,11 @@
             cursor: pointer;
             white-space: nowrap;
         }
+        .buy-button.out-of-stock {
+            background: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
         .section-title {
             font-family: "stratos-black", sans-serif;
             font-size: 16px;
@@ -445,35 +450,27 @@
     </div>
 
     <script>
-        const NEW_STORE = 'lazy-film-store.myshopify.com';
-        const NEW_PRODUCT_ID = '9183375261923';
-        let variantId = null;
+        const WC_STORE = 'https://store.lazyfilms.in';
+        const WC_PRODUCT_ID = 11;
 
         const buyBtn = document.getElementById('lazy500-buy');
         const qtyInput = document.getElementById('lazy500-qty');
 
-        // Lock button and fetch variant ID from new store
         buyBtn.disabled = true;
         buyBtn.textContent = 'Loading...';
 
-        fetch(`https://${NEW_STORE}/products.json?limit=250`)
+        fetch(`${WC_STORE}/wp-json/wc/store/v1/products/${WC_PRODUCT_ID}`)
             .then(r => r.json())
-            .then(({ products }) => {
-                const product = products.find(p => String(p.id) === NEW_PRODUCT_ID);
-                if (product && product.variants.length) {
-                    variantId = String(product.variants[0].id);
-                    if (!product.variants[0].available) {
-                        buyBtn.textContent = 'Out of Stock';
-                    } else {
-                        buyBtn.disabled = false;
-                        buyBtn.textContent = 'Add to Cart';
-                    }
+            .then(product => {
+                if (!product.is_in_stock) {
+                    buyBtn.textContent = 'Out of Stock';
+                    buyBtn.classList.add('out-of-stock');
                 } else {
-                    buyBtn.textContent = 'Unavailable';
+                    buyBtn.disabled = false;
+                    buyBtn.textContent = 'Add to Cart';
                 }
             })
             .catch(() => {
-                // On fetch failure, unlock with a fallback
                 buyBtn.disabled = false;
                 buyBtn.textContent = 'Add to Cart';
             });
@@ -510,9 +507,9 @@
 
         // Add to shared cart
         buyBtn.addEventListener('click', () => {
-            if (!variantId) return;
+            if (buyBtn.disabled) return;
             const qty = parseInt(qtyInput.value, 10) || 1;
-            window.addToCart({ name: 'LAZY 500', price: 850, quantity: qty, variantId: variantId });
+            window.addToCart({ name: 'LAZY 500', price: 850, quantity: qty, productId: WC_PRODUCT_ID });
             buyBtn.textContent = 'Added!';
             setTimeout(() => { buyBtn.textContent = 'Add to Cart'; }, 1200);
         });
