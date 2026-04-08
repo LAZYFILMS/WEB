@@ -44,6 +44,9 @@
         // Optional: Shopify variant to charge Express per roll (hidden product recommended)
         // Can be overridden via URL param: ?express=gid://shopify/ProductVariant/123 or 123
         let EXPRESS_VARIANT_ID = '43760587767907';
+        // Postcard prints (Shopify product 7993326567523)
+        const POSTCARD_PRINTS_FEE_PER_ROLL = 800;
+        let POSTCARD_PRINTS_VARIANT_ID = '44106916233315';
     </script>
 </head>
 <style>
@@ -158,6 +161,7 @@
         font-size: 14px;
         height: 36px;
         min-width: 100px;
+        margin-top: 4px;
         margin-bottom: 20px;
     }
 
@@ -296,6 +300,17 @@
 
     .return-negatives-container {
         margin: 20px 0;
+    }
+
+    .postcard-new-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #ff1744;
+        text-shadow: 0 0 3px rgba(255, 23, 68, 0.45);
+        margin-left: 8px;
+        vertical-align: middle;
     }
 
     textarea {
@@ -897,14 +912,11 @@
 
         <!-- Order Form Section -->
         <div class="order-box">
-            <button type="button" class="add-roll-btn" onclick="addNewRoll()">
-                Add Roll
-            </button>
-            
             <form id="order-form">
                 <div id="rolls-container">
                     <!-- Rolls will be added dynamically -->
                 </div>
+                <button type="button" class="add-roll-btn" onclick="addNewRoll()">+ Add Roll</button>
 
                 <!-- Return Negatives Option -->
                 <div class="return-negatives-container">
@@ -916,7 +928,14 @@
                 <!-- Express Processing Option -->
                 <div class="return-negatives-container">
                     <label>
-                        <input type="checkbox" id="express-processing"> <strong><em>Express!!!</em></strong> - same day delivery (+₹200 per roll)
+                        <input type="checkbox" id="express-processing"> <strong>EXPRESS!!!</strong> - same day delivery (+₹200 per roll)
+                    </label>
+                </div>
+
+                <!-- Postcard Prints -->
+                <div class="return-negatives-container">
+                    <label>
+                        <input type="checkbox" id="postcard-prints"> Postcard Prints (+₹800 per roll) <span class="postcard-new-badge">NEW</span>
                     </label>
                 </div>
 
@@ -1133,6 +1152,13 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             });
             total += EXPRESS_FEE_PER_ROLL * totalRolls;
         }
+        if (document.getElementById('postcard-prints')?.checked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                totalRolls += parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            });
+            total += POSTCARD_PRINTS_FEE_PER_ROLL * totalRolls;
+        }
         return total;
     }
 
@@ -1141,6 +1167,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         document.getElementById('return-negatives').checked = false;
         const express = document.getElementById('express-processing');
         if (express) express.checked = false;
+        const postcard = document.getElementById('postcard-prints');
+        if (postcard) postcard.checked = false;
         document.querySelector('textarea').value = '';
         updateOrderSummary();
     }
@@ -1222,6 +1250,22 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                         <h4>Express - same day delivery × ${totalRolls}</h4>
                     </div>
                     <span>₹${expressTotal}</span>
+                </div>`;
+        }
+
+        if (document.getElementById('postcard-prints')?.checked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                totalRolls += parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            });
+            const postcardTotal = POSTCARD_PRINTS_FEE_PER_ROLL * totalRolls;
+            total += postcardTotal;
+            cartHtml += `
+                <div class="cart-item">
+                    <div class="cart-item-details">
+                        <h4>Postcard Prints × ${totalRolls}</h4>
+                    </div>
+                    <span>₹${postcardTotal}</span>
                 </div>`;
         }
 
@@ -1350,6 +1394,18 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             li.innerHTML = `<span>Express - same day delivery × ${totalRolls}</span><span>₹${expressTotal}</span>`;
             cartItems.appendChild(li);
         }
+
+        if (document.getElementById('postcard-prints')?.checked) {
+            let totalRolls = 0;
+            document.querySelectorAll('.roll-row').forEach(roll => {
+                totalRolls += parseInt(roll.querySelector('input[type="number"]').value) || 0;
+            });
+            const postcardTotal = POSTCARD_PRINTS_FEE_PER_ROLL * totalRolls;
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = `<span>Postcard Prints × ${totalRolls}</span><span>₹${postcardTotal}</span>`;
+            cartItems.appendChild(li);
+        }
     }
 
     function updateCartCount() {
@@ -1382,6 +1438,14 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         updateOrderSummary();
         updateCartDrawer();
     });
+
+    const postcardPrintsEl = document.getElementById('postcard-prints');
+    if (postcardPrintsEl) {
+        postcardPrintsEl.addEventListener('change', () => {
+            updateOrderSummary();
+            updateCartDrawer();
+        });
+    }
 
     // Order state
     let pendingOrderData = null;
@@ -1457,13 +1521,20 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             return;
         }
 
+        const postcardChecked = document.getElementById('postcard-prints')?.checked;
+        if (postcardChecked && !String(POSTCARD_PRINTS_VARIANT_ID || '').trim()) {
+            alert('Postcard Prints variant id is missing. Set POSTCARD_PRINTS_VARIANT_ID in the page script.');
+            return;
+        }
+
         // Store order data so we can optionally show express upsell before checkout
         pendingOrderData = {
             items: items,
             customerInfo: {},
             notes: document.querySelector('textarea').value || '',
             returnNegatives: document.getElementById('return-negatives').checked,
-            expressProcessing: document.getElementById('express-processing').checked
+            expressProcessing: document.getElementById('express-processing').checked,
+            postcardPrints: !!postcardChecked
         };
 
         proceedToCheckoutWithExpressUpsell();
@@ -1551,6 +1622,8 @@ If you've followed this method, we'll develop it at box speed, and it should wor
         document.getElementById('return-negatives').addEventListener('change', updateOrderSummary);
         const express = document.getElementById('express-processing');
         if (express) express.addEventListener('change', updateOrderSummary);
+        const postcardCb = document.getElementById('postcard-prints');
+        if (postcardCb) postcardCb.addEventListener('change', updateOrderSummary);
         updateOrderSummary();
         
         const delay = Math.random() * 2000 + 3000;
@@ -1714,6 +1787,12 @@ If you've followed this method, we'll develop it at box speed, and it should wor
                     if (vid && totalRolls > 0) items.push(`${vid}:${totalRolls}`);
                 }
             }
+            if (orderData.postcardPrints && POSTCARD_PRINTS_VARIANT_ID) {
+                let totalRolls = 0;
+                orderData.items.forEach(i => totalRolls += (i.quantity || 0));
+                const vid = String(POSTCARD_PRINTS_VARIANT_ID).split('/').pop();
+                if (vid && totalRolls > 0) items.push(`${vid}:${totalRolls}`);
+            }
 
             checkoutUrl += items.join(',');
 
@@ -1730,9 +1809,10 @@ If you've followed this method, we'll develop it at box speed, and it should wor
             }).join('\n\n');
 
             const expressNote = orderData.expressProcessing ? '\nExpress: YES - same day delivery (₹500/roll)' : '';
+            const postcardNote = orderData.postcardPrints ? '\nPostcard prints: YES (₹800/roll × total rolls)' : '';
 
             const params = new URLSearchParams({
-                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nNotes: ${orderData.notes}${expressNote}`
+                'note': `ORDER DETAILS:\n\n${orderDetails}\n\nNotes: ${orderData.notes}${expressNote}${postcardNote}`
             });
 
             checkoutUrl += '?' + params.toString();
