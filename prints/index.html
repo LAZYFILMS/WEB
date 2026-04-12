@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Prints! — LAZY FILM LAB</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://fonts.googleapis.com/css2?family=Stratos:wght@900&display=swap" rel="stylesheet" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Agrandir:wght@400;700&display=swap" rel="stylesheet" as="style">
+
+    <style>
+        body {
+            font-family: "Lucida Console", Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            color: #000;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 30px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            background-color: #f9f9f9;
+            min-height: auto;
+        }
+
+        header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .site-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            gap: 7px;
+            box-sizing: border-box;
+        }
+
+        .site-nav > a {
+            font-family: 'Stratos', sans-serif;
+            text-decoration: none;
+            color: #6a6a6a;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            flex: 1 1 0;
+            min-width: 0;
+            line-height: 1.2;
+        }
+
+        .site-nav > a[aria-current='page'] {
+            color: #000;
+        }
+
+        .site-nav > a:not([aria-current='page']):hover {
+            color: #333;
+        }
+
+        .site-nav-sep {
+            flex: 0 0 auto;
+            color: #c4c4c4;
+            font-weight: bold;
+            font-size: 17px;
+            user-select: none;
+            line-height: 1;
+        }
+
+        @media (min-width: 480px) {
+            .site-nav > a {
+                font-size: 18px;
+            }
+
+            .site-nav-sep {
+                font-size: 19px;
+            }
+        }
+
+        @media (min-width: 560px) {
+            .site-nav > a {
+                font-size: 19px;
+            }
+        }
+
+        .order-box {
+            margin-top: 8px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 32px;
+        }
+
+        .section-title {
+            font-family: 'Stratos', sans-serif;
+            font-size: 20px;
+            margin: 0 0 8px;
+            font-weight: bold;
+        }
+
+        .sub {
+            margin: 0 0 24px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .sub p {
+            margin: 0 0 12px;
+        }
+
+        .sub p:last-child {
+            margin-bottom: 0;
+        }
+
+        .prints-fieldset {
+            border: 2px solid #000;
+            border-radius: 8px;
+            margin: 0 0 20px;
+            padding: 16px 18px 18px;
+            background: #fff;
+        }
+
+        .prints-fieldset legend {
+            font-family: 'Stratos', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 0 8px;
+        }
+
+        label.opt {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 12px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        label.opt input {
+            margin-top: 3px;
+        }
+
+        .size-visual-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 14px 18px;
+            margin-top: 14px;
+        }
+
+        .size-visual-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 14px 12px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+            min-width: 108px;
+            box-sizing: border-box;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .size-visual-card:hover {
+            background: #fafafa;
+        }
+
+        .size-visual-card:has(input:checked) {
+            background: #000;
+            color: #fff;
+        }
+
+        .size-visual-card:focus-within {
+            outline: 2px solid #000;
+            outline-offset: 2px;
+        }
+
+        .size-visual-card:has(input:checked):focus-within {
+            outline-color: #fff;
+        }
+
+        .size-visual-card input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .size-canvas-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            min-height: 96px;
+        }
+
+        .size-canvas {
+            display: block;
+            width: auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 3px;
+            background: linear-gradient(148deg, #e4e4e4 0%, #efefef 45%, #d6d6d6 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.65),
+                0 2px 6px rgba(0, 0, 0, 0.12);
+            border: 2px solid #1a1a1a;
+        }
+
+        .size-canvas-img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .size-visual-card:has(input:checked) .size-canvas {
+            background: #111;
+            border-color: #fff;
+            box-shadow:
+                inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Rough real-world scale: taller = larger print; aspect ratio exact per format */
+        .size-canvas--4x6 {
+            height: 64px;
+            aspect-ratio: 4 / 6;
+        }
+
+        .size-canvas--5x7 {
+            height: 74px;
+            aspect-ratio: 5 / 7;
+        }
+
+        .size-canvas--8x10 {
+            height: 88px;
+            aspect-ratio: 8 / 10;
+        }
+
+        .size-label-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-align: center;
+        }
+
+        .size-label-text {
+            font-family: 'Stratos', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+        }
+
+        .size-label-price {
+            font-size: 12px;
+            opacity: 0.85;
+            line-height: 1.3;
+            max-width: 10em;
+        }
+
+        .size-visual-card:has(input:checked) .size-label-price {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 520px) {
+            .size-visual-options {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .size-visual-card {
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                min-width: unset;
+                gap: 16px;
+            }
+
+            .size-canvas-wrap {
+                min-height: unset;
+                flex-shrink: 0;
+            }
+
+            .size-label-block {
+                align-items: flex-start;
+                text-align: left;
+                flex: 1;
+                min-width: 0;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            height: 36px;
+            max-width: 140px;
+        }
+
+        textarea {
+            min-height: 100px;
+            margin-top: 6px;
+            resize: vertical;
+        }
+
+        .qty-row {
+            margin-top: 16px;
+        }
+
+        .roll-print-row {
+            padding: 14px 0;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .roll-print-row:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .roll-print-row .roll-heading {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-family: 'Stratos', sans-serif;
+        }
+
+        .roll-print-row .form-group {
+            margin-bottom: 12px;
+        }
+
+        .roll-print-row .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .mode-panel {
+            display: none;
+        }
+
+        .mode-panel.active {
+            display: block;
+        }
+
+        .err {
+            color: #b00020;
+            font-size: 13px;
+            margin: 10px 0 0;
+            display: none;
+        }
+
+        .err.show {
+            display: block;
+        }
+
+        .place-order {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: inherit;
+        }
+
+        .place-order:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .checkout-estimate {
+            margin-top: 20px;
+            padding: 14px 16px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .checkout-estimate-total {
+            font-family: 'Stratos', sans-serif;
+            font-weight: bold;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+        }
+
+        .checkout-estimate-detail {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        .checkout-estimate-note {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        footer .footer-inner {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        footer a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                margin: 10px auto;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+
+            .order-box {
+                padding: 20px 16px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            footer .footer-inner {
+                gap: 15px;
+            }
+
+            footer a {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="site-nav" aria-label="Site">
+                <a href="https://www.lazyfilms.in/labs/">Develop Film</a>
+                <span class="site-nav-sep" aria-hidden="true">|</span>
+                <a href="https://www.lazyfilms.in/prints/" aria-current="page">Prints</a>
+                <span class="site-nav-sep" aria-hidden="true">|</span>
+                <a href="https://www.lazyfilms.in/store/">Buy Film</a>
+            </nav>
+        </header>
+
+        <div class="order-box">
+            <h2 class="section-title">Get Prints!</h2>
+            <div class="sub">
+                <p>Get digital prints of your film scans with ease. Simply upload the Google Drive link we sent you to have your entire roll printed in your desired size.</p>
+                <p>If you’d like to print only selected images, create a folder with the photos you want printed, upload it to Google Drive, and send us the link.</p>
+            </div>
+
+            <form id="prints-form">
+                <fieldset class="prints-fieldset">
+                    <legend>Order type</legend>
+                    <label class="opt">
+                        <input type="radio" name="mode" value="full_roll" checked>
+                        <span><strong>Full roll</strong> — one price per roll by size (4×6 / 5×7 / 8×10).</span>
+                    </label>
+                    <label class="opt">
+                        <input type="radio" name="mode" value="individual">
+                        <span><strong>Individual prints</strong> — paste a Drive link to the images, say how many to print, pick size (priced per print).</span>
+                    </label>
+                </fieldset>
+
+                <div id="panel-full-roll" class="mode-panel active">
+                    <fieldset class="prints-fieldset">
+                        <legend>Full roll — print size</legend>
+                        <p class="hint" style="margin-top:0">Tap a print to match proportions (4×6, 5×7, 8×10).</p>
+                        <div class="size-visual-options" data-size-group="full" role="presentation">
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_full" value="4x6" checked>
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--4x6" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="180" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">4×6</span>
+                                    <span class="size-label-price">₹800 / roll</span>
+                                </span>
+                            </label>
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_full" value="5x7">
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--5x7" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="168" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">5×7</span>
+                                    <span class="size-label-price">₹900 / roll</span>
+                                </span>
+                            </label>
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_full" value="8x10">
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--8x10" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="150" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">8×10</span>
+                                    <span class="size-label-price">₹1,600 / roll</span>
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+                    <fieldset class="prints-fieldset">
+                        <legend>No. of rolls</legend>
+                        <div class="form-group">
+                            <label for="roll-count">No. of rolls</label>
+                            <input type="number" id="roll-count" min="1" max="99" value="1">
+                        </div>
+                        <p class="hint" style="margin-top:0">For each roll, add the <strong>film name</strong> and its <strong>Google Drive</strong> folder link below.</p>
+                        <div id="roll-rows-wrap"></div>
+                    </fieldset>
+                </div>
+
+                <div id="panel-individual" class="mode-panel">
+                    <fieldset class="prints-fieldset">
+                        <legend>Google Drive link</legend>
+                        <p class="hint" style="margin-top:0">Required. One folder with all images to print.</p>
+                        <input type="text" id="drive-individual" placeholder="https://drive.google.com/..." autocomplete="off">
+                    </fieldset>
+                    <fieldset class="prints-fieldset">
+                        <legend>No. of prints</legend>
+                        <div class="form-group">
+                            <label for="print-count">No. of prints</label>
+                            <input type="number" id="print-count" min="1" max="999" value="1">
+                        </div>
+                        <p class="hint">Total prints at the size you pick — total price is (prints × price per print) at checkout.</p>
+                    </fieldset>
+                    <fieldset class="prints-fieldset">
+                        <legend>Print size (per print)</legend>
+                        <p class="hint" style="margin-top:0">Sizes are to scale with each other — pick the format you want.</p>
+                        <div class="size-visual-options" data-size-group="individual" role="presentation">
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_individual" value="4x6" checked>
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--4x6" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="180" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">4×6</span>
+                                    <span class="size-label-price">₹30 / print</span>
+                                </span>
+                            </label>
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_individual" value="5x7">
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--5x7" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="168" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">5×7</span>
+                                    <span class="size-label-price">₹35 / print</span>
+                                </span>
+                            </label>
+                            <label class="size-visual-card">
+                                <input type="radio" name="size_individual" value="8x10">
+                                <span class="size-canvas-wrap"><span class="size-canvas size-canvas--8x10" aria-hidden="true"><img class="size-canvas-img" src="https://www.lazyfilms.in/store/images/samples2/sample3.jpg" alt="" width="120" height="150" loading="lazy" decoding="async"></span></span>
+                                <span class="size-label-block">
+                                    <span class="size-label-text">8×10</span>
+                                    <span class="size-label-price">₹50 / print</span>
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <fieldset class="prints-fieldset">
+                    <legend>Notes (optional)</legend>
+                    <textarea id="notes" placeholder="Original scan order #, special instructions…"></textarea>
+                </fieldset>
+
+                <p class="err" id="form-err"></p>
+                <div class="checkout-estimate" id="checkout-estimate" aria-live="polite">
+                    <div class="checkout-estimate-total" id="estimate-total"></div>
+                    <div class="checkout-estimate-detail" id="estimate-detail"></div>
+                    <p class="checkout-estimate-note">Final amount may include taxes or shipping at checkout.</p>
+                </div>
+                <button type="submit" class="place-order" id="submit-btn">Add to cart &amp; checkout</button>
+            </form>
+        </div>
+
+        <footer>
+            <div class="footer-inner">
+                <a href="https://www.lazyfilms.in/labs/CONTACT">Contact</a>
+                <a href="https://www.lazyfilms.in/labs/REFUND">Refund Policy</a>
+                <a href="https://www.lazyfilms.in/labs/T&C">Terms & Conditions</a>
+                <a href="https://www.lazyfilms.in/labs/PRIVACY_POLICY">Privacy Policy</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            /** Your store hostname (same as checkout / labs). */
+            const SHOPIFY_STORE = 'rphzqx-d5.myshopify.com';
+
+            /** Variant IDs for full-roll line items (one unit = one roll at that size price). */
+            const VARIANT_FULL_ROLL = {
+                '4x6': '44112387637347',
+                '5x7': '44112387670115',
+                '8x10': '44112387702883'
+            };
+            /** Variant IDs for individual prints (unit price ₹30 / ₹35 / ₹50 in Shopify; cart quantity = number of prints). */
+            const VARIANT_PER_PRINT = {
+                '4x6': '44112388554851',
+                '5x7': '44112388587619',
+                '8x10': '44112388620387'
+            };
+
+            /** Display prices (keep in sync with Shopify variants and labels on this page). */
+            const PRICE_FULL_ROLL = { '4x6': 800, '5x7': 900, '8x10': 1600 };
+            const PRICE_PER_PRINT = { '4x6': 30, '5x7': 35, '8x10': 50 };
+            const SIZE_LABEL = { '4x6': '4×6', '5x7': '5×7', '8x10': '8×10' };
+
+            const rupee = new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            });
+
+            const form = document.getElementById('prints-form');
+            const formErr = document.getElementById('form-err');
+            const submitBtn = document.getElementById('submit-btn');
+            const panelFull = document.getElementById('panel-full-roll');
+            const panelInd = document.getElementById('panel-individual');
+            const rollRowsWrap = document.getElementById('roll-rows-wrap');
+            const rollCountInput = document.getElementById('roll-count');
+            const printCountInput = document.getElementById('print-count');
+            const estimateTotalEl = document.getElementById('estimate-total');
+            const estimateDetailEl = document.getElementById('estimate-detail');
+
+            function showErr(msg) {
+                formErr.textContent = msg;
+                formErr.classList.toggle('show', !!msg);
+            }
+
+            function syncModePanels() {
+                const mode = form.querySelector('input[name="mode"]:checked').value;
+                panelFull.classList.toggle('active', mode === 'full_roll');
+                panelInd.classList.toggle('active', mode === 'individual');
+                updateCheckoutEstimate();
+            }
+
+            function updateCheckoutEstimate() {
+                const mode = form.querySelector('input[name="mode"]:checked').value;
+                if (mode === 'full_roll') {
+                    const size = form.querySelector('input[name="size_full"]:checked').value;
+                    const unit = PRICE_FULL_ROLL[size];
+                    const raw = parseInt(rollCountInput.value, 10);
+                    const rolls = Number.isFinite(raw) ? Math.max(1, Math.min(99, raw)) : 1;
+                    const total = rolls * unit;
+                    estimateTotalEl.textContent = 'Estimated total: ' + rupee.format(total);
+                    estimateDetailEl.textContent =
+                        rolls +
+                        (rolls === 1 ? ' roll' : ' rolls') +
+                        ' × ' +
+                        rupee.format(unit) +
+                        ' (' +
+                        SIZE_LABEL[size] +
+                        ' full roll)';
+                } else {
+                    const size = form.querySelector('input[name="size_individual"]:checked').value;
+                    const unit = PRICE_PER_PRINT[size];
+                    const raw = parseInt(printCountInput.value, 10);
+                    const prints = Number.isFinite(raw) ? Math.max(1, Math.min(999, raw)) : 1;
+                    const total = prints * unit;
+                    estimateTotalEl.textContent = 'Estimated total: ' + rupee.format(total);
+                    estimateDetailEl.textContent =
+                        prints +
+                        (prints === 1 ? ' print' : ' prints') +
+                        ' × ' +
+                        rupee.format(unit) +
+                        ' (' +
+                        SIZE_LABEL[size] +
+                        ')';
+                }
+            }
+
+            form.querySelectorAll('input[name="mode"]').forEach((r) => {
+                r.addEventListener('change', syncModePanels);
+            });
+            form.addEventListener('change', function (e) {
+                const t = e.target;
+                if (t && t.matches && t.matches('input[name="size_full"], input[name="size_individual"]')) {
+                    updateCheckoutEstimate();
+                }
+            });
+            printCountInput.addEventListener('input', updateCheckoutEstimate);
+            printCountInput.addEventListener('change', updateCheckoutEstimate);
+            syncModePanels();
+
+            function readRollRowState() {
+                const films = rollRowsWrap.querySelectorAll('.roll-film');
+                const drives = rollRowsWrap.querySelectorAll('.roll-drive');
+                const n = Math.min(films.length, drives.length);
+                const out = [];
+                for (let i = 0; i < n; i++) {
+                    out.push({
+                        film: films[i].value,
+                        drive: drives[i].value
+                    });
+                }
+                return out;
+            }
+
+            function renderRollRows(count, prev) {
+                const n = Math.max(1, Math.min(99, count));
+                const prevRows = prev || readRollRowState();
+                rollRowsWrap.replaceChildren();
+                for (let i = 0; i < n; i++) {
+                    const filmVal = prevRows[i] ? prevRows[i].film : '';
+                    const driveVal = prevRows[i] ? prevRows[i].drive : '';
+                    const row = document.createElement('div');
+                    row.className = 'roll-print-row';
+
+                    const heading = document.createElement('div');
+                    heading.className = 'roll-heading';
+                    heading.textContent = 'Roll ' + (i + 1) + ' of ' + n;
+                    row.appendChild(heading);
+
+                    const fgFilm = document.createElement('div');
+                    fgFilm.className = 'form-group';
+                    const labFilm = document.createElement('label');
+                    labFilm.textContent = 'Film name';
+                    const inpFilm = document.createElement('input');
+                    inpFilm.type = 'text';
+                    inpFilm.className = 'roll-film';
+                    inpFilm.placeholder = 'e.g. Portra 400 — holiday roll';
+                    inpFilm.value = filmVal;
+                    fgFilm.appendChild(labFilm);
+                    fgFilm.appendChild(inpFilm);
+                    row.appendChild(fgFilm);
+
+                    const fgDrive = document.createElement('div');
+                    fgDrive.className = 'form-group';
+                    const labDrive = document.createElement('label');
+                    labDrive.textContent = 'Google Drive link';
+                    const inpDrive = document.createElement('input');
+                    inpDrive.type = 'text';
+                    inpDrive.className = 'roll-drive';
+                    inpDrive.placeholder = 'https://drive.google.com/...';
+                    inpDrive.autocomplete = 'off';
+                    inpDrive.value = driveVal;
+                    fgDrive.appendChild(labDrive);
+                    fgDrive.appendChild(inpDrive);
+                    row.appendChild(fgDrive);
+
+                    rollRowsWrap.appendChild(row);
+                }
+            }
+
+            function onRollCountChange() {
+                const v = parseInt(rollCountInput.value, 10);
+                const n = Number.isFinite(v) ? v : 1;
+                const prev = readRollRowState();
+                renderRollRows(n, prev);
+                rollCountInput.value = String(Math.max(1, Math.min(99, n)));
+                updateCheckoutEstimate();
+            }
+
+            rollCountInput.addEventListener('input', onRollCountChange);
+            rollCountInput.addEventListener('change', onRollCountChange);
+            renderRollRows(1, []);
+            updateCheckoutEstimate();
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                showErr('');
+
+                const mode = form.querySelector('input[name="mode"]:checked').value;
+                const notes = document.getElementById('notes').value.trim();
+                const notesProp = notes || '(none)';
+
+                let items;
+
+                if (mode === 'full_roll') {
+                    const size = form.querySelector('input[name="size_full"]:checked').value;
+                    const variantId = VARIANT_FULL_ROLL[size];
+                    if (!variantId) {
+                        showErr('Set the Shopify variant ID for this size in VARIANT_FULL_ROLL.');
+                        return;
+                    }
+                    const films = rollRowsWrap.querySelectorAll('.roll-film');
+                    const drives = rollRowsWrap.querySelectorAll('.roll-drive');
+                    const n = films.length;
+                    if (n < 1) {
+                        showErr('Set No. of rolls to at least 1.');
+                        return;
+                    }
+                    for (let i = 0; i < n; i++) {
+                        const film = films[i].value.trim();
+                        const drive = drives[i].value.trim();
+                        if (!film) {
+                            showErr('Enter a film name for roll ' + (i + 1) + '.');
+                            return;
+                        }
+                        if (!drive) {
+                            showErr('Paste the Google Drive link for roll ' + (i + 1) + '.');
+                            return;
+                        }
+                    }
+                    items = [];
+                    for (let i = 0; i < n; i++) {
+                        items.push({
+                            id: Number(variantId),
+                            quantity: 1,
+                            properties: {
+                                'Print mode': 'Full roll',
+                                'Print size': size + ' (full roll)',
+                                'Film name': films[i].value.trim(),
+                                'Google Drive link': drives[i].value.trim(),
+                                'Roll': String(i + 1) + ' of ' + String(n),
+                                'Customer notes': notesProp
+                            }
+                        });
+                    }
+                } else {
+                    const size = form.querySelector('input[name="size_individual"]:checked').value;
+                    const variantId = VARIANT_PER_PRINT[size];
+                    if (!variantId) {
+                        showErr('Set the Shopify variant ID for this size in VARIANT_PER_PRINT.');
+                        return;
+                    }
+                    const drive = document.getElementById('drive-individual').value.trim();
+                    const count = Math.max(1, parseInt(document.getElementById('print-count').value, 10) || 0);
+                    if (!drive) {
+                        showErr('Paste the Google Drive link for your images.');
+                        return;
+                    }
+                    if (count < 1) {
+                        showErr('Enter No. of prints (at least 1).');
+                        return;
+                    }
+                    items = [
+                        {
+                            id: Number(variantId),
+                            quantity: count,
+                            properties: {
+                                'Print mode': 'Individual prints',
+                                'Print size': size + ' (per print)',
+                                'Google Drive link': drive,
+                                'No. of prints': String(count),
+                                'Customer notes': notesProp
+                            }
+                        }
+                    ];
+                }
+
+                if (!SHOPIFY_STORE || !String(SHOPIFY_STORE).trim()) {
+                    showErr('Set SHOPIFY_STORE in the script to your myshopify.com domain.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                try {
+                    const res = await fetch('https://' + SHOPIFY_STORE + '/cart/add.js', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                        body: JSON.stringify({ items: items })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        const msg = data.description || data.message || JSON.stringify(data);
+                        throw new Error(msg || 'Cart error');
+                    }
+                    window.location.href = 'https://' + SHOPIFY_STORE + '/cart';
+                } catch (err) {
+                    showErr(err.message || String(err));
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
