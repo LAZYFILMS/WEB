@@ -811,7 +811,7 @@
             renderRollRows(1, []);
             updateCheckoutEstimate();
 
-            form.addEventListener('submit', async (e) => {
+            form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 showErr('');
 
@@ -899,24 +899,59 @@
                     return;
                 }
 
-                submitBtn.disabled = true;
-                try {
-                    const res = await fetch('https://' + SHOPIFY_STORE + '/cart/add.js', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                        body: JSON.stringify({ items: items })
+                /**
+                 * Add to cart via a real HTML form POST to /cart/add (not /cart/add.js).
+                 * fetch() to add.js is blocked by CORS when this page is on another domain (e.g. lazyfilms.in).
+                 * A navigational form submit is not subject to that restriction.
+                 */
+                function submitItemsToShopifyCart(cartItems) {
+                    const cartForm = document.createElement('form');
+                    cartForm.method = 'POST';
+                    cartForm.action = 'https://' + SHOPIFY_STORE + '/cart/add';
+                    cartForm.setAttribute('accept-charset', 'UTF-8');
+                    cartForm.style.cssText = 'position:absolute;left:-9999px';
+
+                    const utf8 = document.createElement('input');
+                    utf8.type = 'hidden';
+                    utf8.name = 'utf8';
+                    utf8.value = '\u2713';
+                    cartForm.appendChild(utf8);
+
+                    const returnTo = document.createElement('input');
+                    returnTo.type = 'hidden';
+                    returnTo.name = 'return_to';
+                    returnTo.value = '/cart';
+                    cartForm.appendChild(returnTo);
+
+                    cartItems.forEach(function (item, i) {
+                        const idInp = document.createElement('input');
+                        idInp.type = 'hidden';
+                        idInp.name = 'items[' + i + '][id]';
+                        idInp.value = String(item.id);
+                        cartForm.appendChild(idInp);
+
+                        const qInp = document.createElement('input');
+                        qInp.type = 'hidden';
+                        qInp.name = 'items[' + i + '][quantity]';
+                        qInp.value = String(item.quantity);
+                        cartForm.appendChild(qInp);
+
+                        const props = item.properties || {};
+                        Object.keys(props).forEach(function (key) {
+                            const pInp = document.createElement('input');
+                            pInp.type = 'hidden';
+                            pInp.name = 'items[' + i + '][properties][' + key + ']';
+                            pInp.value = String(props[key]);
+                            cartForm.appendChild(pInp);
+                        });
                     });
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok) {
-                        const msg = data.description || data.message || JSON.stringify(data);
-                        throw new Error(msg || 'Cart error');
-                    }
-                    window.location.href = 'https://' + SHOPIFY_STORE + '/cart';
-                } catch (err) {
-                    showErr(err.message || String(err));
-                } finally {
-                    submitBtn.disabled = false;
+
+                    document.body.appendChild(cartForm);
+                    submitBtn.disabled = true;
+                    cartForm.submit();
                 }
+
+                submitItemsToShopifyCart(items);
             });
         })();
     </script>
