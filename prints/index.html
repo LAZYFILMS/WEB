@@ -623,7 +623,7 @@
                     <div class="checkout-estimate-detail" id="estimate-detail"></div>
                     <p class="checkout-estimate-note">Final amount may include taxes or shipping at checkout.</p>
                 </div>
-                <button type="submit" class="place-order" id="submit-btn">Add to cart &amp; checkout</button>
+                <button type="submit" class="place-order" id="submit-btn">Checkout</button>
             </form>
         </div>
 
@@ -920,7 +920,7 @@
                     const returnTo = document.createElement('input');
                     returnTo.type = 'hidden';
                     returnTo.name = 'return_to';
-                    returnTo.value = '/cart';
+                    returnTo.value = '/checkout';
                     cartForm.appendChild(returnTo);
 
                     cartItems.forEach(function (item, i) {
