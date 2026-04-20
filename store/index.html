@@ -679,6 +679,27 @@
             margin-right: 15px;
         }
 
+        .variant-fetch-btn {
+            background: none;
+            border: none;
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .variant-id-output {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #333;
+            word-break: break-word;
+            max-width: 100%;
+            display: block;
+        }
+
         /* Separator between galleries */
         .sample-photos + .sample-photos {
             margin-top: 80px;
@@ -703,6 +724,10 @@
         #sample-gallery-monochrome {
             margin-top: 1350px;  /* Space for Lazy 500 (800) + Lazy 250 (545) + buffer */
         }
+
+        #sample-gallery-reversal {
+            margin-top: 1900px;
+        }
     </style>
 </head>
 <body>
@@ -718,6 +743,31 @@
                 <img src="images/lazy250.jpg" alt="Lazy 250 Film" class="carousel-image">
                 <img src="images/lazy-monochrome.jpg" alt="Lazy Monochrome Film" class="carousel-image">
             </div>
+        </div>
+
+        <div class="product-details">
+            <img src="images/ektachrome-thumb copy.jpg" alt="Lazy Reversal 100D" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title"><a href="lazyreversal100d.html" style="color: inherit; text-decoration: none;">LAZY REVERSAL 100D (DX-CODED)</a></h2>
+                    <p class="product-price">₹1200</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazyreversal100d">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazyreversal100d">
+                        <button type="button" class="qty-btn increment" data-product="lazyreversal100d">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="lazyreversal100d" data-variant="759">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-lazyreversal100d" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy Reversal 100D is a daylight-balanced, DX-coded color reversal film for vivid, true-to-life imagery with fine grain, strong sharpness, and a cinematic analog edge.</span>
+                <span class="description-full">Rated at ISO 100, it thrives in bright conditions with rich yet natural color rendering, slightly cool blues, and clean whites. Crucially, it is DX-coded for reliable camera ISO reading, which is especially important for color reversal film. As a reversal film, it creates a direct positive image on film, ideal for projection and high-quality scanning. For proper processing, this film must be developed in E6 chemistry.</span>
+                <button class="see-more-desc" data-product="lazyreversal100d">See more</button>
+                <a href="#sample-gallery-reversal" class="see-samples">See Sample photos</a>
+            </p>
         </div>
 
         <div class="product-details">
@@ -899,6 +949,21 @@
         </div>
     </div>
 
+    <!-- Lazy Reversal 100D Sample Photos -->
+    <div id="sample-gallery-reversal" class="sample-photos">
+        <h3 class="gallery-title">LAZY REVERSAL 100D</h3>
+        <div class="gallery-grid">
+            <img src="images/ektachrome/1.jpeg" alt="Lazy Reversal 100D sample 1" class="gallery-image">
+            <img src="images/ektachrome/2.jpeg" alt="Lazy Reversal 100D sample 2" class="gallery-image">
+            <img src="images/ektachrome/3.jpeg" alt="Lazy Reversal 100D sample 3" class="gallery-image">
+            <img src="images/ektachrome/4.jpeg" alt="Lazy Reversal 100D sample 4" class="gallery-image">
+            <img src="images/ektachrome/5.jpeg" alt="Lazy Reversal 100D sample 5" class="gallery-image">
+            <img src="images/ektachrome/6.jpeg" alt="Lazy Reversal 100D sample 6" class="gallery-image">
+        </div>
+        <button type="button" class="variant-fetch-btn" data-fetch-variant-id="759">Fetch Variant ID</button>
+        <span class="variant-id-output" id="variant-id-output-759" aria-live="polite"></span>
+    </div>
+
     <!-- Modal for full-size images -->
     <div class="image-modal" onclick="closeModal()">
         <img class="modal-content" src="" alt="Full size image">
@@ -943,6 +1008,7 @@
         // WooCommerce store
         const WC_STORE = 'https://store.lazyfilms.in';
         const WC_PRODUCT_IDS = {
+            lazyreversal100d: 759,
             lazy500:        11,
             lazy250:        20,
             lazymonochrome: 26,
@@ -994,12 +1060,40 @@
 
         // Add to cart functionality for all products
         const PRODUCT_CATALOGUE = {
+            lazyreversal100d:{ name: 'LAZY Reversal 100D',                     price: 1200 },
             lazy500:       { name: 'LAZY 500',                               price: 850  },
             lazy250:       { name: 'LAZY 250',                               price: 850  },
             lazymonochrome:{ name: 'LAZY Monochrome',                        price: 850  },
             fujifilmprovia:{ name: 'Fujifilm Provia 100F RDP 3 (Exp. 2015)', price: 2100 },
             superia800:    { name: 'Fujifilm Superia Xtra 800 (Exp. 2010)',   price: 900  }
         };
+
+        async function fetchVariantId(productId, outputEl) {
+            outputEl.textContent = 'Checking product...';
+            try {
+                const res = await fetch(`${WC_STORE}/wp-json/wc/store/v1/products/${productId}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const product = await res.json();
+                const variationIds = Array.isArray(product.variations) ? product.variations : [];
+                if (variationIds.length > 0) {
+                    outputEl.textContent = `Variant ID(s): ${variationIds.join(', ')}`;
+                } else {
+                    outputEl.textContent = `No variants found. This is a simple product, use product ID ${product.id}.`;
+                }
+            } catch (err) {
+                console.error('Variant ID fetch failed:', err);
+                outputEl.textContent = 'Could not fetch variant ID. Please try again.';
+            }
+        }
+
+        document.querySelectorAll('[data-fetch-variant-id]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const productId = this.getAttribute('data-fetch-variant-id');
+                const output = document.getElementById(`variant-id-output-${productId}`);
+                if (!productId || !output) return;
+                fetchVariantId(productId, output);
+            });
+        });
 
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
