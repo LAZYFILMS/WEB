@@ -235,6 +235,13 @@
         .sample-photos {
             margin-top: 30px;
         }
+        .gallery-credit {
+            margin-top: 8px;
+            text-align: right;
+            font-size: 11px;
+            color: #444;
+            font-style: italic;
+        }
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -359,11 +366,15 @@
         <div class="product-layout">
             <div class="product-thumb">
                 <div class="product-thumb-main">
-                    <img id="lazyreversal100d-main-image" src="catalogue/ektachrome/EKTACHROME.png" alt="LAZY REVERSAL 100D film">
+                    <img id="lazyreversal100d-main-image" src="catalogue/ektachrome/1" alt="LAZY REVERSAL 100D film">
                 </div>
                 <div class="product-thumb-strip">
-                    <img class="thumb-option active" data-src="catalogue/ektachrome/EKTACHROME.png" src="catalogue/ektachrome/EKTACHROME.png" alt="LAZY REVERSAL 100D thumb">
-                    <img class="thumb-option" data-src="catalogue/ektachrome/ektachrome-thumb.jpg" src="catalogue/ektachrome/ektachrome-thumb.jpg" alt="LAZY REVERSAL 100D thumbnail">
+                    <img class="thumb-option active" data-src="catalogue/ektachrome/1" src="catalogue/ektachrome/1" alt="LAZY REVERSAL 100D product 1">
+                    <img class="thumb-option" data-src="catalogue/ektachrome/2" src="catalogue/ektachrome/2" alt="LAZY REVERSAL 100D product 2">
+                    <img class="thumb-option" data-src="catalogue/ektachrome/3" src="catalogue/ektachrome/3" alt="LAZY REVERSAL 100D product 3">
+                    <img class="thumb-option" data-src="catalogue/ektachrome/4" src="catalogue/ektachrome/4" alt="LAZY REVERSAL 100D product 4">
+                    <img class="thumb-option" data-src="catalogue/ektachrome/5" src="catalogue/ektachrome/5" alt="LAZY REVERSAL 100D product 5">
+                    <img class="thumb-option" data-src="catalogue/ektachrome/EKTACHROME.png" src="catalogue/ektachrome/EKTACHROME.png" alt="LAZY REVERSAL 100D ektachrome">
                     <img class="thumb-option" data-src="images/ektachrome/1.jpeg" src="images/ektachrome/1.jpeg" alt="LAZY REVERSAL 100D sample 1">
                     <img class="thumb-option" data-src="images/ektachrome/2.jpeg" src="images/ektachrome/2.jpeg" alt="LAZY REVERSAL 100D sample 2">
                     <img class="thumb-option" data-src="images/ektachrome/3.jpeg" src="images/ektachrome/3.jpeg" alt="LAZY REVERSAL 100D sample 3">
@@ -416,6 +427,7 @@
                 <img src="images/ektachrome/5.jpeg" alt="LAZY REVERSAL 100D sample 5" class="gallery-image">
                 <img src="images/ektachrome/6.jpeg" alt="LAZY REVERSAL 100D sample 6" class="gallery-image">
             </div>
+            <p class="gallery-credit">Shot by the best - Aditya Varma</p>
         </div>
 
         <section class="other-products">
@@ -519,12 +531,12 @@
             });
         });
 
-        // Fallback in case the primary thumbnail file is unavailable.
+        // Fallback in case one source image is unavailable.
         mainImage.addEventListener('error', function () {
-            if (this.src.indexOf('EKTACHROME.png') !== -1) {
+            if (this.src.indexOf('/1') !== -1) {
+                this.src = 'catalogue/ektachrome/EKTACHROME.png';
+            } else if (this.src.indexOf('EKTACHROME.png') !== -1) {
                 this.src = 'catalogue/ektachrome/ektachrome-thumb.jpg';
-            } else if (this.src.indexOf('ektachrome-thumb.jpg') !== -1) {
-                this.src = 'images/ektachrome-thumb copy.jpg';
             }
         }, { once: true });
 
