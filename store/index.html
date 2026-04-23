@@ -3,1343 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAZY FILM STORE</title>
-
-    <!-- Fonts -->
-    <link href="https://use.typekit.net/[your-kit-code].css" rel="stylesheet">
+    <title>LAZY FILMS</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
     <style>
-        body {
-            font-family: "stratos", monospace;
+        * {
             margin: 0;
             padding: 0;
-            background: #fff;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 600px;
-            padding: 30px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            background-color: #fff;
-            margin: 20px auto;
-            position: relative;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .title {
-            font-family: "stratos-black", sans-serif;
-            font-size: 24px;
-            margin: 0;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .develop-link {
-            font-family: "stratos-black", sans-serif;
-            text-decoration: none;
-            color: #000;
-            font-size: 24px;
-            text-transform: uppercase;
-            font-weight: bold;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .product-header {
-            margin-bottom: 20px;
-        }
-
-        .product-header img {
-            width: 100%;
-            height: auto;
-            border: 1px solid #000;
-            margin-bottom: 15px;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px 14px;
-            margin-top: 10px;
-            align-items: stretch;
-        }
-
-        .product-details {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-            width: 100%;
-            min-height: 290px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .more-info-btn {
-            font-size: 11px;
-            color: #0000EE;
-            text-decoration: underline;
-            display: inline-block;
-            margin-top: 0;
-            margin-left: auto;
-            background: none;
-            padding: 0;
-            border-radius: 0;
-            position: static;
-        }
-
-        .product-links-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .product-thumbnail {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            height: auto;
-            object-fit: contain;
-            object-position: center;
-            border: none;
-            background: #fafafa;
-            margin-right: 0;
-            margin-bottom: 4px;
-        }
-
-        .product-info {
-            width: 100%;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            margin: 0;
-            padding-right: 0;
-            flex: 1;
-        }
-
-        .product-header-group {
-            flex: 1;
-            margin-bottom: 5px;
-        }
-
-        .product-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: auto;
-        }
-
-        .quantity-input {
-            width: 60px;
-            height: 35px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            text-align: center;
-            font-family: "stratos", monospace;
-            font-size: 14px;
-        }
-
-        /* Hide native number spinners */
-        .quantity-input::-webkit-outer-spin-button,
-        .quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .quantity-input {
-            -moz-appearance: textfield;
-            appearance: textfield;
-        }
-
-        /* Quantity control with +/- buttons inside the input (keeps same size) */
-        .quantity-control { position: relative; display: inline-block; }
-        .quantity-control .quantity-input {
-            width: 72px;
-            height: 35px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            padding: 0 24px; /* room for +/- */
             box-sizing: border-box;
         }
-        .qty-btn {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 24px;
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            line-height: 1;
-            cursor: pointer;
-            user-select: none;
-        }
-        .qty-btn.decrement { left: 0; }
-        .qty-btn.increment { right: 0; }
 
-        /* Out of stock styling */
-        .add-to-cart.out-of-stock {
-            background: #999;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .stock-status {
-            color: #ff0000;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 4px;
-            text-align: left;
-            margin-right: 0;
-            display: block;
-        }
-
-        .product-title {
-            display: block;
-            font-family: "stratos-black", sans-serif;
-            font-size: 17.25px;
-            margin: 0;
-            font-weight: 600;
-            margin-bottom: 6px;
-            line-height: 1.2;
-        }
-
-        .product-title a {
-            color: #000;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-
-        .product-price {
-            display: block;
-            font-family: "stratos-black", sans-serif;
-            font-size: 13px;
-            margin: 0 0 10px 0;
-            font-weight: 500;
-        }
-
-        .product-description {
-            margin: 0;
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .description-preview,
-        .description-full,
-        .see-more-desc {
-            display: none !important;
-        }
-
-        .see-samples {
-            color: #0000EE;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 11px;
-            display: inline-block;
-            margin-top: 0;
-        }
-
-        .quantity-control {
-            display: inline-block;
-        }
-
-        .add-to-cart {
+        body, html {
+            height: 100%;
+            font-family: 'stratos', sans-serif;
             background: #000;
             color: #fff;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: "stratos-black", sans-serif;
-            font-size: 16.8px;
-            white-space: nowrap;
-            font-weight: bold;
-            display: inline-block;
+            cursor: none;
+            overflow: hidden;
         }
 
-        .add-to-cart.loading {
-            opacity: 0.7;
-            cursor: wait;
-            position: relative;
+        /* Full-screen background */
+        .bg {
+            position: fixed;
+            inset: 0;
+            background-image: url('nathan.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
         }
 
-        .add-to-cart.loading::after {
+        .bg::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            border: 2px solid #fff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
         }
 
-        @keyframes spin {
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
-
-
-        .cart-count {
-            background: #000;
-            color: #fff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 12px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .cart-summary {
-            margin: 30px 0;
-            padding: 20px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .cart-summary h3 {
-            font-family: "stratos-black", sans-serif;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 15px 0;
-        }
-
-        .place-order {
-            width: 100%;
-            background: #000;
-            color: #fff;
-            border: none;
-            padding: 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: "stratos-black", sans-serif;
-            font-size: 18px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-        }
-
-        footer a {
-            font-family: "stratos", sans-serif;
-            font-size: 12px;
-            color: #000;
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        /* Base gallery styles */
-        .sample-photos {
-            position: relative;
-            left: 0;
-            transform: none;
-            width: 800px;
-            max-width: 100%;
-            margin: 40px auto 0;
-            padding-bottom: 40px;
-        }
-
-        .gallery-title {
-            font-family: "stratos-black", sans-serif;
-            font-size: 18px;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            align-items: start;
-        }
-
-        .gallery-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            transition: transform 0.2s ease;
-        }
-
-        .gallery-image:hover {
-            transform: scale(1.02);
-            z-index: 1;
-        }
-
-        /* Adjust heights and crop positions for all images */
-        .gallery-image:nth-child(1) {
-            height: 220px;
-            object-position: center 20%;
-        }
-
-        .gallery-image:nth-child(2) {
-            height: 220px;
-            object-position: center 60%;
-        }
-
-        .gallery-image:nth-child(3) {
-            height: 220px;
-            object-position: center 25%;
-        }
-
-        .gallery-image:nth-child(4) {
-            height: 220px;
-            object-position: center top;
-        }
-
-        .gallery-image:nth-child(5) {
-            height: 220px;
-            object-position: center 45%;
-        }
-
-        .gallery-image:nth-child(6) {
-            height: 220px;
-            object-position: center 35%;
-        }
-
-        /* Adjust last three images */
-        .gallery-image:nth-child(7) {
-            height: 220px;
-            object-position: center 55%;
-        }
-
-        .gallery-image:nth-child(8) {
-            height: 220px;
-            object-position: center 40%;
-        }
-
-        .gallery-image:nth-child(9) {
-            height: 220px;
-            object-position: center 50%;
-        }
-
-        /* Modal styles for full-size images */
-        .image-modal {
+        /* Button stack */
+        .nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            cursor: pointer;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            object-fit: contain;
-            border: none;
-            box-shadow: none;
-        }
-
-        .image-modal.active {
+            inset: 0;
+            z-index: 10;
             display: flex;
-            animation: fadeIn 0.3s;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .gallery-image {
-            cursor: pointer;
-        }
-
-
-        /* Add mobile responsive styles */
-        @media (max-width: 768px) {
-            .container {
-                width: 90%;
-                margin: 10px auto;
-                padding: 15px;
-                border-width: 1px;
-            }
-
-            /* Carousel styles */
-            .carousel {
-                position: relative;
-                width: 100%;
-                height: 250px;
-                overflow: hidden;
-                margin-bottom: 0px;  /* Negative margin to remove gap */
-            }
-
-            /* Product details container */
-            .products-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 14px 10px;
-                margin-top: 0;
-                align-items: stretch;
-            }
-
-            /* Kill descendant img margin inherited from desktop rule */
-            .product-header img {
-                margin-bottom: 0;
-            }
-
-            .product-header .carousel img {
-                margin-bottom: 0;
-            }
-
-            .product-details {
-                margin-top: 0;
-                gap: 4px;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                flex-wrap: nowrap;
-                min-height: 0;
-                border: 1px solid #000;
-                border-radius: 4px;
-                padding: 8px;
-                box-sizing: border-box;
-                width: 100%;
-            }
-
-            /* Reset the "stacked" spacing used when grid was 1 col */
-            .product-details + .product-details {
-                margin-top: 0;
-                padding-top: 8px;
-                border-top: 1px solid #000;
-            }
-
-            /* Product thumbnail */
-            .product-thumbnail {
-                width: 100%;
-                aspect-ratio: 1 / 1;
-                height: auto;
-                margin-right: 0;
-                margin-top: 0;
-                margin-bottom: 4px;
-                display: block;
-                border: none;
-                background: #fafafa;
-                object-fit: contain;
-                object-position: center;
-            }
-
-            /* Remove any extra spacing */
-            .product-header {
-                margin: 0;
-                padding: 0;
-                font-size: 0;  /* Remove any font spacing */
-                line-height: 0;  /* Remove line height spacing */
-            }
-
-            /* Header adjustments */
-            header {
-                margin-bottom: 15px;
-                padding: 5px 0;
-            }
-
-            .title {
-                font-size: 20px;
-            }
-
-            /* Develop film link adjustment */
-            .develop-link {
-                font-size: 19px;
-                text-decoration: underline;
-            }
-
-            /* Product header adjustments */
-            .product-header {
-                margin: 0;
-            }
-
-            /* Product header image */
-            .product-header img {
-                width: 100%;
-                height: auto;
-                margin-bottom: 15px;
-            }
-
-            /* Product info adjustments */
-            .product-info {
-                min-width: unset;
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                padding-right: 0;
-                width: 100%;
-            }
-
-            /* Product header-group adjustments */
-            .product-header-group {
-                margin-bottom: 4px;
-                text-align: left;
-                margin-right: 0;
-            }
-
-            .product-title {
-                font-size: 13.5px;
-                font-weight: 600;
-                margin: 0 0 3px 0;
-                line-height: 1.2;
-            }
-
-            .product-price {
-                font-size: 12px;
-                margin: 0 0 6px 0;
-                font-weight: bold;
-            }
-
-            .see-samples,
-            .more-info-btn {
-                font-size: 10px;
-            }
-
-            .product-links-row {
-                gap: 6px;
-            }
-
-            .product-actions {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                flex-wrap: nowrap;
-                margin-right: 0;
-                margin-top: auto;
-                width: 100%;
-            }
-
-            .quantity-input {
-                width: 60px;
-                height: 36px;
-                -webkit-appearance: none;
-                appearance: none;
-                margin: 0;
-                padding: 0 5px;
-                text-align: center;
-                pointer-events: auto !important;
-                z-index: 2;
-            }
-
-            .add-to-cart {
-                padding: 8px 10px;
-                font-size: 12px;
-                flex: 1;
-                min-width: 0;
-                pointer-events: auto !important;
-                z-index: 2;
-                position: relative;
-            }
-
-            .quantity-control .quantity-input {
-                width: 56px;
-                height: 32px;
-                padding: 0 20px;
-                font-size: 13px;
-            }
-
-            .qty-btn {
-                width: 20px;
-                font-size: 14px;
-            }
-
-            /* Fix stacking context */
-            .product-info {
-                position: relative;
-                z-index: 1;
-            }
-
-            /* Description text */
-            .product-description { margin: 0; }
-
-            /* Sample photos grid */
-            .sample-photos {
-                position: relative !important;  /* Override absolute positioning */
-                left: 0 !important;  /* Reset left position */
-                transform: none !important;  /* Remove transform */
-                width: 90% !important;  /* Set width relative to viewport */
-                margin: 20px auto !important;  /* Center align with consistent spacing */
-            }
-
-            .gallery-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-
-            .gallery-image {
-                height: 160px;
-            }
-
-            .gallery-title {
-                font-size: 18px;
-            }
-
-            /* Reset gallery spacing for mobile */
-            #sample-gallery-250 {
-                position: relative !important;
-                margin-top: 60px !important;  /* Consistent spacing between galleries */
-            }
-            
-            #sample-gallery-monochrome {
-                position: relative !important;
-                margin-top: 60px !important;  /* Consistent spacing between galleries */
-            }
-
-            #sample-gallery-lazy100 {
-                position: relative !important;
-                margin-top: 60px !important;  /* Consistent spacing between galleries */
-            }
-
-            .carousel {
-                height: 250px;
-                margin: 0;
-                padding: 0;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .carousel {
-                position: relative;
-                width: 100%;
-                height: 400px;
-                overflow: hidden;
-            }
-        }
-
-        .carousel-image {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        .carousel-image.active {
-            opacity: 1;
-        }
-
-        .see-more-btn {
+        .nav-btn {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-weight: normal;
+            font-size: 18px;
+            line-height: 2;
+            color: #fff;
+            text-decoration: none;
             background: none;
             border: none;
-            color: #0000EE;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
             padding: 0;
-            margin-right: 15px;
-        }
-
-        .gallery-credit {
-            margin-top: 10px;
-            font-size: 11px;
-            color: #333;
+            cursor: none;
             text-align: center;
+            letter-spacing: 0;
+            text-transform: none;
+            transition: opacity 0.15s ease;
         }
 
-        .gallery-credit a {
-            color: inherit;
-            text-decoration: underline;
+        .nav-btn:hover {
+            opacity: 0.5;
         }
 
-        /* Separator between galleries */
-        .sample-photos + .sample-photos {
-            margin-top: 80px;
-            border-top: 1px solid #eee;
-            padding-top: 40px;
+        /* Custom cursor */
+        #cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            top: 0;
+            left: 0;
         }
 
-        /* Spacing for galleries */
-        /* Lazy 500: 9 images (3 rows × 220px) + gaps + title + padding = ~780px */
-        #sample-gallery { margin-top: 40px; }
-        
-        /* Lazy 250: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
-        /* Start after Lazy 500 gallery ends */
-        #sample-gallery-250 { margin-top: 60px; }
-        
-        /* Lazy Monochrome: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
-        /* Start after Lazy 250 gallery ends */
-        #sample-gallery-monochrome { margin-top: 60px; }
+        #cursor-circle {
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            opacity: 0.6;
+            transition: all 0.15s ease;
+        }
 
-        #sample-gallery-lazy100 { margin-top: 60px; }
+        #cursor-circle.hovering {
+            width: 16px;
+            height: 16px;
+            margin-top: -8px;
+            margin-left: -8px;
+            opacity: 1;
+            background: #fff;
+        }
 
-        #sample-gallery-reversal { margin-top: 60px; }
+        /* Write to us overlay */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .popup {
+            width: 90%;
+            max-width: 520px;
+            background: #fff;
+            color: #000;
+            padding: 36px 36px 30px;
+            position: relative;
+        }
+
+        .popup-title {
+            font-family: "stratos", sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .popup-sub {
+            font-family: "stratos", sans-serif;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 22px;
+        }
+
+        .popup textarea {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            border: 1.5px solid #ccc;
+            padding: 12px 14px;
+            font-family: "stratos", sans-serif;
+            font-size: 15px;
+            color: #000;
+            outline: none;
+            margin-bottom: 8px;
+            transition: border-color 0.15s;
+        }
+
+        .popup textarea:focus {
+            border-color: #000;
+        }
+
+        .popup input[type="email"] {
+            width: 100%;
+            border: 1.5px solid #ccc;
+            padding: 11px 14px;
+            font-family: "stratos", sans-serif;
+            font-size: 15px;
+            color: #000;
+            outline: none;
+            margin-bottom: 18px;
+            transition: border-color 0.15s;
+        }
+
+        .popup input[type="email"]:focus {
+            border-color: #000;
+        }
+
+        .popup-send {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 13px;
+            font-family: "stratos", sans-serif;
+            font-weight: 900;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .popup-send:hover {
+            background: #333;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+
+        .popup-close:hover {
+            color: #000;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .nav-btn {
+                font-size: 16px;
+            }
+
+            #cursor {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .nav-btn {
+                cursor: pointer;
+            }
+
+            .popup {
+                padding: 28px 22px 24px;
+            }
+
+            .popup-title {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <span class="title">LAZY FILM STORE</span>
-            <a href="https://lazyfilms.in/labs" class="develop-link">DEVELOP FILM</a>
-        </header>
 
-        <div class="product-header">
-            <div class="carousel">
-                <img src="images/lazy500.jpg" alt="Lazy 500 Film" class="carousel-image active">
-                <img src="images/lazy250.jpg" alt="Lazy 250 Film" class="carousel-image">
-                <img src="images/lazy-monochrome.jpg" alt="Lazy Monochrome Film" class="carousel-image">
-            </div>
-        </div>
-
-        <div class="products-grid">
-        <div class="product-details">
-            <img src="images/ektachrome-thumb copy.jpg" alt="Lazy Reversal 100D" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazyreversal100d.html" style="color: inherit; text-decoration: none;">LAZY REVERSAL 100D (DX-CODED)</a></h2>
-                    <p class="product-price">₹1200</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="lazyreversal100d">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazyreversal100d">
-                        <button type="button" class="qty-btn increment" data-product="lazyreversal100d">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="lazyreversal100d" data-variant="759">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-lazyreversal100d" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Lazy Reversal 100D is a daylight-balanced, DX-coded color reversal film for vivid, true-to-life imagery with fine grain, strong sharpness, and a cinematic analog edge.</span>
-                <span class="description-full">Rated at ISO 100, it thrives in bright conditions with rich yet natural color rendering, slightly cool blues, and clean whites. Crucially, it is DX-coded for reliable camera ISO reading, which is especially important for color reversal film. As a reversal film, it creates a direct positive image on film, ideal for projection and high-quality scanning. For proper processing, this film must be developed in E6 chemistry.</span>
-                <button class="see-more-desc" data-product="lazyreversal100d">See more</button>
-                <span class="product-links-row">
-                    <a href="#sample-gallery-reversal" class="see-samples">See Sample photos</a>
-                    <a class="more-info-btn" href="lazyreversal100d.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/lazy100-thumb.jpg" alt="LAZY 100" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy100.html" style="color: inherit; text-decoration: none;">Lazy 100 - Color Negative Film</a></h2>
-                    <p class="product-price">₹850</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="lazy100">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy100">
-                        <button type="button" class="qty-btn increment" data-product="lazy100">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="lazy100" data-variant="795">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-lazy100" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Lazy 100 is our daylight-balanced color negative film, respooled from Kodak Vision3 50D for clean detail, smooth tones, and a cinematic analog look.</span>
-                <span class="description-full">It is built for bright conditions with ultra-fine grain, soft pastel color, excellent skin tones, and strong dynamic range that holds highlights and shadows beautifully. Process in ECN-2 for intended motion-picture character.</span>
-                <button class="see-more-desc" data-product="lazy100">See more</button>
-                <span class="product-links-row">
-                    <a href="#sample-gallery-lazy100" class="see-samples">See Sample photos</a>
-                    <a class="more-info-btn" href="lazy100.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/lazy500-thumb.jpg" alt="Lazy 500" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy500.html" style="color: inherit; text-decoration: none;">Lazy 500 - Color Negative Film</a></h2>
-                    <p class="product-price">₹850</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="lazy500">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy500">
-                        <button type="button" class="qty-btn increment" data-product="lazy500">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="lazy500" data-variant="43200428507235">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-lazy500" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues.</span>
-                <span class="description-full">Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.</span>
-                <button class="see-more-desc" data-product="lazy500">See more</button>
-                <span class="product-links-row">
-                    <a href="#sample-gallery" class="see-samples">See Sample photos</a>
-                    <a class="more-info-btn" href="lazy500.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/provia.png" alt="Fujifilm Provia 100F RDP 3" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="provia100f.html" style="color: inherit; text-decoration: none;">Fujifilm Provia 100F RDP 3 (Expired 2015)</a></h2>
-                    <p class="product-price">₹2100</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="fujifilmprovia">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="fujifilmprovia">
-                        <button type="button" class="qty-btn increment" data-product="fujifilmprovia">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="fujifilmprovia" data-variant="43863277437027">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-fujifilmprovia" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Often regarded as one of the finest color slide films ever made, Provia RDP III delivers legendary sharpness, natural skin tones, and beautifully balanced saturation.</span>
-                <span class="description-full">Although expired in 2015, this roll has been cold-stored, so its sensitivity remains fully intact — no exposure compensation is needed. Please note: some rolls may show minor mold on the ends, so keep that in mind before purchasing.</span>
-                <button class="see-more-desc" data-product="fujifilmprovia">See more</button>
-                <span class="product-links-row">
-                    <span class="see-samples" aria-hidden="true"></span>
-                    <a class="more-info-btn" href="provia100f.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy250.html" style="color: inherit; text-decoration: none;">Lazy 250 - Color Negative Film</a></h2>
-                    <p class="product-price">₹850</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="lazy250">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy250">
-                        <button type="button" class="qty-btn increment" data-product="lazy250">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="lazy250" data-variant="43269458690147">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-lazy250" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude.</span>
-                <span class="description-full">Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision. Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast. Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.</span>
-                <button class="see-more-desc" data-product="lazy250">See more</button>
-                <span class="product-links-row">
-                    <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
-                    <a class="more-info-btn" href="lazy250.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/Superia-thumb.jpg" alt="Fujifilm Superia Xtra 800" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="superia800.html" style="color: inherit; text-decoration: none;">Fujifilm Superia Xtra 800 (Expired 2010)</a></h2>
-                    <p class="product-price">₹900</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="superia800">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="superia800">
-                        <button type="button" class="qty-btn increment" data-product="superia800">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="superia800" data-variant="43881964961891" id="superia800-add-btn">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-superia800" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Fujifilm Superia X-TRA 800 is a discontinued high-speed color negative film with a very recognizable Fuji look.</span>
-                <span class="description-full">This roll expired in 2010 and was cold-stored, so the colors are largely intact, though age has introduced some characteristics. The film is particularly strong in blues and greens, which tend to come out rich and slightly cool. It has a distinct color palette that differs noticeably from current-generation color negative films. Best shot at ISO 200 (overexposing by about 2 stops helps control fog, improves shadow detail, and gives better overall color balance). Works well in daylight and evenly lit scenes. Not recommended if you are looking for clean, neutral negatives.</span>
-                <button class="see-more-desc" data-product="superia800">See more</button>
-                <span class="product-links-row">
-                    <span class="see-samples" aria-hidden="true"></span>
-                    <a class="more-info-btn" href="superia800.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
-            <img src="images/lazy-monochrome-thumb.jpg" alt="Lazy Monochrome" class="product-thumbnail">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazymonochrome.html" style="color: inherit; text-decoration: none;">LAZY MONOCHROME</a></h2>
-                    <p class="product-price">₹850</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="lazymonochrome">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazymonochrome">
-                        <button type="button" class="qty-btn increment" data-product="lazymonochrome">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="lazymonochrome" data-variant="43841780514915">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-lazymonochrome" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Lazy Monochrome is a sharp, high-quality black and white film with insane detail, deep blacks, and excellent tonal range.</span>
-                <span class="description-full">It has strong, clean contrast that makes every frame look crisp. Its default ISO is 250, and for best results it should be developed in D96. This film works beautifully in sharp light and strong shadows, making it great for street photography, architecture, or basically any kind of photography where you want clean lines and rich monochrome depth.</span>
-                <button class="see-more-desc" data-product="lazymonochrome">See more</button>
-                <span class="product-links-row">
-                    <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
-                    <a class="more-info-btn" href="lazymonochrome.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        </div>
-
-        <div class="cart-summary" id="inline-cart-summary">
-            <h3>Cart Summary</h3>
-            <p style="color:#999; font-size:14px;">Your cart is empty.</p>
-        </div>
-
-        <button class="place-order" id="inline-place-order">Place Order</button>
-
-        <footer>
-            <a href="https://www.lazyfilms.in/labs/CONTACT">Contact</a>
-            <a href="https://www.lazyfilms.in/labs/REFUND">Refund Policy</a>
-            <a href="https://www.lazyfilms.in/labs/T&C">Terms & Conditions</a>
-            <a href="https://www.lazyfilms.in/labs/PRIVACY_POLICY">Privacy Policy</a>
-        </footer>
+    <div id="cursor">
+        <div id="cursor-circle"></div>
     </div>
 
-    <!-- Sample Photos outside container -->
-    <div id="sample-gallery" class="sample-photos">
-        <h3 class="gallery-title">LAZY500</h3>
-        <div class="gallery-grid">
-            <img src="images/samples/sample7.jpg" alt="Sample 7" class="gallery-image">
-            <img src="images/samples/sample1.jpg" alt="Sample 1" class="gallery-image">
-            <img src="images/samples/sample2.jpg" alt="Sample 2" class="gallery-image">
-            <img src="images/samples/sample3.jpg" alt="Sample 3" class="gallery-image">
-            <img src="images/samples/sample4.jpg" alt="Sample 4" class="gallery-image">
-            <img src="images/samples/sample8.jpg" alt="Sample 8" class="gallery-image">
-            <img src="images/samples/sample9.jpg" alt="Sample 9" class="gallery-image">
-            <img src="images/samples/sample6.jpg" alt="Sample 6" class="gallery-image">
-            <img src="images/samples/sample5.jpg" alt="Sample 5" class="gallery-image">
+    <div class="bg"></div>
+
+    <nav class="nav">
+        <a href="store/index.html" class="nav-btn">BUY FILM</a>
+        <a href="https://www.lazyfilms.in/labs" class="nav-btn">DEVELOP FILM</a>
+        <button class="nav-btn" id="makeFilmsBtn">MAKE FILMS ON FILMS</button>
+    </nav>
+
+    <!-- Write to us popup -->
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <button class="popup-close" id="popupClose">&times;</button>
+            <div class="popup-title">Write to us</div>
+            <div class="popup-sub">Tell us what you have in mind</div>
+            <form id="writeForm" action="https://formsubmit.co/sarang@lazyfilms.in" method="POST" target="_blank">
+                <input type="hidden" name="_subject" value="Make Films On Films — Inquiry">
+                <input type="hidden" name="_captcha" value="false">
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Your email"
+                    required
+                >
+                <textarea
+                    name="message"
+                    placeholder="What do you have in mind?"
+                    required
+                ></textarea>
+                <button type="submit" class="popup-send">Send →</button>
+            </form>
         </div>
     </div>
-    <!-- Lazy 250 Sample Photos -->
-    <div id="sample-gallery-250" class="sample-photos">
-        <h3 class="gallery-title">LAZY250</h3>
-        <div class="gallery-grid">
-            <img src="images/samples2/sample1.jpg" alt="Sample 1" class="gallery-image">
-            <img src="images/samples2/sample2.jpg" alt="Sample 2" class="gallery-image">
-            <img src="images/samples2/sample3.jpg" alt="Sample 3" class="gallery-image">
-            <img src="images/samples2/sample4.jpg" alt="Sample 4" class="gallery-image">
-            <img src="images/samples2/sample5.jpg" alt="Sample 5" class="gallery-image">
-            <img src="images/samples2/sample6.jpg" alt="Sample 6" class="gallery-image">
-        </div>
-    </div>
-
-    <!-- Lazy Monochrome Sample Photos -->
-        <div id="sample-gallery-monochrome" class="sample-photos">
-        <h3 class="gallery-title">LAZY MONOCHROME</h3>
-        <div class="gallery-grid">
-            <img src="images/samples3/1.jpg" alt="Sample 1" class="gallery-image">
-            <img src="images/samples3/2.jpg" alt="Sample 2" class="gallery-image">
-            <img src="images/samples3/3.jpg" alt="Sample 3" class="gallery-image">
-            <img src="images/samples3/4.jpg" alt="Sample 4" class="gallery-image">
-            <img src="images/samples3/5.jpg" alt="Sample 5" class="gallery-image">
-            <img src="images/samples3/6.jpg" alt="Sample 6" class="gallery-image">
-        </div>
-    </div>
-
-    <!-- Lazy 100 Sample Photos -->
-    <div id="sample-gallery-lazy100" class="sample-photos">
-        <h3 class="gallery-title">LAZY 100</h3>
-        <div class="gallery-grid">
-            <img src="images/LAZY%20100/1.jpeg" alt="LAZY 100 sample 1" class="gallery-image">
-            <img src="images/LAZY%20100/2.jpeg" alt="LAZY 100 sample 2" class="gallery-image">
-            <img src="images/LAZY%20100/3.jpeg" alt="LAZY 100 sample 3" class="gallery-image">
-            <img src="images/LAZY%20100/4.jpeg" alt="LAZY 100 sample 4" class="gallery-image">
-            <img src="images/LAZY%20100/5.jpeg" alt="LAZY 100 sample 5" class="gallery-image">
-            <img src="images/LAZY%20100/6.jpeg" alt="LAZY 100 sample 6" class="gallery-image">
-        </div>
-        <p class="gallery-credit">Shot by - Ameya Adchule (@filmamu)</p>
-    </div>
-
-    <!-- Lazy Reversal 100D Sample Photos -->
-    <div id="sample-gallery-reversal" class="sample-photos">
-        <h3 class="gallery-title">LAZY REVERSAL 100D</h3>
-        <div class="gallery-grid">
-            <img src="images/ektachrome/1.jpeg" alt="Lazy Reversal 100D sample 1" class="gallery-image">
-            <img src="images/ektachrome/2.jpeg" alt="Lazy Reversal 100D sample 2" class="gallery-image">
-            <img src="images/ektachrome/3.jpeg" alt="Lazy Reversal 100D sample 3" class="gallery-image">
-            <img src="images/ektachrome/4.jpeg" alt="Lazy Reversal 100D sample 4" class="gallery-image">
-            <img src="images/ektachrome/5.jpeg" alt="Lazy Reversal 100D sample 5" class="gallery-image">
-            <img src="images/ektachrome/6.jpeg" alt="Lazy Reversal 100D sample 6" class="gallery-image">
-        </div>
-        <p class="gallery-credit">Shot by - Aditya Varma (@adityavarmaarts)</p>
-    </div>
-
-    <!-- Modal for full-size images -->
-    <div class="image-modal" onclick="closeModal()">
-        <img class="modal-content" src="" alt="Full size image">
-    </div>
-
 
     <script>
-        // Add smooth scrolling for both galleries
-        document.querySelectorAll('.see-samples').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = e.target.getAttribute('href');
-                document.querySelector(targetId).scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
-            });
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        const circle = document.getElementById('cursor-circle');
+
+        document.addEventListener('mousemove', e => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
         });
 
-        // Quantity input and button handlers
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            input.addEventListener('input', function() {
-                const val = parseInt(this.value) || 1;
-                this.value = val < 1 ? 1 : val;
-            });
+        document.querySelectorAll('.nav-btn, .popup-close, .popup-send').forEach(el => {
+            el.addEventListener('mouseenter', () => circle.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => circle.classList.remove('hovering'));
         });
 
-        document.querySelectorAll('.qty-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const product = this.dataset.product;
-                const wrapper = this.closest('.quantity-control');
-                const input = wrapper.querySelector('.quantity-input[data-product="' + product + '"]');
-                let current = parseInt(input.value) || 1;
-                if (this.classList.contains('decrement')) {
-                    current = Math.max(1, current - 1);
-                } else {
-                    current = current + 1;
-                }
-                input.value = current;
-            });
+        // Popup
+        const overlay   = document.getElementById('overlay');
+        const makeBtn   = document.getElementById('makeFilmsBtn');
+        const closeBtn  = document.getElementById('popupClose');
+        const writeForm = document.getElementById('writeForm');
+
+        makeBtn.addEventListener('click', () => overlay.classList.add('show'));
+        closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) overlay.classList.remove('show');
         });
 
-        // WooCommerce store
-        const WC_STORE = 'https://store.lazyfilms.in';
-        const WC_PRODUCT_IDS = {
-            lazy100:        795,
-            lazyreversal100d: 759,
-            lazy500:        11,
-            lazy250:        20,
-            lazymonochrome: 26,
-            fujifilmprovia: 31,
-            superia800:     34
-        };
-
-        function lockAddToCartButtons() {
-            document.querySelectorAll('.add-to-cart').forEach(btn => {
-                btn.disabled = true;
-                btn.dataset.originalText = btn.textContent;
-                btn.textContent = 'Loading...';
-            });
-        }
-
-        // Fetch stock status for all products from WooCommerce Store API
-        async function fetchAllWooCommerceStock() {
-            lockAddToCartButtons();
-            try {
-                const res = await fetch(`${WC_STORE}/wp-json/wc/store/v1/products?per_page=50`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const products = await res.json();
-
-                Object.keys(WC_PRODUCT_IDS).forEach(key => {
-                    const wcId = WC_PRODUCT_IDS[key];
-                    const product = products.find(p => p.id === wcId);
-                    const btn = document.querySelector(`.add-to-cart[data-product="${key}"]`);
-                    if (!btn) return;
-
-                    if (product && !product.is_in_stock) {
-                        btn.classList.add('out-of-stock');
-                        const stockEl = document.getElementById(`stock-status-${key}`);
-                        if (stockEl) stockEl.style.display = 'block';
-                        btn.textContent = 'Out of Stock';
-                    } else {
-                        btn.disabled = false;
-                        btn.textContent = btn.dataset.originalText || 'Add to Cart';
-                    }
-                });
-            } catch (err) {
-                console.error('Failed to fetch WooCommerce stock:', err);
-                document.querySelectorAll('.add-to-cart').forEach(btn => {
-                    btn.disabled = false;
-                    btn.textContent = btn.dataset.originalText || 'Add to Cart';
-                });
-            }
-        }
-
-
-        // Add to cart functionality for all products
-        const PRODUCT_CATALOGUE = {
-            lazy100:       { name: 'Lazy 100 - Color Negative Film',         price: 850  },
-            lazyreversal100d:{ name: 'LAZY Reversal 100D',                     price: 1200 },
-            lazy500:       { name: 'Lazy 500 - Color Negative Film',         price: 850  },
-            lazy250:       { name: 'Lazy 250 - Color Negative Film',         price: 850  },
-            lazymonochrome:{ name: 'LAZY Monochrome',                        price: 850  },
-            fujifilmprovia:{ name: 'Fujifilm Provia 100F RDP 3 (Exp. 2015)', price: 2100 },
-            superia800:    { name: 'Fujifilm Superia Xtra 800 (Exp. 2010)',   price: 900  }
-        };
-
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', function() {
-                const productKey = this.dataset.product;
-                const wcProductId = WC_PRODUCT_IDS[productKey];
-                const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
-                const quantity = parseInt(quantityInput.value) || 1;
-
-                if (!wcProductId) {
-                    alert('Product not ready yet. Please wait a moment and try again.');
-                    return;
-                }
-
-                const info = PRODUCT_CATALOGUE[productKey] || { name: productKey, price: 0 };
-                window.addToCart({ name: info.name, price: info.price, quantity: quantity, productId: wcProductId });
-
-                this.textContent = 'Added!';
-                const btn = this;
-                setTimeout(() => { btn.textContent = 'Add to Cart'; }, 1000);
-            });
-        });
-
-        // Ensure quantity inputs only accept positive numbers
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            input.addEventListener('change', function() {
-                if (this.value < 1) this.value = 1;
-            });
-        });
-
-        // Image modal functionality
-        const modal = document.querySelector('.image-modal');
-        const modalImg = document.querySelector('.modal-content');
-        
-        // Fallback for servers with case-sensitive image filenames (.jpg vs .JPG)
-        // If an image fails to load, automatically retry with the opposite extension case once.
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('error', function() {
-                const src = this.getAttribute('src');
-                if (!src) return;
-                if (src.endsWith('.jpg')) {
-                    this.src = src.replace(/\.jpg$/, '.JPG');
-                } else if (src.endsWith('.JPG')) {
-                    this.src = src.replace(/\.JPG$/, '.jpg');
-                }
-            }, { once: true });
-        });
-        
-        // Add click listeners to all gallery images
-        document.querySelectorAll('.gallery-image').forEach(img => {
-            img.addEventListener('click', function() {
-                modal.classList.add('active');
-                modalImg.src = this.src;
-            });
-        });
-        
-        // Close modal function
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        // Inline cart summary — updates whenever cart changes
-        window.onCartUpdate = function () {
-            var summary = document.getElementById('inline-cart-summary');
-            if (!summary) return;
-            var cart;
-            try { cart = JSON.parse(localStorage.getItem('lf_cart')) || { items: [] }; }
-            catch (e) { cart = { items: [] }; }
-
-            if (!cart.items.length) {
-                summary.innerHTML = '<h3>Cart Summary</h3><p style="color:#999;font-size:14px;">Your cart is empty.</p>';
-                return;
-            }
-
-            var rows = cart.items.map(function (item) {
-                return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;">' +
-                    '<div>' +
-                        '<span style="font-size:14px;font-weight:600;">' + item.name + '</span>' +
-                        '<span style="font-size:13px;color:#666;margin-left:8px;">x' + item.quantity + '</span>' +
-                    '</div>' +
-                    '<div style="display:flex;align-items:center;gap:12px;">' +
-                        '<span style="font-size:14px;">&#8377;' + (item.price * item.quantity) + '</span>' +
-                        '<button onclick="removeFromCart(' + item.id + ')" style="background:none;border:none;color:#e00;cursor:pointer;font-size:13px;padding:0;text-decoration:underline;">Remove</button>' +
-                    '</div>' +
-                '</div>';
-            }).join('');
-
-            var total = cart.items.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
-            summary.innerHTML = '<h3>Cart Summary</h3>' + rows +
-                '<p style="font-weight:bold;margin-top:12px;font-size:16px;">Total: &#8377;' + total + '</p>';
-        };
-
-        document.getElementById('inline-place-order').addEventListener('click', function () {
-            window.checkoutCart();
-        });
-
-        // Add carousel functionality
-        function startCarousel() {
-            const images = document.querySelectorAll('.carousel-image');
-            let currentIndex = 0;
-
-            setInterval(() => {
-                images[currentIndex].classList.remove('active');
-                currentIndex = (currentIndex + 1) % images.length;
-                images[currentIndex].classList.add('active');
-            }, 5000); // Change image every 5 seconds
-        }
-
-
-        // Start carousel when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            startCarousel();
-            fetchAllWooCommerceStock();
-            window.onCartUpdate();
-        });
-
-        // Add see more functionality for descriptions
-        document.querySelectorAll('.see-more-desc').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const productId = this.dataset.product;
-                const description = this.closest('.product-description');
-                const fullText = description.querySelector('.description-full');
-                const previewText = description.querySelector('.description-preview');
-                
-                if (fullText.classList.contains('show')) {
-                    fullText.classList.remove('show');
-                    this.textContent = 'See more';
-                } else {
-                    fullText.classList.add('show');
-                    this.textContent = 'See less';
-                }
-            });
+        writeForm.addEventListener('submit', () => {
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                writeForm.reset();
+            }, 400);
         });
     </script>
-    <script src="cart.js"></script>
 </body>
 </html>
