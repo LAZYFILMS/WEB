@@ -64,35 +64,70 @@
             margin-bottom: 15px;
         }
 
-        .product-details {
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 14px;
             margin-top: 10px;
+            align-items: stretch;
+        }
+
+        .product-details {
             display: flex;
-            gap: 25px;
-            margin-bottom: 20px;
+            flex-direction: column;
             align-items: flex-start;
-            flex-wrap: wrap;
-            padding-top: 10px;
-            width: 100%;
-            padding: 0 15px;
-            box-sizing: border-box;
+            gap: 6px;
             margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 290px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .more-info-btn {
+            font-size: 11px;
+            color: #0000EE;
+            text-decoration: underline;
+            display: inline-block;
+            margin-top: 0;
+            margin-left: auto;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            position: static;
+        }
+
+        .product-links-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
         }
 
         .product-thumbnail {
-            width: 112px;
+            width: 100%;
+            aspect-ratio: 1 / 1;
             height: auto;
-            margin-right: 5px;
+            object-fit: contain;
+            object-position: center;
+            border: none;
+            background: #fafafa;
+            margin-right: 0;
+            margin-bottom: 4px;
         }
 
         .product-info {
-            flex: 1;
-            min-width: 300px;
+            width: 100%;
+            min-width: 0;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 5px;
-            padding-right: 8px;
+            flex-direction: column;
             margin: 0;
+            padding-right: 0;
+            flex: 1;
         }
 
         .product-header-group {
@@ -103,7 +138,9 @@
         .product-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: auto;
         }
 
         .quantity-input {
@@ -122,7 +159,10 @@
             -webkit-appearance: none;
             margin: 0;
         }
-        .quantity-input { -moz-appearance: textfield; }
+        .quantity-input {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
 
         /* Quantity control with +/- buttons inside the input (keeps same size) */
         .quantity-control { position: relative; display: inline-block; }
@@ -159,85 +199,73 @@
             color: #ff0000;
             font-size: 12px;
             font-weight: bold;
-            margin-top: 5px;
-            text-align: right;
-            margin-right: 8px;
+            margin-top: 4px;
+            text-align: left;
+            margin-right: 0;
             display: block;
-            clear: both;
-            width: 100%;
-            position: relative;
-            left: 0;
         }
 
         .product-title {
             display: block;
             font-family: "stratos-black", sans-serif;
-            font-size: 20px;
+            font-size: 17.25px;
             margin: 0;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .product-title a {
+            color: #000;
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
 
         .product-price {
             display: block;
             font-family: "stratos-black", sans-serif;
-            font-size: 16px;
-            margin: 0 0 15px 0;
+            font-size: 13px;
+            margin: 0 0 10px 0;
             font-weight: 500;
         }
 
         .product-description {
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 25px 0 15px 0;
+            margin: 0;
             width: 100%;
-            flex-basis: 100%;
-            order: 3;
+            margin-top: 8px;
         }
 
-        .description-preview {
-            display: block;
-        }
-
-        .description-full {
-            display: none;
-        }
-
-        .description-full.show {
-            display: inline;
-        }
-
+        .description-preview,
+        .description-full,
         .see-more-desc {
-            background: none;
-            border: none;
-            color: #0000EE;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 0;
-            margin-top: 5px;
+            display: none !important;
         }
 
         .see-samples {
             color: #0000EE;
             text-decoration: underline;
             cursor: pointer;
-            font-size: 12px;
-            display: block;
-            margin-top: 15px;
+            font-size: 11px;
+            display: inline-block;
+            margin-top: 0;
+        }
+
+        .quantity-control {
+            display: inline-block;
         }
 
         .add-to-cart {
             background: #000;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 22px;
             border-radius: 4px;
             cursor: pointer;
             font-family: "stratos-black", sans-serif;
-            font-size: 16px;
+            font-size: 16.8px;
             white-space: nowrap;
             font-weight: bold;
+            display: inline-block;
         }
 
         .add-to-cart.loading {
@@ -333,11 +361,12 @@
 
         /* Base gallery styles */
         .sample-photos {
-            position: absolute;  /* Keep absolute positioning */
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            left: 0;
+            transform: none;
             width: 800px;
-            margin-top: 40px;
+            max-width: 100%;
+            margin: 40px auto 0;
             padding-bottom: 40px;
         }
 
@@ -472,31 +501,57 @@
             }
 
             /* Product details container */
-            .product-details {
-                margin-top: -100px;  /* Keep the negative margin for first product */
-                padding: 0;
-                gap: 10px;
-                display: flex;
-                align-items: flex-start;
-                flex-wrap: wrap;
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px 10px;
+                margin-top: 0;
+                align-items: stretch;
             }
 
-            /* Spacing for second product only */
+            /* Kill descendant img margin inherited from desktop rule */
+            .product-header img {
+                margin-bottom: 0;
+            }
+
+            .product-header .carousel img {
+                margin-bottom: 0;
+            }
+
+            .product-details {
+                margin-top: 0;
+                gap: 4px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                flex-wrap: nowrap;
+                min-height: 0;
+                border: 1px solid #000;
+                border-radius: 4px;
+                padding: 8px;
+                box-sizing: border-box;
+                width: 100%;
+            }
+
+            /* Reset the "stacked" spacing used when grid was 1 col */
             .product-details + .product-details {
-                margin-top: 50px;  /* Increased spacing to prevent overlap */
-                padding-top: 30px;
-                border-top: 1px solid #eee;
-                position: relative;  /* Ensure proper stacking */
-                z-index: 1;  /* Ensure it stays above first product */
+                margin-top: 0;
+                padding-top: 8px;
+                border-top: 1px solid #000;
             }
 
             /* Product thumbnail */
             .product-thumbnail {
-                width: 130px;
+                width: 100%;
+                aspect-ratio: 1 / 1;
                 height: auto;
-                margin-right: 5px;
+                margin-right: 0;
                 margin-top: 0;
+                margin-bottom: 4px;
                 display: block;
+                border: none;
+                background: #fafafa;
+                object-fit: contain;
+                object-position: center;
             }
 
             /* Remove any extra spacing */
@@ -541,58 +596,82 @@
                 margin: 0;
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
-                align-items: flex-end;
-                padding-right: 8px;
+                flex: 1;
+                padding-right: 0;
+                width: 100%;
             }
 
             /* Product header-group adjustments */
             .product-header-group {
-                margin-bottom: 5px;
-                text-align: right;
-                margin-right: 2px;  /* Slight adjustment for text alignment */
+                margin-bottom: 4px;
+                text-align: left;
+                margin-right: 0;
             }
 
             .product-title {
-                font-size: 20px;
+                font-size: 13.5px;
                 font-weight: 600;
-                margin: 0 0 4px 0;
+                margin: 0 0 3px 0;
+                line-height: 1.2;
             }
 
             .product-price {
-                font-size: 18px;
-                margin: 0;
+                font-size: 12px;
+                margin: 0 0 6px 0;
                 font-weight: bold;
+            }
+
+            .see-samples,
+            .more-info-btn {
+                font-size: 10px;
+            }
+
+            .product-links-row {
+                gap: 6px;
             }
 
             .product-actions {
                 display: flex;
-                flex-direction: row;
                 align-items: center;
-                gap: 10px;
-                justify-content: flex-end;
-                margin-right: 2px;  /* Align with text above */
-                width: 100%;  /* Ensure full width for better touch targets */
+                gap: 6px;
+                flex-wrap: nowrap;
+                margin-right: 0;
+                margin-top: auto;
+                width: 100%;
             }
 
             .quantity-input {
                 width: 60px;
                 height: 36px;
-                -webkit-appearance: none;  /* Fix for iOS */
+                -webkit-appearance: none;
                 appearance: none;
                 margin: 0;
                 padding: 0 5px;
                 text-align: center;
-                pointer-events: auto !important;  /* Force enable interaction */
-                z-index: 2;  /* Ensure it's above other elements */
+                pointer-events: auto !important;
+                z-index: 2;
             }
 
             .add-to-cart {
-                padding: 8px 15px;
+                padding: 8px 10px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 0;
+                pointer-events: auto !important;
+                z-index: 2;
+                position: relative;
+            }
+
+            .quantity-control .quantity-input {
+                width: 56px;
+                height: 32px;
+                padding: 0 20px;
+                font-size: 13px;
+            }
+
+            .qty-btn {
+                width: 20px;
                 font-size: 14px;
-                pointer-events: auto !important;  /* Force enable interaction */
-                z-index: 2;  /* Ensure it's above other elements */
-                position: relative;  /* Ensure proper stacking */
             }
 
             /* Fix stacking context */
@@ -602,11 +681,7 @@
             }
 
             /* Description text */
-            .product-description {
-                margin: 10px 0;
-                font-size: 14px;
-                line-height: 1.4;
-            }
+            .product-description { margin: 0; }
 
             /* Sample photos grid */
             .sample-photos {
@@ -641,6 +716,11 @@
                 margin-top: 60px !important;  /* Consistent spacing between galleries */
             }
 
+            #sample-gallery-lazy100 {
+                position: relative !important;
+                margin-top: 60px !important;  /* Consistent spacing between galleries */
+            }
+
             .carousel {
                 height: 250px;
                 margin: 0;
@@ -648,11 +728,13 @@
             }
         }
 
-        .carousel {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            overflow: hidden;
+        @media (min-width: 769px) {
+            .carousel {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                overflow: hidden;
+            }
         }
 
         .carousel-image {
@@ -679,25 +761,16 @@
             margin-right: 15px;
         }
 
-        .variant-fetch-btn {
-            background: none;
-            border: none;
-            color: #0000EE;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 0;
-            margin-top: 8px;
-            display: block;
-        }
-
-        .variant-id-output {
-            margin-top: 6px;
+        .gallery-credit {
+            margin-top: 10px;
             font-size: 11px;
             color: #333;
-            word-break: break-word;
-            max-width: 100%;
-            display: block;
+            text-align: center;
+        }
+
+        .gallery-credit a {
+            color: inherit;
+            text-decoration: underline;
         }
 
         /* Separator between galleries */
@@ -709,25 +782,19 @@
 
         /* Spacing for galleries */
         /* Lazy 500: 9 images (3 rows × 220px) + gaps + title + padding = ~780px */
-        #sample-gallery {
-            margin-top: 0;
-        }
+        #sample-gallery { margin-top: 40px; }
         
         /* Lazy 250: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
         /* Start after Lazy 500 gallery ends */
-        #sample-gallery-250 {
-            margin-top: 800px;  /* Space for Lazy 500 gallery (3 rows) */
-        }
+        #sample-gallery-250 { margin-top: 60px; }
         
         /* Lazy Monochrome: 6 images (2 rows × 220px) + gaps + title + padding = ~545px */
         /* Start after Lazy 250 gallery ends */
-        #sample-gallery-monochrome {
-            margin-top: 1350px;  /* Space for Lazy 500 (800) + Lazy 250 (545) + buffer */
-        }
+        #sample-gallery-monochrome { margin-top: 60px; }
 
-        #sample-gallery-reversal {
-            margin-top: 1900px;
-        }
+        #sample-gallery-lazy100 { margin-top: 60px; }
+
+        #sample-gallery-reversal { margin-top: 60px; }
     </style>
 </head>
 <body>
@@ -745,6 +812,7 @@
             </div>
         </div>
 
+        <div class="products-grid">
         <div class="product-details">
             <img src="images/ektachrome-thumb copy.jpg" alt="Lazy Reversal 100D" class="product-thumbnail">
             <div class="product-info">
@@ -766,7 +834,38 @@
                 <span class="description-preview">Lazy Reversal 100D is a daylight-balanced, DX-coded color reversal film for vivid, true-to-life imagery with fine grain, strong sharpness, and a cinematic analog edge.</span>
                 <span class="description-full">Rated at ISO 100, it thrives in bright conditions with rich yet natural color rendering, slightly cool blues, and clean whites. Crucially, it is DX-coded for reliable camera ISO reading, which is especially important for color reversal film. As a reversal film, it creates a direct positive image on film, ideal for projection and high-quality scanning. For proper processing, this film must be developed in E6 chemistry.</span>
                 <button class="see-more-desc" data-product="lazyreversal100d">See more</button>
-                <a href="#sample-gallery-reversal" class="see-samples">See Sample photos</a>
+                <span class="product-links-row">
+                    <a href="#sample-gallery-reversal" class="see-samples">See Sample photos</a>
+                    <a class="more-info-btn" href="lazyreversal100d.html">More info</a>
+                </span>
+            </p>
+        </div>
+
+        <div class="product-details">
+            <img src="images/lazy100-thumb.jpg" alt="LAZY 100" class="product-thumbnail">
+            <div class="product-info">
+                <div class="product-header-group">
+                    <h2 class="product-title"><a href="lazy100.html" style="color: inherit; text-decoration: none;">Lazy 100 - Color Negative Film</a></h2>
+                    <p class="product-price">₹850</p>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button type="button" class="qty-btn decrement" data-product="lazy100">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" data-product="lazy100">
+                        <button type="button" class="qty-btn increment" data-product="lazy100">+</button>
+                    </div>
+                    <button class="add-to-cart" data-product="lazy100" data-variant="795">Add to Cart</button>
+                </div>
+            </div>
+            <div class="stock-status" id="stock-status-lazy100" style="display: none;">Out of Stock</div>
+            <p class="product-description">
+                <span class="description-preview">Lazy 100 is our daylight-balanced color negative film, respooled from Kodak Vision3 50D for clean detail, smooth tones, and a cinematic analog look.</span>
+                <span class="description-full">It is built for bright conditions with ultra-fine grain, soft pastel color, excellent skin tones, and strong dynamic range that holds highlights and shadows beautifully. Process in ECN-2 for intended motion-picture character.</span>
+                <button class="see-more-desc" data-product="lazy100">See more</button>
+                <span class="product-links-row">
+                    <a href="#sample-gallery-lazy100" class="see-samples">See Sample photos</a>
+                    <a class="more-info-btn" href="lazy100.html">More info</a>
+                </span>
             </p>
         </div>
 
@@ -774,7 +873,7 @@
             <img src="images/lazy500-thumb.jpg" alt="Lazy 500" class="product-thumbnail">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy500.html" style="color: inherit; text-decoration: none;">LAZY 500</a></h2>
+                    <h2 class="product-title"><a href="lazy500.html" style="color: inherit; text-decoration: none;">Lazy 500 - Color Negative Film</a></h2>
                     <p class="product-price">₹850</p>
                 </div>
                 <div class="product-actions">
@@ -791,7 +890,10 @@
                 <span class="description-preview">Lazy500 is a versatile 500 ASA tungsten-balanced film stock, perfect for capturing stunning skin tones and cool, cinematic hues.</span>
                 <span class="description-full">Ideally processed in ECN-2, it delivers exceptional results across a wide range of scenarios, making it the go-to choice for just about anything you want to shoot.</span>
                 <button class="see-more-desc" data-product="lazy500">See more</button>
-                <a href="#sample-gallery" class="see-samples">See Sample photos</a>
+                <span class="product-links-row">
+                    <a href="#sample-gallery" class="see-samples">See Sample photos</a>
+                    <a class="more-info-btn" href="lazy500.html">More info</a>
+                </span>
             </p>
         </div>
 
@@ -816,6 +918,10 @@
                 <span class="description-preview">Often regarded as one of the finest color slide films ever made, Provia RDP III delivers legendary sharpness, natural skin tones, and beautifully balanced saturation.</span>
                 <span class="description-full">Although expired in 2015, this roll has been cold-stored, so its sensitivity remains fully intact — no exposure compensation is needed. Please note: some rolls may show minor mold on the ends, so keep that in mind before purchasing.</span>
                 <button class="see-more-desc" data-product="fujifilmprovia">See more</button>
+                <span class="product-links-row">
+                    <span class="see-samples" aria-hidden="true"></span>
+                    <a class="more-info-btn" href="provia100f.html">More info</a>
+                </span>
             </p>
         </div>
 
@@ -823,7 +929,7 @@
             <img src="images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy250.html" style="color: inherit; text-decoration: none;">LAZY 250</a></h2>
+                    <h2 class="product-title"><a href="lazy250.html" style="color: inherit; text-decoration: none;">Lazy 250 - Color Negative Film</a></h2>
                     <p class="product-price">₹850</p>
                 </div>
                 <div class="product-actions">
@@ -840,7 +946,10 @@
                 <span class="description-preview">Lazy 250 is a daylight-balanced 250 ISO color negative film that delivers stunning colors, fine grain, and exceptional latitude.</span>
                 <span class="description-full">Whether you're shooting sunlit landscapes, intimate portraits, or everyday moments, this film adapts effortlessly to your vision. Renowned for its versatility, Lazy 250 performs beautifully in both outdoor and indoor lighting conditions. With an impressive dynamic range, it retains details in shadows and highlights, making it a favorite among film photographers. Need more speed? Push it up to 800 ISO with ease while maintaining rich colors and balanced contrast. Perfect for professionals and enthusiasts alike, Lazy 250 ensures every frame is timeless.</span>
                 <button class="see-more-desc" data-product="lazy250">See more</button>
-                <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
+                <span class="product-links-row">
+                    <a href="#sample-gallery-250" class="see-samples">See Sample photos</a>
+                    <a class="more-info-btn" href="lazy250.html">More info</a>
+                </span>
             </p>
         </div>
 
@@ -865,6 +974,10 @@
                 <span class="description-preview">Fujifilm Superia X-TRA 800 is a discontinued high-speed color negative film with a very recognizable Fuji look.</span>
                 <span class="description-full">This roll expired in 2010 and was cold-stored, so the colors are largely intact, though age has introduced some characteristics. The film is particularly strong in blues and greens, which tend to come out rich and slightly cool. It has a distinct color palette that differs noticeably from current-generation color negative films. Best shot at ISO 200 (overexposing by about 2 stops helps control fog, improves shadow detail, and gives better overall color balance). Works well in daylight and evenly lit scenes. Not recommended if you are looking for clean, neutral negatives.</span>
                 <button class="see-more-desc" data-product="superia800">See more</button>
+                <span class="product-links-row">
+                    <span class="see-samples" aria-hidden="true"></span>
+                    <a class="more-info-btn" href="superia800.html">More info</a>
+                </span>
             </p>
         </div>
 
@@ -889,8 +1002,13 @@
                 <span class="description-preview">Lazy Monochrome is a sharp, high-quality black and white film with insane detail, deep blacks, and excellent tonal range.</span>
                 <span class="description-full">It has strong, clean contrast that makes every frame look crisp. Its default ISO is 250, and for best results it should be developed in D96. This film works beautifully in sharp light and strong shadows, making it great for street photography, architecture, or basically any kind of photography where you want clean lines and rich monochrome depth.</span>
                 <button class="see-more-desc" data-product="lazymonochrome">See more</button>
-                <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
+                <span class="product-links-row">
+                    <a href="#sample-gallery-monochrome" class="see-samples">See Sample photos</a>
+                    <a class="more-info-btn" href="lazymonochrome.html">More info</a>
+                </span>
             </p>
+        </div>
+
         </div>
 
         <div class="cart-summary" id="inline-cart-summary">
@@ -949,6 +1067,20 @@
         </div>
     </div>
 
+    <!-- Lazy 100 Sample Photos -->
+    <div id="sample-gallery-lazy100" class="sample-photos">
+        <h3 class="gallery-title">LAZY 100</h3>
+        <div class="gallery-grid">
+            <img src="images/LAZY%20100/1.jpeg" alt="LAZY 100 sample 1" class="gallery-image">
+            <img src="images/LAZY%20100/2.jpeg" alt="LAZY 100 sample 2" class="gallery-image">
+            <img src="images/LAZY%20100/3.jpeg" alt="LAZY 100 sample 3" class="gallery-image">
+            <img src="images/LAZY%20100/4.jpeg" alt="LAZY 100 sample 4" class="gallery-image">
+            <img src="images/LAZY%20100/5.jpeg" alt="LAZY 100 sample 5" class="gallery-image">
+            <img src="images/LAZY%20100/6.jpeg" alt="LAZY 100 sample 6" class="gallery-image">
+        </div>
+        <p class="gallery-credit">Shot by - Ameya Adchule (@filmamu)</p>
+    </div>
+
     <!-- Lazy Reversal 100D Sample Photos -->
     <div id="sample-gallery-reversal" class="sample-photos">
         <h3 class="gallery-title">LAZY REVERSAL 100D</h3>
@@ -960,8 +1092,7 @@
             <img src="images/ektachrome/5.jpeg" alt="Lazy Reversal 100D sample 5" class="gallery-image">
             <img src="images/ektachrome/6.jpeg" alt="Lazy Reversal 100D sample 6" class="gallery-image">
         </div>
-        <button type="button" class="variant-fetch-btn" data-fetch-variant-id="759">Fetch Variant ID</button>
-        <span class="variant-id-output" id="variant-id-output-759" aria-live="polite"></span>
+        <p class="gallery-credit">Shot by - Aditya Varma (@adityavarmaarts)</p>
     </div>
 
     <!-- Modal for full-size images -->
@@ -1008,6 +1139,7 @@
         // WooCommerce store
         const WC_STORE = 'https://store.lazyfilms.in';
         const WC_PRODUCT_IDS = {
+            lazy100:        795,
             lazyreversal100d: 759,
             lazy500:        11,
             lazy250:        20,
@@ -1060,40 +1192,14 @@
 
         // Add to cart functionality for all products
         const PRODUCT_CATALOGUE = {
+            lazy100:       { name: 'Lazy 100 - Color Negative Film',         price: 850  },
             lazyreversal100d:{ name: 'LAZY Reversal 100D',                     price: 1200 },
-            lazy500:       { name: 'LAZY 500',                               price: 850  },
-            lazy250:       { name: 'LAZY 250',                               price: 850  },
+            lazy500:       { name: 'Lazy 500 - Color Negative Film',         price: 850  },
+            lazy250:       { name: 'Lazy 250 - Color Negative Film',         price: 850  },
             lazymonochrome:{ name: 'LAZY Monochrome',                        price: 850  },
             fujifilmprovia:{ name: 'Fujifilm Provia 100F RDP 3 (Exp. 2015)', price: 2100 },
             superia800:    { name: 'Fujifilm Superia Xtra 800 (Exp. 2010)',   price: 900  }
         };
-
-        async function fetchVariantId(productId, outputEl) {
-            outputEl.textContent = 'Checking product...';
-            try {
-                const res = await fetch(`${WC_STORE}/wp-json/wc/store/v1/products/${productId}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const product = await res.json();
-                const variationIds = Array.isArray(product.variations) ? product.variations : [];
-                if (variationIds.length > 0) {
-                    outputEl.textContent = `Variant ID(s): ${variationIds.join(', ')}`;
-                } else {
-                    outputEl.textContent = `No variants found. This is a simple product, use product ID ${product.id}.`;
-                }
-            } catch (err) {
-                console.error('Variant ID fetch failed:', err);
-                outputEl.textContent = 'Could not fetch variant ID. Please try again.';
-            }
-        }
-
-        document.querySelectorAll('[data-fetch-variant-id]').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const productId = this.getAttribute('data-fetch-variant-id');
-                const output = document.getElementById(`variant-id-output-${productId}`);
-                if (!productId || !output) return;
-                fetchVariantId(productId, output);
-            });
-        });
 
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
