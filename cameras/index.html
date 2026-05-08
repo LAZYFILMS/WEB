@@ -3,9 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Cameras — Lazy Film Lab</title>
-    <!-- Hosted on GitHub Pages: add your *.github.io origin to CORS on cameras.lazyfilms.in (same as film store). -->
+    <title>Buy Used 35mm Film Cameras in India | LAZY FILMS Camera Shop</title>
+    <meta name="description" content="Hand-tested vintage and used 35mm film cameras for sale in India — Pentax, Nikon, Canon, Olympus and more. Each camera is serviced and graded before shipping from Mumbai.">
+    <meta name="keywords" content="used film camera india, buy 35mm camera india, vintage camera mumbai, pentax me super india, film camera shop india">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://www.lazyfilms.in/cameras/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LAZY FILMS">
+    <meta property="og:title" content="Buy Used 35mm Film Cameras in India | LAZY FILMS">
+    <meta property="og:description" content="Hand-tested vintage 35mm film cameras shipped from Mumbai.">
+    <meta property="og:url" content="https://www.lazyfilms.in/cameras/">
+    <meta property="og:image" content="https://www.lazyfilms.in/sample1.jpg">
+    <meta property="og:locale" content="en_IN">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://www.lazyfilms.in/sample1.jpg">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
     <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "LAZY FILMS Camera Shop",
+      "url": "https://www.lazyfilms.in/cameras/",
+      "description": "Used and vintage 35mm film cameras for sale in India.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "C13, Sahar CHS, Sahar Road, Parsiwada, Chakala, Andheri East",
+        "addressLocality": "Mumbai",
+        "addressRegion": "MH",
+        "postalCode": "400099",
+        "addressCountry": "IN"
+      },
+      "areaServed": "IN",
+      "currenciesAccepted": "INR"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home",  "item": "https://www.lazyfilms.in/" },
+        { "@type": "ListItem", "position": 2, "name": "Cameras", "item": "https://www.lazyfilms.in/cameras/" }
+      ]
+    }
+    </script>
     <style>
         body {
             font-family: "stratos", monospace;
@@ -133,45 +182,6 @@
             flex-wrap: wrap;
         }
 
-        .quantity-control {
-            position: relative;
-            display: inline-block;
-        }
-
-        .quantity-control .quantity-input {
-            width: 72px;
-            height: 35px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            padding: 0 24px;
-            box-sizing: border-box;
-            text-align: center;
-            font-family: "stratos", monospace;
-            font-size: 14px;
-        }
-
-        .quantity-input::-webkit-outer-spin-button,
-        .quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .quantity-input { -moz-appearance: textfield; }
-
-        .qty-btn {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 24px;
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            line-height: 1;
-            cursor: pointer;
-            user-select: none;
-        }
-        .qty-btn.decrement { left: 0; }
-        .qty-btn.increment { right: 0; }
-
         .add-to-cart {
             background: #000;
             color: #fff;
@@ -296,18 +306,13 @@
 
         <div class="products-grid">
             <div class="product-details">
-                <img src="images/KB10.jpg" alt="Kodak KB-10" class="product-thumbnail">
+                <img src="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/cameras/images/KB10.jpg" alt="Kodak KB-10" class="product-thumbnail" loading="eager" fetchpriority="high" decoding="async">
                 <div class="product-info">
                     <div class="product-header-group">
                         <h2 class="product-title">Kodak KB-10</h2>
                         <p class="product-price">₹2,000</p>
                     </div>
                     <div class="product-actions">
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn decrement" data-product="kodak_kb10">−</button>
-                            <input type="number" class="quantity-input" value="1" min="1" data-product="kodak_kb10">
-                            <button type="button" class="qty-btn increment" data-product="kodak_kb10">+</button>
-                        </div>
                         <button type="button" class="add-to-cart" data-product="kodak_kb10">Add to Cart</button>
                     </div>
                 </div>
@@ -320,18 +325,13 @@
             </div>
 
             <div class="product-details">
-                <img src="images/PENTAXK1000.jpg" alt="Pentax K1000" class="product-thumbnail">
+                <img src="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/cameras/images/PENTAXK1000.jpg" alt="Pentax K1000" class="product-thumbnail" loading="lazy" decoding="async">
                 <div class="product-info">
                     <div class="product-header-group">
                         <h2 class="product-title">Pentax K1000</h2>
                         <p class="product-price">₹8,000</p>
                     </div>
                     <div class="product-actions">
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn decrement" data-product="pentax_k1000">−</button>
-                            <input type="number" class="quantity-input" value="1" min="1" data-product="pentax_k1000">
-                            <button type="button" class="qty-btn increment" data-product="pentax_k1000">+</button>
-                        </div>
                         <button type="button" class="add-to-cart" data-product="pentax_k1000">Add to Cart</button>
                     </div>
                 </div>
@@ -344,18 +344,13 @@
             </div>
 
             <div class="product-details">
-                <img src="images/NIKONFM2.jpg" alt="Nikon FM2" class="product-thumbnail">
+                <img src="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/cameras/images/NIKONFM2.jpg" alt="Nikon FM2" class="product-thumbnail" loading="lazy" decoding="async">
                 <div class="product-info">
                     <div class="product-header-group">
                         <h2 class="product-title">Nikon FM2</h2>
                         <p class="product-price">₹25,000</p>
                     </div>
                     <div class="product-actions">
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn decrement" data-product="nikon_fm2">−</button>
-                            <input type="number" class="quantity-input" value="1" min="1" data-product="nikon_fm2">
-                            <button type="button" class="qty-btn increment" data-product="nikon_fm2">+</button>
-                        </div>
                         <button type="button" class="add-to-cart" data-product="nikon_fm2">Add to Cart</button>
                     </div>
                 </div>
@@ -368,18 +363,13 @@
             </div>
 
             <div class="product-details">
-                <img src="images/NIKONFM10.jpg" alt="Nikon FM10" class="product-thumbnail">
+                <img src="https://raw.githubusercontent.com/LAZYFILMS/WEB/main/cameras/images/NIKONFM10.jpg" alt="Nikon FM10" class="product-thumbnail" loading="lazy" decoding="async">
                 <div class="product-info">
                     <div class="product-header-group">
                         <h2 class="product-title">Nikon FM10</h2>
                         <p class="product-price">₹8,000</p>
                     </div>
                     <div class="product-actions">
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn decrement" data-product="nikon_fm10">−</button>
-                            <input type="number" class="quantity-input" value="1" min="1" data-product="nikon_fm10">
-                            <button type="button" class="qty-btn increment" data-product="nikon_fm10">+</button>
-                        </div>
                         <button type="button" class="add-to-cart" data-product="nikon_fm10">Add to Cart</button>
                     </div>
                 </div>
@@ -388,6 +378,25 @@
                     <span class="description-preview">Entry Nikon FM — lightweight body for learning on F-mount glass.</span>
                     <span class="description-full">See WooCommerce for what’s included (body / lens / caps).</span>
                     <button type="button" class="see-more-desc" data-product="nikon_fm10">See more</button>
+                </p>
+            </div>
+
+            <div class="product-details" id="pentax_me">
+                <a href="pentaxme.html"><img src="https://cameras.lazyfilms.in/wp-content/uploads/2026/05/619CU3oxfxL._AC_UF10001000_QL80_.jpg" alt="Pentax ME Super" class="product-thumbnail" loading="lazy" decoding="async"></a>
+                <div class="product-info">
+                    <div class="product-header-group">
+                        <h2 class="product-title"><a href="pentaxme.html">Pentax ME Super</a></h2>
+                        <p class="product-price">₹15,000</p>
+                    </div>
+                    <div class="product-actions">
+                        <button type="button" class="add-to-cart" data-product="pentax_me">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="stock-status" id="stock-status-pentax_me" style="display: none;">Out of Stock</div>
+                <p class="product-description">
+                    <span class="description-preview">Compact Pentax ME Super — aperture-priority SLR, 50mm lens, motor drive included.</span>
+                    <span class="description-full">Recently serviced, 8/10 condition. Clean viewfinder, working light meter. <a href="pentaxme.html">See full listing →</a></span>
+                    <button type="button" class="see-more-desc" data-product="pentax_me">See more</button>
                 </p>
             </div>
         </div>
@@ -408,31 +417,6 @@
     </div>
 
     <script>
-        document.querySelectorAll('.quantity-input').forEach(function (input) {
-            input.addEventListener('input', function () {
-                var val = parseInt(this.value, 10) || 1;
-                this.value = val < 1 ? 1 : val;
-            });
-            input.addEventListener('change', function () {
-                if (this.value < 1) this.value = 1;
-            });
-        });
-
-        document.querySelectorAll('.qty-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var product = this.dataset.product;
-                var wrapper = this.closest('.quantity-control');
-                var input = wrapper.querySelector('.quantity-input[data-product="' + product + '"]');
-                var current = parseInt(input.value, 10) || 1;
-                if (this.classList.contains('decrement')) {
-                    current = Math.max(1, current - 1);
-                } else {
-                    current = current + 1;
-                }
-                input.value = current;
-            });
-        });
-
         /** Cameras WooCommerce — checkout uses cameras/cart.js → https://cameras.lazyfilms.in/?lf_cart=… */
         var WC_STORE = 'https://cameras.lazyfilms.in';
 
@@ -441,14 +425,16 @@
             kodak_kb10:  11,
             pentax_k1000: 29,
             nikon_fm2:   34,
-            nikon_fm10:  35
+            nikon_fm10:  35,
+            pentax_me:   37
         };
 
         var PRODUCT_CATALOGUE = {
             kodak_kb10:  { name: 'Kodak KB-10',  price: 2000 },
             pentax_k1000: { name: 'Pentax K1000', price: 8000 },
             nikon_fm2:   { name: 'Nikon FM2',    price: 25000 },
-            nikon_fm10:  { name: 'Nikon FM10',   price: 8000 }
+            nikon_fm10:  { name: 'Nikon FM10',   price: 8000 },
+            pentax_me:   { name: 'Pentax ME Super', price: 15000 }
         };
 
         function lockAddToCartButtons() {
@@ -510,9 +496,7 @@
             button.addEventListener('click', function () {
                 var productKey = this.dataset.product;
                 var wcProductId = WC_PRODUCT_IDS[productKey];
-                var actions = this.closest('.product-info');
-                var quantityInput = actions.querySelector('.quantity-input');
-                var quantity = parseInt(quantityInput.value, 10) || 1;
+                var quantity = 1;
 
                 if (!wcProductId) {
                     alert('This listing is not connected to the shop yet. Add WooCommerce product IDs in cameras/index.html.');

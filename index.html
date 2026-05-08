@@ -3,12 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAZY FILMS</title>
+    <title>LAZY FILMS — Buy 35mm Film, Develop Rolls & Print Photos in India</title>
+    <meta name="description" content="LAZY FILMS sells fresh 35mm film, develops rolls (C-41, E-6, B&amp;W, ECN-2) and prints photos for analog photographers across India. Based in Mumbai, shipping pan-India.">
+    <meta name="keywords" content="35mm film india, buy film online india, film developing mumbai, lazy films, analog photography india, c-41 lab india, e-6 slide film, film prints india">
+    <meta name="author" content="LAZY FILMS">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://www.lazyfilms.in/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LAZY FILMS">
+    <meta property="og:title" content="LAZY FILMS — Buy 35mm Film, Develop Rolls & Print Photos in India">
+    <meta property="og:description" content="Fresh 35mm film, lab developing and prints for analog photographers across India. Based in Mumbai.">
+    <meta property="og:url" content="https://www.lazyfilms.in/">
+    <meta property="og:image" content="https://www.lazyfilms.in/sample1.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LAZY FILMS — Buy 35mm Film, Develop Rolls & Print Photos in India">
+    <meta name="twitter:description" content="Fresh 35mm film, lab developing and prints for analog photographers across India.">
+    <meta name="twitter:image" content="https://www.lazyfilms.in/sample1.jpg">
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#000000">
+
+    <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Preconnect for fonts (perf) -->
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
     <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+
+    <!-- Structured data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "LAZY FILMS",
+      "alternateName": "Lazy Film Lab",
+      "url": "https://www.lazyfilms.in/",
+      "logo": "https://www.lazyfilms.in/Lazy.png",
+      "description": "LAZY FILMS sells fresh 35mm film, develops rolls and prints photos for analog photographers across India.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "C13, Sahar CHS, Sahar Road, Parsiwada, Chakala, Andheri East",
+        "addressLocality": "Mumbai",
+        "addressRegion": "MH",
+        "postalCode": "400099",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91-9405143371",
+      "email": "sarang@lazyfilms.in",
+      "sameAs": [
+        "https://www.instagram.com/lazyfilms.in/"
+      ]
+    }
+    </script>
+
+    <!-- Structured data: WebSite (enables sitelinks search box) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "LAZY FILMS",
+      "url": "https://www.lazyfilms.in/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.lazyfilms.in/store/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     <style>
         * {
             margin: 0;
@@ -219,6 +290,19 @@
             color: #000;
         }
 
+        /* Visually hidden, still accessible to screen readers and search engines */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         /* Mobile */
         @media (max-width: 600px) {
             .nav-btn {
@@ -253,13 +337,36 @@
         <div id="cursor-circle"></div>
     </div>
 
-    <div class="bg"></div>
+    <div class="bg" role="img" aria-label="Analog photograph backdrop"></div>
 
-    <nav class="nav">
-        <a href="store/index.html" class="nav-btn">BUY FILM</a>
-        <a href="https://www.lazyfilms.in/labs" class="nav-btn">DEVELOP FILM</a>
+    <header class="sr-only">
+        <h1>LAZY FILMS — Fresh 35mm Film, Lab Developing &amp; Prints in India</h1>
+        <p>
+            LAZY FILMS is a Mumbai-based film photography brand and lab. We sell fresh
+            35mm film stocks (Lazy 100, Lazy 250, Lazy 500, Lazy Monochrome, Lazy
+            Reversal 100D, Fujifilm Provia 100F, Fujifilm Superia X-TRA 800) and ship
+            pan-India. Our lab in Andheri East develops C-41 colour negatives, E-6 slide
+            film, ECN-2 cinema film and traditional black-and-white rolls, with optional
+            scanning and prints. We also stock used 35mm cameras like the Pentax ME Super
+            and run film photography workshops.
+        </p>
+    </header>
+
+    <nav class="nav" aria-label="Primary">
+        <a href="/store/" class="nav-btn">BUY FILM</a>
+        <a href="/labs/" class="nav-btn">DEVELOP FILM</a>
         <button class="nav-btn" id="makeFilmsBtn">MAKE FILMS ON FILMS</button>
     </nav>
+
+    <footer class="sr-only">
+        <p>
+            <a href="/store/">Buy 35mm film online in India</a> ·
+            <a href="/labs/">Film developing in Mumbai</a> ·
+            <a href="/cameras/">Used film cameras</a> ·
+            <a href="/prints/">Photo prints</a> ·
+            <a href="/Contact.html">Contact</a>
+        </p>
+    </footer>
 
     <!-- Write to us popup -->
     <div class="overlay" id="overlay">
@@ -267,7 +374,7 @@
             <button class="popup-close" id="popupClose">&times;</button>
             <div class="popup-title">Write to us</div>
             <div class="popup-sub">Tell us what you have in mind</div>
-            <form id="writeForm" action="https://formsubmit.co/sarang@lazyfilms.in" method="POST" target="_blank">
+            <form id="writeForm" action="https://formsubmit.co/sarang@lazyfilms.in" method="POST" target="_blank" rel="noopener noreferrer">
                 <input type="hidden" name="_subject" value="Make Films On Films — Inquiry">
                 <input type="hidden" name="_captcha" value="false">
                 <input

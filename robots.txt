@@ -1,0 +1,22 @@
+# LAZY FILMS — robots.txt
+# Allow all reputable crawlers to index every page.
+
+User-agent: *
+Allow: /
+Disallow: /backend/
+
+# Block AI scrapers that don't send traffic back. Remove any line below if you want them.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+# Sitemap
+Sitemap: https://www.lazyfilms.in/sitemap.xml
