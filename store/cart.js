@@ -3,6 +3,26 @@
     const STORE = 'https://store.lazyfilms.in';
     const KEY = 'lf_cart';
 
+    // Shopify domain used when a cart contains at least one DEV+SCAN bundle
+    // line, or when a mixed cart needs to be routed entirely through Shopify.
+    // The storefront is locked down via theme.liquid redirects so the
+    // discounted bundle-priced variants can only be reached this way.
+    const SHOPIFY_DOMAIN = 'rphzqx-d5.myshopify.com';
+
+    // ProductId used for the auto-added Return Negative shipping line.
+    // Defined in store/index.html (SHOPIFY_RETURN_NEGATIVE) but shared here
+    // so the cart UI can detect the line and render the helper hint.
+    const RETURN_NEGATIVE_PRODUCT_ID = 'shopify_return_negative';
+
+    // Monotonically-increasing cart item id. Date.now() alone collides when
+    // multiple items are added in the same millisecond (e.g. a bundle line
+    // and the auto-added Return Negative), causing Remove to nuke both.
+    var __idCounter = 0;
+    function nextCartItemId() {
+        __idCounter += 1;
+        return Date.now() * 1000 + __idCounter;
+    }
+
     // --- State helpers ---
     function getCart() {
         try { return JSON.parse(localStorage.getItem(KEY)) || { items: [] }; }
@@ -14,17 +34,56 @@
 
     // --- Public API ---
     window.addToCart = function (item) {
-        // item: { name, price, quantity, productId }
+        // item: { name, price, quantity, productId,
+        //         platform?, productKey?, bundleVariantIds? }
         var cart = getCart();
         var existing = cart.items.find(function (i) { return i.productId === item.productId; });
         if (existing) {
             existing.quantity += item.quantity;
+            // Refresh routing metadata in case it was missing on an older
+            // cart item (e.g. saved before the bundle schema existed).
+            if (item.platform)         existing.platform         = item.platform;
+            if (item.productKey)       existing.productKey       = item.productKey;
+            if (item.bundleVariantIds) existing.bundleVariantIds = item.bundleVariantIds;
         } else {
-            cart.items.push({ id: Date.now(), name: item.name, price: item.price, quantity: item.quantity, productId: item.productId });
+            cart.items.push({
+                id:               nextCartItemId(),
+                name:             item.name,
+                price:            item.price,
+                quantity:         item.quantity,
+                productId:        item.productId,
+                platform:         item.platform || 'woocommerce',
+                productKey:       item.productKey || null,
+                bundleVariantIds: item.bundleVariantIds || null
+            });
         }
         saveCart(cart);
         renderCart();
         if (typeof window.onCartUpdate === 'function') window.onCartUpdate();
+    };
+
+    // Add an item only if the same productId isn't already in the cart.
+    // Used by the bundle flow to auto-add the Return Negative shipping line
+    // exactly once (without bumping its quantity if multiple bundles are
+    // added). The user can still remove it manually.
+    window.ensureInCart = function (item) {
+        var cart = getCart();
+        var existing = cart.items.find(function (i) { return i.productId === item.productId; });
+        if (existing) return false;
+        cart.items.push({
+            id:               nextCartItemId(),
+            name:             item.name,
+            price:            item.price,
+            quantity:         item.quantity || 1,
+            productId:        item.productId,
+            platform:         item.platform || 'woocommerce',
+            productKey:       item.productKey || null,
+            bundleVariantIds: item.bundleVariantIds || null
+        });
+        saveCart(cart);
+        renderCart();
+        if (typeof window.onCartUpdate === 'function') window.onCartUpdate();
+        return true;
     };
 
     window.removeFromCart = function (id) {
@@ -35,11 +94,74 @@
         if (typeof window.onCartUpdate === 'function') window.onCartUpdate();
     };
 
+    function isBundleItem(i) {
+        // Defensive: any of these mark a Shopify-routed bundle line.
+        return (
+            i.platform === 'shopify' ||
+            (Array.isArray(i.bundleVariantIds) && i.bundleVariantIds.length > 0) ||
+            (typeof i.productId === 'string' && i.productId.indexOf('bundle_') === 0)
+        );
+    }
+
     window.checkoutCart = function () {
         var cart = getCart();
         if (!cart.items.length) { alert('Your cart is empty.'); return; }
-        var items = cart.items.map(function (i) { return i.productId + ':' + i.quantity; }).join(',');
-        window.location.href = STORE + '/?lf_cart=' + items;
+
+        var hasBundle = cart.items.some(isBundleItem);
+
+        // All-WooCommerce cart → original woocommerce flow.
+        if (!hasBundle) {
+            var wooItems = cart.items
+                .map(function (i) { return i.productId + ':' + i.quantity; })
+                .join(',');
+            window.location.href = STORE + '/?lf_cart=' + wooItems;
+            return;
+        }
+
+        // At least one DEV+SCAN bundle → route the entire cart to Shopify.
+        // Each bundle line expands into 3 Shopify cart lines (roll + process +
+        // scan) at the same quantity. WooCommerce-tagged items get swapped to
+        // their corresponding Shopify roll variant via the global map exposed
+        // by the store page.
+        var shopifyNormalMap = window.LF_SHOPIFY_NORMAL_BY_PRODUCT_KEY || {};
+        var missing = [];
+        var parts = [];
+
+        cart.items.forEach(function (item) {
+            var qty = item.quantity;
+
+            if (isBundleItem(item) && item.bundleVariantIds && item.bundleVariantIds.length) {
+                // Bundle: emit one line per component variant at the same qty.
+                item.bundleVariantIds.forEach(function (vid) {
+                    if (!vid || String(vid).indexOf('TODO') === 0) {
+                        missing.push(item.name);
+                    } else {
+                        parts.push(vid + ':' + qty);
+                    }
+                });
+                return;
+            }
+
+            // WooCommerce-tagged plain roll → substitute Shopify roll variant.
+            var rollId = shopifyNormalMap[item.productKey];
+            if (!rollId || String(rollId).indexOf('TODO') === 0) {
+                missing.push(item.name);
+                return;
+            }
+            parts.push(rollId + ':' + qty);
+        });
+
+        if (missing.length) {
+            alert('Cannot check out — Shopify variant missing for: ' +
+                missing.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '));
+            return;
+        }
+
+        // (Return Negative is no longer auto-appended at checkout — it's
+        // added to the cart as a removable line item when a bundle is added.)
+
+        // Shopify cart permalink: /cart/<variantId>:<qty>,<variantId>:<qty>...
+        window.location.href = 'https://' + SHOPIFY_DOMAIN + '/cart/' + parts.join(',');
     };
 
     // --- Drawer helpers ---
@@ -78,7 +200,14 @@
             return;
         }
 
-        container.innerHTML = cart.items.map(function (item) {
+        var hasReturnNegative = cart.items.some(function (i) {
+            return i.productId === RETURN_NEGATIVE_PRODUCT_ID;
+        });
+        var hint = hasReturnNegative
+            ? '<p class="lf-return-hint">Remove "Return Negative" from the cart if you don\'t want negatives shipped back.</p>'
+            : '';
+
+        container.innerHTML = hint + cart.items.map(function (item) {
             return '<div class="lf-cart-item">' +
                 '<div class="lf-item-info">' +
                     '<div class="lf-item-name">' + item.name + '</div>' +
@@ -112,6 +241,7 @@
             '.lf-close-btn:hover{color:#555;}',
             '#lf-cart-items{flex:1;overflow-y:auto;padding:8px 20px;}',
             '.lf-empty{color:#aaa;font-size:14px;text-align:center;padding:40px 0;font-family:"stratos",monospace;}',
+            '.lf-return-hint{font-size:11.5px;font-style:italic;color:#666;font-family:"stratos",monospace;margin:8px 0 4px;line-height:1.4;}',
             '.lf-cart-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #eee;}',
             '.lf-item-info{flex:1;min-width:0;}',
             '.lf-item-name{font-size:14px;font-weight:600;font-family:"stratos",monospace;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',

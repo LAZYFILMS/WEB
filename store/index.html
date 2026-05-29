@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy 35mm Film Online in India | LAZY FILMS Store — Free Shipping</title>
-    <meta name="description" content="Buy fresh 35mm film online in India. Lazy 100, 250, 500, Monochrome, Reversal 100D, Fujifilm Provia 100F &amp; Superia 800. Pan-India shipping from Mumbai. Lab developing available.">
-    <meta name="keywords" content="buy 35mm film india, 35mm film online india, lazy film, lazy 250, lazy 100, lazy 500, fujifilm provia 100f india, superia 800 india, color negative film, slide film india, b&amp;w film india">
+    <meta name="description" content="Buy fresh 35mm film online in India. Lazy 100, 250, 500, Monochrome and Reversal 100D — all DX-coded. Pan-India shipping from Mumbai. Lab developing available.">
+    <meta name="keywords" content="buy 35mm film india, 35mm film online india, lazy film, lazy 100, lazy 250, lazy 500, lazy reversal 100d, lazy monochrome, color negative film, slide film india, b&amp;w film india, dx coded film india">
     <meta name="author" content="LAZY FILMS">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://www.lazyfilms.in/store/">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="LAZY FILMS">
     <meta property="og:title" content="Buy 35mm Film Online in India | LAZY FILMS Store">
-    <meta property="og:description" content="Fresh 35mm film stocks shipped pan-India from Mumbai. Lazy 100, 250, 500, Monochrome, Reversal 100D, Fujifilm Provia 100F &amp; Superia 800.">
+    <meta property="og:description" content="Fresh DX-coded 35mm film shipped pan-India from Mumbai. Lazy 100, 250, 500, Monochrome and Reversal 100D.">
     <meta property="og:url" content="https://www.lazyfilms.in/store/">
     <meta property="og:image" content="https://www.lazyfilms.in/sample1.jpg">
     <meta property="og:image:width" content="1200">
@@ -72,9 +72,7 @@
         { "@type": "ListItem", "position": 2, "url": "https://www.lazyfilms.in/store/lazy250.html",        "name": "Lazy 250 — Color Negative Film" },
         { "@type": "ListItem", "position": 3, "url": "https://www.lazyfilms.in/store/lazy500.html",        "name": "Lazy 500 — Color Negative Film" },
         { "@type": "ListItem", "position": 4, "url": "https://www.lazyfilms.in/store/lazymonochrome.html", "name": "Lazy Monochrome — Black &amp; White Film" },
-        { "@type": "ListItem", "position": 5, "url": "https://www.lazyfilms.in/store/lazyreversal100d.html", "name": "Lazy Reversal 100D — Color Slide Film" },
-        { "@type": "ListItem", "position": 6, "url": "https://www.lazyfilms.in/store/provia100f.html",    "name": "Fujifilm Provia 100F — Slide Film" },
-        { "@type": "ListItem", "position": 7, "url": "https://www.lazyfilms.in/store/superia800.html",    "name": "Fujifilm Superia X-TRA 800" }
+        { "@type": "ListItem", "position": 5, "url": "https://www.lazyfilms.in/store/lazyreversal100d.html", "name": "Lazy Reversal 100D — Color Slide Film" }
       ]
     }
     </script>
@@ -359,6 +357,73 @@
             white-space: nowrap;
             font-weight: bold;
             display: inline-block;
+        }
+
+        .combo-section {
+            width: 100%;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 3px;
+        }
+
+        /* Windows 98 style bevelled button (solid red, no gradient) */
+        .combo-btn {
+            background: #c83232;
+            color: #fff;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 0;
+            cursor: pointer;
+            font-family: "stratos-black", sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            width: 100%;
+            text-transform: none;
+            line-height: 1.1;
+            box-shadow:
+                inset  1px  1px 0 0 #ff8a8a,
+                inset -1px -1px 0 0 #4a0e0e,
+                inset  2px  2px 0 0 #e85a5a,
+                inset -2px -2px 0 0 #7a1818;
+            text-shadow: none;
+            transition: none;
+        }
+
+        .combo-btn:hover { background: #c83232; }
+        .combo-btn:focus { outline: 1px dotted #fff; outline-offset: -4px; }
+
+        .combo-btn:active {
+            background: #b22929;
+            box-shadow:
+                inset  1px  1px 0 0 #4a0e0e,
+                inset -1px -1px 0 0 #ff8a8a,
+                inset  2px  2px 0 0 #7a1818,
+                inset -2px -2px 0 0 #e85a5a;
+        }
+
+        .combo-btn:disabled {
+            background: #c0c0c0;
+            color: #808080;
+            cursor: not-allowed;
+            opacity: 1;
+            box-shadow:
+                inset  1px  1px 0 0 #ffffff,
+                inset -1px -1px 0 0 #404040,
+                inset  2px  2px 0 0 #dfdfdf,
+                inset -2px -2px 0 0 #808080;
+            text-shadow: 1px 1px 0 #ffffff;
+        }
+
+        .combo-price {
+            display: block;
+            color: #d62828;
+            font-style: italic;
+            font-family: "stratos", monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            margin: -6px 0 8px 0;
         }
 
         .add-to-cart.loading {
@@ -747,6 +812,21 @@
                 position: relative;
             }
 
+            .combo-section {
+                margin-top: 6px;
+                gap: 2px;
+            }
+
+            .combo-btn {
+                padding: 7px 8px;
+                font-size: 10.5px;
+            }
+
+            .combo-price {
+                font-size: 11px;
+                margin: -4px 0 6px 0;
+            }
+
             .quantity-control .quantity-input {
                 width: 56px;
                 height: 32px;
@@ -904,8 +984,9 @@
             <img src="images/ektachrome-thumb copy.jpg" alt="Lazy Reversal 100D" class="product-thumbnail" loading="lazy" decoding="async">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazyreversal100d.html" style="color: inherit; text-decoration: none;">LAZY REVERSAL 100D (DX-CODED)</a></h2>
+                    <h2 class="product-title"><a href="lazyreversal100d.html" style="color: inherit; text-decoration: none;">LAZY REVERSAL 100D (DX-Coded)</a></h2>
                     <p class="product-price">₹1200</p>
+                    <span class="combo-price">999/- (bundle price)</span>
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
@@ -914,6 +995,9 @@
                         <button type="button" class="qty-btn increment" data-product="lazyreversal100d">+</button>
                     </div>
                     <button class="add-to-cart" data-product="lazyreversal100d" data-variant="759">Add to Cart</button>
+                </div>
+                <div class="combo-section">
+                    <button class="combo-btn" data-product="lazyreversal100d">Add with DEV+SCAN Bundle (+1100)</button>
                 </div>
             </div>
             <div class="stock-status" id="stock-status-lazyreversal100d" style="display: none;">Out of Stock</div>
@@ -932,8 +1016,9 @@
             <img src="images/lazy100-thumb.jpg" alt="LAZY 100" class="product-thumbnail" loading="lazy" decoding="async">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy100.html" style="color: inherit; text-decoration: none;">Lazy 100 - Color Negative Film</a></h2>
+                    <h2 class="product-title"><a href="lazy100.html" style="color: inherit; text-decoration: none;">Lazy 100 - Color Negative Film (DX-Coded)</a></h2>
                     <p class="product-price">₹850</p>
+                    <span class="combo-price">699/- (bundle price)</span>
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
@@ -942,6 +1027,9 @@
                         <button type="button" class="qty-btn increment" data-product="lazy100">+</button>
                     </div>
                     <button class="add-to-cart" data-product="lazy100" data-variant="795">Add to Cart</button>
+                </div>
+                <div class="combo-section">
+                    <button class="combo-btn" data-product="lazy100">Add with DEV+SCAN Bundle (+950)</button>
                 </div>
             </div>
             <div class="stock-status" id="stock-status-lazy100" style="display: none;">Out of Stock</div>
@@ -960,8 +1048,9 @@
             <img src="images/lazy500-thumb.jpg" alt="Lazy 500" class="product-thumbnail" loading="lazy" decoding="async">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy500.html" style="color: inherit; text-decoration: none;">Lazy 500 - Color Negative Film</a></h2>
+                    <h2 class="product-title"><a href="lazy500.html" style="color: inherit; text-decoration: none;">Lazy 500 - Color Negative Film (DX-Coded)</a></h2>
                     <p class="product-price">₹850</p>
+                    <span class="combo-price">699/- (bundle price)</span>
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
@@ -970,6 +1059,9 @@
                         <button type="button" class="qty-btn increment" data-product="lazy500">+</button>
                     </div>
                     <button class="add-to-cart" data-product="lazy500" data-variant="43200428507235">Add to Cart</button>
+                </div>
+                <div class="combo-section">
+                    <button class="combo-btn" data-product="lazy500">Add with DEV+SCAN Bundle (+950)</button>
                 </div>
             </div>
             <div class="stock-status" id="stock-status-lazy500" style="display: none;">Out of Stock</div>
@@ -985,39 +1077,12 @@
         </div>
 
         <div class="product-details">
-            <img src="images/provia.png" alt="Fujifilm Provia 100F RDP 3" class="product-thumbnail" loading="lazy" decoding="async">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="provia100f.html" style="color: inherit; text-decoration: none;">Fujifilm Provia 100F RDP 3 (Expired 2015)</a></h2>
-                    <p class="product-price">₹2100</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="fujifilmprovia">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="fujifilmprovia">
-                        <button type="button" class="qty-btn increment" data-product="fujifilmprovia">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="fujifilmprovia" data-variant="43863277437027">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-fujifilmprovia" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Often regarded as one of the finest color slide films ever made, Provia RDP III delivers legendary sharpness, natural skin tones, and beautifully balanced saturation.</span>
-                <span class="description-full">Although expired in 2015, this roll has been cold-stored, so its sensitivity remains fully intact — no exposure compensation is needed. Please note: some rolls may show minor mold on the ends, so keep that in mind before purchasing.</span>
-                <button class="see-more-desc" data-product="fujifilmprovia">See more</button>
-                <span class="product-links-row">
-                    <span class="see-samples" aria-hidden="true"></span>
-                    <a class="more-info-btn" href="provia100f.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
             <img src="images/lazy250-thumb.jpg" alt="Lazy 250" class="product-thumbnail" loading="lazy" decoding="async">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazy250.html" style="color: inherit; text-decoration: none;">Lazy 250 - Color Negative Film</a></h2>
+                    <h2 class="product-title"><a href="lazy250.html" style="color: inherit; text-decoration: none;">Lazy 250 - Color Negative Film (DX-Coded)</a></h2>
                     <p class="product-price">₹850</p>
+                    <span class="combo-price">699/- (bundle price)</span>
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
@@ -1026,6 +1091,9 @@
                         <button type="button" class="qty-btn increment" data-product="lazy250">+</button>
                     </div>
                     <button class="add-to-cart" data-product="lazy250" data-variant="43269458690147">Add to Cart</button>
+                </div>
+                <div class="combo-section">
+                    <button class="combo-btn" data-product="lazy250">Add with DEV+SCAN Bundle (+950)</button>
                 </div>
             </div>
             <div class="stock-status" id="stock-status-lazy250" style="display: none;">Out of Stock</div>
@@ -1041,39 +1109,12 @@
         </div>
 
         <div class="product-details">
-            <img src="images/Superia-thumb.jpg" alt="Fujifilm Superia Xtra 800" class="product-thumbnail" loading="lazy" decoding="async">
-            <div class="product-info">
-                <div class="product-header-group">
-                    <h2 class="product-title"><a href="superia800.html" style="color: inherit; text-decoration: none;">Fujifilm Superia Xtra 800 (Expired 2010)</a></h2>
-                    <p class="product-price">₹900</p>
-                </div>
-                <div class="product-actions">
-                    <div class="quantity-control">
-                        <button type="button" class="qty-btn decrement" data-product="superia800">−</button>
-                        <input type="number" class="quantity-input" value="1" min="1" data-product="superia800">
-                        <button type="button" class="qty-btn increment" data-product="superia800">+</button>
-                    </div>
-                    <button class="add-to-cart" data-product="superia800" data-variant="43881964961891" id="superia800-add-btn">Add to Cart</button>
-                </div>
-            </div>
-            <div class="stock-status" id="stock-status-superia800" style="display: none;">Out of Stock</div>
-            <p class="product-description">
-                <span class="description-preview">Fujifilm Superia X-TRA 800 is a discontinued high-speed color negative film with a very recognizable Fuji look.</span>
-                <span class="description-full">This roll expired in 2010 and was cold-stored, so the colors are largely intact, though age has introduced some characteristics. The film is particularly strong in blues and greens, which tend to come out rich and slightly cool. It has a distinct color palette that differs noticeably from current-generation color negative films. Best shot at ISO 200 (overexposing by about 2 stops helps control fog, improves shadow detail, and gives better overall color balance). Works well in daylight and evenly lit scenes. Not recommended if you are looking for clean, neutral negatives.</span>
-                <button class="see-more-desc" data-product="superia800">See more</button>
-                <span class="product-links-row">
-                    <span class="see-samples" aria-hidden="true"></span>
-                    <a class="more-info-btn" href="superia800.html">More info</a>
-                </span>
-            </p>
-        </div>
-
-        <div class="product-details">
             <img src="images/lazy-monochrome-thumb.jpg" alt="Lazy Monochrome" class="product-thumbnail" loading="lazy" decoding="async">
             <div class="product-info">
                 <div class="product-header-group">
-                    <h2 class="product-title"><a href="lazymonochrome.html" style="color: inherit; text-decoration: none;">LAZY MONOCHROME</a></h2>
+                    <h2 class="product-title"><a href="lazymonochrome.html" style="color: inherit; text-decoration: none;">LAZY MONOCHROME (DX-Coded)</a></h2>
                     <p class="product-price">₹850</p>
+                    <span class="combo-price">699/- (bundle price)</span>
                 </div>
                 <div class="product-actions">
                     <div class="quantity-control">
@@ -1082,6 +1123,9 @@
                         <button type="button" class="qty-btn increment" data-product="lazymonochrome">+</button>
                     </div>
                     <button class="add-to-cart" data-product="lazymonochrome" data-variant="43841780514915">Add to Cart</button>
+                </div>
+                <div class="combo-section">
+                    <button class="combo-btn" data-product="lazymonochrome">Add with DEV+SCAN Bundle (+950)</button>
                 </div>
             </div>
             <div class="stock-status" id="stock-status-lazymonochrome" style="display: none;">Out of Stock</div>
@@ -1122,10 +1166,8 @@
             <a href="lazy250.html">Lazy 250</a>,
             <a href="lazy500.html">Lazy 500</a>,
             <a href="lazymonochrome.html">Lazy Monochrome</a> and
-            <a href="lazyreversal100d.html">Lazy Reversal 100D</a> stocks alongside
-            hand-picked Fujifilm rolls
-            (<a href="provia100f.html">Provia 100F</a>,
-            <a href="superia800.html">Superia X-TRA 800</a>).
+            <a href="lazyreversal100d.html">Lazy Reversal 100D</a> stocks —
+            all DX-coded for reliable in-camera ISO reading.
             Every roll is stored cold and shipped in protective packaging.
             Pair your purchase with our
             <a href="/labs/">in-house developing lab</a> for end-to-end service.
@@ -1245,14 +1287,99 @@
         // WooCommerce store
         const WC_STORE = 'https://store.lazyfilms.in';
         const WC_PRODUCT_IDS = {
-            lazy100:        795,
+            lazy100:          795,
             lazyreversal100d: 759,
-            lazy500:        11,
-            lazy250:        20,
-            lazymonochrome: 26,
-            fujifilmprovia: 31,
-            superia800:     34
+            lazy500:          11,
+            lazy250:          20,
+            lazymonochrome:   26
         };
+
+        // -----------------------------------------------------------------
+        // SHOPIFY CONFIG (rphzqx-d5.myshopify.com)
+        // -----------------------------------------------------------------
+        // The "DEV+SCAN Bundle" buttons add a Shopify cart with three line
+        // items (matching the labs/ flow): the film roll, the processing
+        // service, and high-res scanning.
+        //
+        // Roll variant prices on Shopify are the discounted "bundle" prices
+        // (e.g. Lazy 250 is ₹699 on Shopify, ₹850 on the woocommerce store).
+        // The Shopify storefront is locked down via theme.liquid redirects,
+        // so the discounted variants can only be reached through bundle
+        // checkouts initiated from this site.
+        // -----------------------------------------------------------------
+        const SHOPIFY_PROCESS_VARIANTS = {
+            'ECN-2': '43181189103715',  // No push/pull, ₹450
+            'C-41':  '43181189365859',  // No push/pull, ₹450
+            'B&W':   '43181189628003',  // No push/pull, ₹450
+            'E-6':   '43989455765603'   // No push/pull, ₹600
+        };
+        const SHOPIFY_SCAN_VARIANT = '43989457567843';  // High Res, no borders, ₹500
+
+        // Auto-added to the cart whenever a bundle is added. Shown as a
+        // separate, removable line item (with a hint above the cart) so
+        // customers can opt out of receiving their negatives back.
+        const SHOPIFY_RETURN_NEGATIVE = {
+            variantId: '43199974604899',
+            name:      'Return Negative',
+            price:     150,
+            productId: 'shopify_return_negative'
+        };
+
+        const SHOPIFY_PRODUCTS = {
+            lazy100: {
+                rollVariantId: '44222946410595',
+                bundle: {
+                    process:     'ECN-2',
+                    extraLabel:  '+950',
+                    bundleName:  'Lazy 100 + DEV+SCAN Bundle',
+                    bundleTotal: 1649  // 699 + 450 + 500
+                }
+            },
+            lazyreversal100d: {
+                rollVariantId: '44222954012771',
+                bundle: {
+                    process:     'E-6',
+                    extraLabel:  '+1100',
+                    bundleName:  'Lazy Reversal 100D + DEV+SCAN Bundle',
+                    bundleTotal: 2099  // 999 + 600 + 500
+                }
+            },
+            lazy500: {
+                rollVariantId: '43200428507235',
+                bundle: {
+                    process:     'ECN-2',
+                    extraLabel:  '+950',
+                    bundleName:  'Lazy 500 + DEV+SCAN Bundle',
+                    bundleTotal: 1649
+                }
+            },
+            lazy250: {
+                rollVariantId: '43269458690147',
+                bundle: {
+                    process:     'ECN-2',
+                    extraLabel:  '+950',
+                    bundleName:  'Lazy 250 + DEV+SCAN Bundle',
+                    bundleTotal: 1649
+                }
+            },
+            lazymonochrome: {
+                rollVariantId: '43841780514915',
+                bundle: {
+                    process:     'B&W',
+                    extraLabel:  '+950',
+                    bundleName:  'Lazy Monochrome + DEV+SCAN Bundle',
+                    bundleTotal: 1649
+                }
+            }
+        };
+
+        // Expose to cart.js so checkout can fall back to Shopify roll IDs
+        // when a mixed cart needs to be routed entirely through Shopify.
+        window.LF_SHOPIFY_NORMAL_BY_PRODUCT_KEY = Object.keys(SHOPIFY_PRODUCTS).reduce(function (m, k) {
+            m[k] = SHOPIFY_PRODUCTS[k].rollVariantId;
+            return m;
+        }, {});
+        window.LF_WC_PRODUCT_IDS = WC_PRODUCT_IDS;
 
         function lockAddToCartButtons() {
             document.querySelectorAll('.add-to-cart').forEach(btn => {
@@ -1302,17 +1429,20 @@
             lazyreversal100d:{ name: 'LAZY Reversal 100D',                     price: 1200 },
             lazy500:       { name: 'Lazy 500 - Color Negative Film',         price: 850  },
             lazy250:       { name: 'Lazy 250 - Color Negative Film',         price: 850  },
-            lazymonochrome:{ name: 'LAZY Monochrome',                        price: 850  },
-            fujifilmprovia:{ name: 'Fujifilm Provia 100F RDP 3 (Exp. 2015)', price: 2100 },
-            superia800:    { name: 'Fujifilm Superia Xtra 800 (Exp. 2010)',   price: 900  }
+            lazymonochrome:{ name: 'LAZY Monochrome',                        price: 850  }
         };
+
+        // Helper: pull the quantity input from the same product card
+        function getQuantityForProduct(productKey) {
+            const input = document.querySelector('.quantity-input[data-product="' + productKey + '"]');
+            return Math.max(1, parseInt(input && input.value, 10) || 1);
+        }
 
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
                 const productKey = this.dataset.product;
                 const wcProductId = WC_PRODUCT_IDS[productKey];
-                const quantityInput = this.previousElementSibling.querySelector('.quantity-input');
-                const quantity = parseInt(quantityInput.value) || 1;
+                const quantity = getQuantityForProduct(productKey);
 
                 if (!wcProductId) {
                     alert('Product not ready yet. Please wait a moment and try again.');
@@ -1320,11 +1450,79 @@
                 }
 
                 const info = PRODUCT_CATALOGUE[productKey] || { name: productKey, price: 0 };
-                window.addToCart({ name: info.name, price: info.price, quantity: quantity, productId: wcProductId });
+                window.addToCart({
+                    name: info.name,
+                    price: info.price,
+                    quantity: quantity,
+                    productId: wcProductId,
+                    platform: 'woocommerce',
+                    productKey: productKey
+                });
 
                 this.textContent = 'Added!';
                 const btn = this;
                 setTimeout(() => { btn.textContent = 'Add to Cart'; }, 1000);
+            });
+        });
+
+        // DEV+SCAN Bundle button → adds a Shopify-bound bundle item to the
+        // cart. At checkout (see cart.js) each bundle line expands into three
+        // Shopify cart lines: the film roll, the processing service, and a
+        // high-res scan. Any cart with at least one bundle item is routed
+        // entirely through Shopify (woo-only items get substituted with their
+        // Shopify roll variant via LF_SHOPIFY_NORMAL_BY_PRODUCT_KEY).
+        document.querySelectorAll('.combo-btn').forEach(button => {
+            // Cache the original label so the post-click reset can restore it
+            // verbatim (different films show different "+amount").
+            button.dataset.originalText = button.textContent;
+
+            button.addEventListener('click', function () {
+                const productKey = this.dataset.product;
+                const config = SHOPIFY_PRODUCTS[productKey];
+                const quantity = getQuantityForProduct(productKey);
+
+                if (!config || !config.bundle || !config.rollVariantId) {
+                    alert('DEV+SCAN Bundle is not available for this film right now.');
+                    return;
+                }
+
+                const processVariantId = SHOPIFY_PROCESS_VARIANTS[config.bundle.process];
+                if (!processVariantId) {
+                    alert('Processing variant missing for ' + config.bundle.process + '.');
+                    return;
+                }
+
+                window.addToCart({
+                    name:        config.bundle.bundleName,
+                    price:       config.bundle.bundleTotal,
+                    quantity:    quantity,
+                    productId:   'bundle_' + productKey,
+                    platform:    'shopify',
+                    productKey:  productKey,
+                    bundleVariantIds: [
+                        config.rollVariantId,
+                        processVariantId,
+                        SHOPIFY_SCAN_VARIANT
+                    ]
+                });
+
+                // Auto-add the Return Negative line if it's not already in
+                // the cart (user can still remove it).
+                if (typeof window.ensureInCart === 'function') {
+                    window.ensureInCart({
+                        name:             SHOPIFY_RETURN_NEGATIVE.name,
+                        price:            SHOPIFY_RETURN_NEGATIVE.price,
+                        quantity:         1,
+                        productId:        SHOPIFY_RETURN_NEGATIVE.productId,
+                        platform:         'shopify',
+                        productKey:       '_returnnegative',
+                        bundleVariantIds: [SHOPIFY_RETURN_NEGATIVE.variantId]
+                    });
+                }
+
+                this.textContent = 'Added!';
+                const btn = this;
+                setTimeout(() => { btn.textContent = btn.dataset.originalText; }, 1000);
             });
         });
 
@@ -1386,6 +1584,13 @@
                 return;
             }
 
+            var hasReturnNeg = cart.items.some(function (i) {
+                return i.productId === 'shopify_return_negative';
+            });
+            var hint = hasReturnNeg
+                ? '<p style="font-size:12px;font-style:italic;color:#666;margin:0 0 10px;line-height:1.4;">Remove "Return Negative" from the cart if you don\'t want negatives shipped back.</p>'
+                : '';
+
             var rows = cart.items.map(function (item) {
                 return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;">' +
                     '<div>' +
@@ -1400,7 +1605,7 @@
             }).join('');
 
             var total = cart.items.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
-            summary.innerHTML = '<h3>Cart Summary</h3>' + rows +
+            summary.innerHTML = '<h3>Cart Summary</h3>' + hint + rows +
                 '<p style="font-weight:bold;margin-top:12px;font-size:16px;">Total: &#8377;' + total + '</p>';
         };
 
@@ -1455,7 +1660,7 @@
         <p>Yes. We ship every order pan-India from Mumbai. Most metro orders arrive in 2–4 working days; tier-2 cities in 4–7 days.</p>
 
         <h3 style="font-size:15px;margin:18px 0 6px;">Is your film fresh / in date?</h3>
-        <p>Our Lazy-branded film stocks are freshly cut and packaged in-house. Vintage stocks (like Provia 100F or Superia 800) are clearly labelled as expired, cold-stored, and priced accordingly.</p>
+        <p>Our Lazy-branded film stocks are freshly cut, DX-coded and packaged in-house. Every roll is stored cold and shipped in protective packaging.</p>
 
         <h3 style="font-size:15px;margin:18px 0 6px;">Can you develop my film after I shoot it?</h3>
         <p>Yes. Our <a href="/labs/">Mumbai film lab</a> develops C-41 (colour), E-6 (slide), ECN-2 (cinema) and traditional black-and-white rolls. We also offer scanning and prints. Mail-in service is available across India.</p>
@@ -1484,7 +1689,7 @@
         {
           "@type": "Question",
           "name": "Is your film fresh / in date?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Our Lazy-branded film stocks are freshly cut and packaged in-house. Vintage stocks like Provia 100F or Superia 800 are clearly labelled as expired and cold-stored." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Our Lazy-branded film stocks are freshly cut, DX-coded and packaged in-house. Every roll is stored cold and shipped in protective packaging." }
         },
         {
           "@type": "Question",
