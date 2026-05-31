@@ -170,8 +170,7 @@
         }
         .overlay.hidden { display: none !important; }
 
-        /* While any overlay is showing, hide the play HUD so it can never bleed through. */
-        body.in-menu .topbar,
+        /* While any overlay is showing, hide gameplay UI (not the overlays themselves). */
         body.in-menu .hud,
         body.in-menu .board,
         body.in-menu .touchpad {
@@ -439,45 +438,43 @@
 
         <div class="board" id="board">
             <canvas id="game"></canvas>
-
-            <!-- Start overlay -->
-            <div class="overlay" id="startOverlay">
-                <h1>FILM ROLL</h1>
-                <p>Shoot every stock you find. Each frame counts as one exposure.<br>36 exposures = 1 roll. Don't run into your own film.<br>Stocks with a <span style="color:#fff">→</span> drift past — catch them before they exit.<br><span style="color:#ff5252">Avoid the digital cameras that float in.</span></p>
-
-                <div class="keys" aria-hidden="true">
-                    <span class="key">W</span>
-                    <span class="key">A</span>
-                    <span class="key">S</span>
-                    <span class="key">D</span>
-                    <span style="margin: 0 6px;">/</span>
-                    <span class="key">↑</span>
-                    <span class="key">←</span>
-                    <span class="key">↓</span>
-                    <span class="key">→</span>
-                </div>
-
-                <div class="legend" id="legend"></div>
-
-                <button class="btn" id="startBtn">LOAD FILM</button>
-            </div>
-
-            <!-- Game over overlay -->
-            <div class="overlay hidden" id="gameOverOverlay">
-                <h1>FILM SNAPPED</h1>
-                <p class="big"><span id="finalRolls">0</span> roll · <span id="finalExp">0</span> exposures · <span id="finalScore">0</span> pts</p>
-                <div class="breakdown" id="breakdown"></div>
-                <button class="btn" id="restartBtn">LOAD A NEW ROLL</button>
-                <p style="margin-top:14px;">or refresh the page to forget everything.</p>
-            </div>
-
-            <!-- Pause overlay -->
-            <div class="overlay hidden" id="pauseOverlay">
-                <h1>PAUSED</h1>
-                <p>Press SPACE or P to keep shooting.</p>
-                <button class="btn ghost" id="resumeBtn">RESUME</button>
-            </div>
         </div>
+    </div>
+
+    <!-- Overlays live outside .board so body.in-menu can hide the canvas without hiding menus -->
+    <div class="overlay" id="startOverlay">
+        <h1>FILM ROLL</h1>
+        <p>Shoot every stock you find. Each frame counts as one exposure.<br>36 exposures = 1 roll. Don't run into your own film.<br>Stocks with a <span style="color:#fff">→</span> drift past — catch them before they exit.<br><span style="color:#ff5252">Avoid the digital cameras that float in.</span></p>
+
+        <div class="keys" aria-hidden="true">
+            <span class="key">W</span>
+            <span class="key">A</span>
+            <span class="key">S</span>
+            <span class="key">D</span>
+            <span style="margin: 0 6px;">/</span>
+            <span class="key">↑</span>
+            <span class="key">←</span>
+            <span class="key">↓</span>
+            <span class="key">→</span>
+        </div>
+
+        <div class="legend" id="legend"></div>
+
+        <button class="btn" id="startBtn">LOAD FILM</button>
+    </div>
+
+    <div class="overlay hidden" id="gameOverOverlay">
+        <h1>FILM SNAPPED</h1>
+        <p class="big"><span id="finalRolls">0</span> roll · <span id="finalExp">0</span> exposures · <span id="finalScore">0</span> pts</p>
+        <div class="breakdown" id="breakdown"></div>
+        <button class="btn" id="restartBtn">LOAD A NEW ROLL</button>
+        <p style="margin-top:14px;">or refresh the page to forget everything.</p>
+    </div>
+
+    <div class="overlay hidden" id="pauseOverlay">
+        <h1>PAUSED</h1>
+        <p>Press SPACE or P to keep shooting.</p>
+        <button class="btn ghost" id="resumeBtn">RESUME</button>
     </div>
 
     <!-- Mobile touch controls -->
@@ -1430,9 +1427,7 @@
         }
 
         // ====== INIT ======
-        // Start screen is visible by default → mark menu mode so the HUD
-        // is hidden and the overlay has the entire viewport.
-        document.body.classList.add('in-menu');
+        syncMenuClass();
         sizeCanvas();
         // Re-measure after first layout pass (HUD font may load late).
         requestAnimationFrame(sizeCanvas);
