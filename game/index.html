@@ -333,52 +333,73 @@
             .topbar { font-size: 11px; padding: 12px 16px; letter-spacing: 1px; }
         }
 
-        /* ====== Mobile portrait ====== */
+        /* ====== Mobile portrait (primary audience) ====== */
         @media (max-width: 720px) {
-            .topbar { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
-            .topbar span:last-child { display: none; }
-            .stage { padding: 44px 8px 150px; gap: 8px; }
-            .hud {
+            .stage {
+                justify-content: flex-start;
+                padding: 46px 6px 178px;
                 gap: 14px;
-                font-size: 9px;
-                letter-spacing: 1px;
-                row-gap: 6px;
             }
-            .hud .stat { gap: 2px; }
-            .hud .stat b { font-size: 16px; }
+            .topbar { font-size: 12px; padding: 12px 16px; letter-spacing: 1px; }
+            .topbar span:last-child { display: none; }
+            .hud {
+                width: 100%;
+                max-width: 420px;
+                gap: 0;
+                font-size: 11px;
+                letter-spacing: 1.5px;
+                justify-content: space-between;
+            }
+            .hud .stat {
+                flex: 1;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .hud .stat b { font-size: 24px; }
             .hud .divider { display: none; }
-            .meter { width: 90px; height: 6px; }
-            .board { box-shadow: 0 0 0 4px #000, 0 0 40px rgba(255,255,255,0.03); }
-            .touchpad { display: grid; }
-            .overlay { padding: 40px 16px 40px; }
-            .overlay h1 { font-size: 24px; letter-spacing: 1.5px; margin-bottom: 8px; }
-            .overlay p { font-size: 11px; letter-spacing: 0.5px; line-height: 1.55; max-width: 92vw; }
-            .overlay p.big { font-size: 13px; }
+            .meter { width: 100%; max-width: 120px; height: 8px; }
+            .board {
+                width: 100%;
+                max-width: 100%;
+                box-shadow: 0 0 0 4px #000, 0 0 40px rgba(255,255,255,0.03);
+            }
+            .touchpad {
+                display: grid;
+                grid-template-columns: 72px 72px 72px;
+                grid-template-rows: 72px 72px;
+                gap: 8px;
+                bottom: 18px;
+            }
+            .touchpad button { font-size: 28px; }
+            .overlay { padding: 52px 20px 40px; }
+            .overlay h1 { font-size: 34px; letter-spacing: 2px; margin-bottom: 14px; }
+            .overlay p { font-size: 14px; letter-spacing: 0.5px; line-height: 1.6; max-width: 92vw; }
+            .overlay p.big { font-size: 16px; }
             .keys { display: none; }
             .legend {
-                grid-template-columns: 1fr 1fr;
-                gap: 4px 10px;
-                font-size: 9.5px;
+                grid-template-columns: 1fr;
+                gap: 8px;
+                font-size: 13px;
                 letter-spacing: 0.5px;
                 max-width: 92vw;
-                margin-top: 10px;
+                margin-top: 16px;
             }
-            .legend .swatch { width: 9px; height: 9px; }
-            button.btn { padding: 12px 22px; font-size: 13px; }
-            .breakdown { font-size: 11px; gap: 4px 12px; }
+            .legend .swatch { width: 13px; height: 13px; }
+            .legend .row { gap: 10px; }
+            button.btn { padding: 16px 36px; font-size: 15px; min-height: 52px; }
+            .breakdown { font-size: 13px; gap: 6px 14px; max-width: 92vw; }
         }
 
         /* ====== Very narrow (≤ 380px) ====== */
         @media (max-width: 380px) {
-            .topbar { display: none; }
-            .stage { padding-top: 12px; }
-            .hud { gap: 10px; font-size: 8px; }
-            .hud .stat b { font-size: 14px; }
-            .meter { width: 70px; height: 5px; }
+            .stage { padding-top: 10px; padding-bottom: 168px; }
+            .hud .stat b { font-size: 22px; }
             .touchpad {
-                grid-template-columns: 48px 48px 48px;
-                grid-template-rows: 48px 48px;
+                grid-template-columns: 64px 64px 64px;
+                grid-template-rows: 64px 64px;
             }
+            .overlay h1 { font-size: 30px; }
         }
 
         /* ====== Mobile landscape ====== */
@@ -391,14 +412,15 @@
             .hud .divider { display: none; }
             .meter { display: none; }
             .touchpad {
-                bottom: 8px;
+                bottom: 10px;
                 left: auto;
                 right: 12px;
                 transform: none;
-                grid-template-columns: 42px 42px 42px;
-                grid-template-rows: 42px 42px;
-                gap: 4px;
+                grid-template-columns: 54px 54px 54px;
+                grid-template-rows: 54px 54px;
+                gap: 5px;
             }
+            .touchpad button { font-size: 22px; }
             .overlay { padding: 16px 24px; justify-content: center; }
             .overlay h1 { font-size: 22px; margin-bottom: 6px; }
             .overlay p { font-size: 10px; line-height: 1.45; margin-bottom: 4px; }
@@ -540,9 +562,11 @@
             collisionRadius: 0.62,     // cells; head-vs-camera distance for game over
         };
 
-        const GRID_COLS = 24;
-        const GRID_ROWS = 16;
+        const GRID_DESKTOP = { cols: 24, rows: 16 };
+        const GRID_MOBILE  = { cols: 16, rows: 22 }; // taller, narrower — better on phones
         const CELL = 32; // logical px per cell
+        let GRID_COLS = GRID_DESKTOP.cols;
+        let GRID_ROWS = GRID_DESKTOP.rows;
         const FRAMES_PER_ROLL = 36;
         const TICK_START = 130;       // ms between ticks
         const TICK_MIN = 65;          // fastest
@@ -571,32 +595,44 @@
         const touchpad = document.getElementById('touchpad');
 
         // ====== CANVAS SIZING (DPI-aware, responsive) ======
+        function isMobileView() {
+            return window.innerWidth <= 720;
+        }
+
+        function applyGridForViewport() {
+            const g = isMobileView() ? GRID_MOBILE : GRID_DESKTOP;
+            GRID_COLS = g.cols;
+            GRID_ROWS = g.rows;
+        }
+
         function sizeCanvas() {
-            const isMobile = window.innerWidth <= 720;
+            applyGridForViewport();
+            const isMobile = isMobileView();
             const isLandscapeShort = window.innerHeight <= 520 && window.innerWidth > window.innerHeight;
 
-            // Measure actual UI heights so we never guess wrong on different devices.
             const topbar = document.querySelector('.topbar');
             const hud = document.querySelector('.hud');
             const topbarVisible = topbar && getComputedStyle(topbar).display !== 'none';
             const topbarH = topbarVisible ? topbar.offsetHeight : 0;
-            const hudH = hud ? hud.offsetHeight : 0;
+            const hudH = hud && !document.body.classList.contains('in-menu') ? hud.offsetHeight : 0;
 
-            // Reserved space below the canvas (for the touchpad on mobile).
+            // Space for the touchpad on mobile portrait.
             let bottomReserve = 0;
-            if (isMobile) bottomReserve = 150;
-            if (isLandscapeShort) bottomReserve = 0; // touchpad is right-anchored in landscape
+            if (isMobile && !isLandscapeShort) bottomReserve = 178;
+            if (isLandscapeShort) bottomReserve = 0;
 
-            const horizPad = isMobile ? 16 : 32;
-            const vertPad = isMobile ? 24 : 32;
-            const stageGap = 16;
+            const horizPad = isMobile ? 12 : 32;
+            const vertPad = isMobile ? 16 : 32;
+            const stageGap = isMobile ? 14 : 16;
 
             const maxW = window.innerWidth - horizPad;
             const maxH = window.innerHeight - topbarH - hudH - bottomReserve - vertPad - stageGap;
 
             const baseW = GRID_COLS * CELL;
             const baseH = GRID_ROWS * CELL;
-            const scale = Math.min(maxW / baseW, maxH / baseH, 1);
+            // On mobile, allow upscaling so cells fill the screen (pixelated render stays crisp enough).
+            const scaleCap = isMobile ? 2.5 : 1;
+            const scale = Math.min(maxW / baseW, maxH / baseH, scaleCap);
             const cssW = Math.max(120, Math.floor(baseW * scale));
             const cssH = Math.max(80, Math.floor(baseH * scale));
 
@@ -664,6 +700,7 @@
         let rafId;
 
         function resetState() {
+            applyGridForViewport();
             const cx = Math.floor(GRID_COLS / 2);
             const cy = Math.floor(GRID_ROWS / 2);
             snake = [
