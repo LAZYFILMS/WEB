@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FILM ROLL — A LAZY FILMS Game</title>
+    <meta name="description" content="Eat film stocks, expose frames, fill rolls. A snake game by LAZY FILMS where the snake is a 35mm film strip.">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#000000">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+    <link rel="stylesheet" href="https://use.typekit.net/zul3tcf.css">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0a;
+            --film: #141414;
+            --film-edge: #1d1d1d;
+            --frame: #2a2a2a;
+            --ink: #ffffff;
+            --muted: #888;
+            --accent: #ff3d00;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'stratos', 'Lucida Console', Courier, monospace;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .stage {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            gap: 14px;
+        }
+
+        /* Top bar with brand + back link */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            z-index: 5;
+            pointer-events: none;
+        }
+        .topbar a { pointer-events: auto; transition: color .15s; }
+        .topbar a:hover { color: var(--ink); }
+
+        /* HUD */
+        .hud {
+            display: flex;
+            gap: 28px;
+            align-items: stretch;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .hud .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .hud .stat b {
+            font-weight: 400;
+            color: var(--ink);
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+        .hud .divider {
+            width: 1px;
+            background: #222;
+        }
+
+        /* Roll meter */
+        .meter {
+            width: 140px;
+            height: 8px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            position: relative;
+            overflow: hidden;
+        }
+        .meter-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            background: var(--ink);
+            width: 0%;
+            transition: width .15s ease;
+        }
+        .meter-ticks {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(36, 1fr);
+            pointer-events: none;
+        }
+        .meter-ticks span {
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Canvas */
+        .board {
+            position: relative;
+            background: var(--film);
+            border: 1px solid #1f1f1f;
+            box-shadow: 0 0 0 8px #000, 0 0 80px rgba(255,255,255,0.04);
+            line-height: 0;
+        }
+        canvas {
+            display: block;
+            background: #0c0c0c;
+            image-rendering: pixelated;
+        }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            backdrop-filter: blur(2px);
+            z-index: 4;
+        }
+        .overlay.hidden { display: none; }
+
+        .overlay h1 {
+            font-family: 'stratos', sans-serif;
+            font-weight: 900;
+            font-size: clamp(28px, 5vw, 48px);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .overlay p {
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            max-width: 420px;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+        .overlay p.big {
+            color: var(--ink);
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        .keys {
+            display: flex;
+            gap: 6px;
+            margin: 18px 0 22px;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+        .key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            color: var(--ink);
+            background: #111;
+        }
+
+        button.btn {
+            font-family: 'stratos', sans-serif;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            cursor: pointer;
+            transition: opacity .15s, transform .15s;
+        }
+        button.btn:hover { opacity: 0.85; }
+        button.btn:active { transform: translateY(1px); }
+
+        button.btn.ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid #333;
+        }
+
+        /* Stock legend */
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px 16px;
+            max-width: 560px;
+            margin: 18px 0 4px;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            text-align: left;
+        }
+        .legend .row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend .swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+        }
+        .legend b { color: var(--ink); font-weight: 400; }
+
+        /* Final breakdown */
+        .breakdown {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 6px 18px;
+            margin: 16px auto 18px;
+            max-width: 360px;
+            font-family: 'Lucida Console', Courier, monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            text-align: left;
+        }
+        .breakdown .item { color: var(--ink); }
+        .breakdown .count { text-align: right; }
+        .breakdown .pts { text-align: right; color: var(--muted); }
+
+        /* Mobile controls */
+        .touchpad {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px;
+            gap: 6px;
+        }
+        .touchpad button {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            font-size: 22px;
+            font-family: monospace;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .touchpad button:active { background: rgba(255,255,255,0.18); }
+        .touchpad .up { grid-column: 2; grid-row: 1; }
+        .touchpad .left { grid-column: 1; grid-row: 2; }
+        .touchpad .down { grid-column: 2; grid-row: 2; }
+        .touchpad .right { grid-column: 3; grid-row: 2; }
+
+        @media (max-width: 720px) {
+            .topbar { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
+            .hud { gap: 16px; font-size: 11px; letter-spacing: 1px; }
+            .hud .stat b { font-size: 18px; }
+            .meter { width: 100px; }
+            .touchpad { display: grid; }
+            .stage { padding-bottom: 200px; gap: 10px; }
+            .keys { display: none; }
+        }
+
+        @media (max-height: 720px) {
+            .stage { gap: 8px; }
+            .hud .stat b { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/">← LAZY FILMS</a>
+        <span>FILM ROLL · v1</span>
+    </div>
+
+    <div class="stage">
+        <div class="hud" aria-live="polite">
+            <div class="stat">
+                <span>Rolls</span>
+                <b id="rolls">0</b>
+            </div>
+            <div class="divider"></div>
+            <div class="stat">
+                <span>Exposures</span>
+                <b><span id="exposures">0</span> / 36</b>
+                <div class="meter" aria-hidden="true">
+                    <div class="meter-fill" id="meterFill"></div>
+                    <div class="meter-ticks" id="meterTicks"></div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="stat">
+                <span>Score</span>
+                <b id="score">0</b>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <canvas id="game"></canvas>
+
+            <!-- Start overlay -->
+            <div class="overlay" id="startOverlay">
+                <h1>FILM ROLL</h1>
+                <p>Shoot every stock you find. Each frame counts as one exposure.<br>36 exposures = 1 roll. Don't run into your own film.<br>Stocks with a <span style="color:#fff">→</span> drift past — catch them before they exit.<br><span style="color:#ff5252">Avoid the digital cameras that float in.</span></p>
+
+                <div class="keys" aria-hidden="true">
+                    <span class="key">W</span>
+                    <span class="key">A</span>
+                    <span class="key">S</span>
+                    <span class="key">D</span>
+                    <span style="margin: 0 6px;">/</span>
+                    <span class="key">↑</span>
+                    <span class="key">←</span>
+                    <span class="key">↓</span>
+                    <span class="key">→</span>
+                </div>
+
+                <div class="legend" id="legend"></div>
+
+                <button class="btn" id="startBtn">LOAD FILM</button>
+            </div>
+
+            <!-- Game over overlay -->
+            <div class="overlay hidden" id="gameOverOverlay">
+                <h1>FILM SNAPPED</h1>
+                <p class="big"><span id="finalRolls">0</span> roll · <span id="finalExp">0</span> exposures · <span id="finalScore">0</span> pts</p>
+                <div class="breakdown" id="breakdown"></div>
+                <button class="btn" id="restartBtn">LOAD A NEW ROLL</button>
+                <p style="margin-top:14px;">or refresh the page to forget everything.</p>
+            </div>
+
+            <!-- Pause overlay -->
+            <div class="overlay hidden" id="pauseOverlay">
+                <h1>PAUSED</h1>
+                <p>Press SPACE or P to keep shooting.</p>
+                <button class="btn ghost" id="resumeBtn">RESUME</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile touch controls -->
+    <div class="touchpad" id="touchpad" aria-label="Touch controls">
+        <button class="up" data-dir="up">↑</button>
+        <button class="left" data-dir="left">←</button>
+        <button class="down" data-dir="down">↓</button>
+        <button class="right" data-dir="right">→</button>
+    </div>
+
+    <script>
+    (() => {
+        'use strict';
+
+        // ====== CONFIG ======
+        // Film stocks. Two kinds:
+        //   moving: false  → spawns in a fixed cell and waits to be eaten (classic snake food)
+        //   moving: true   → drifts in from a random edge and exits the other side; catch it before it goes
+        //
+        // Drop matching images at the `img` paths below — missing ones render a labeled
+        // fallback canister so the game always works.
+        //   weight = relative spawn frequency (higher = more common)
+        //   points = score awarded per exposure of this stock
+        //   speed  = (moving stocks only) drift speed in cells per second
+        const STOCKS = [
+            // --- Lazy lineup: stationary, the bread and butter ---
+            { id: 'lazy100',        name: 'LAZY 100',      points: 1, color: '#ffd23f', img: 'films/lazy100.png',        weight: 32, type: 'C-41', moving: false },
+            { id: 'lazy250',        name: 'LAZY 250',      points: 2, color: '#5b8df7', img: 'films/lazy250.png',        weight: 24, type: 'C-41', moving: false },
+            { id: 'lazy500',        name: 'LAZY 500',      points: 3, color: '#ff5252', img: 'films/lazy500.png',        weight: 16, type: 'C-41', moving: false },
+
+            // --- Exotics: drift through the frame, must be caught before they exit ---
+            { id: 'lazyreversal',   name: 'LAZY REVERSAL', points: 5, color: '#3ed08c', img: 'films/lazyreversal.png',   weight: 6, type: 'E-6',  moving: true,  speed: 1.4 },
+            { id: 'velvia',         name: 'VELVIA',        points: 6, color: '#ff7be6', img: 'films/velvia.png',         weight: 4, type: 'E-6',  moving: true,  speed: 1.8 },
+            { id: 'provia',         name: 'PROVIA',        points: 4, color: '#5cd0c8', img: 'films/provia.png',         weight: 5, type: 'E-6',  moving: true,  speed: 1.6 },
+            { id: 'portra400',      name: 'PORTRA 400',    points: 5, color: '#ffb27a', img: 'films/portra400.png',      weight: 5, type: 'C-41', moving: true,  speed: 2.0 },
+        ];
+
+        // How much faster moving stocks get per completed roll (multiplier added).
+        const MOVING_FOOD_SPEEDUP_PER_ROLL = 0.10;
+        // Catch radius for moving food (cells; head-to-food center distance).
+        const MOVING_FOOD_CATCH_RADIUS = 0.62;
+
+        // ====== DIGITAL CAMERAS (obstacles) ======
+        // Drop optional images at these paths. Missing images render a clean
+        // drawn camera icon. Listing more images = more variety on screen.
+        const CAMERA_IMAGES = [
+            'cameras/cam1.png',
+            'cameras/cam2.png',
+            'cameras/cam3.png',
+            'cameras/cam4.png',
+        ];
+        const CAMERAS_CFG = {
+            firstSpawnDelayMs: 6000,   // grace period at game start
+            spawnIntervalStartMs: 7000,
+            spawnIntervalMinMs: 2200,
+            spawnSpeedupPerRoll: 700,  // shave this much from interval per completed roll
+            initialMax: 1,             // max concurrent cameras at start
+            extraPerRoll: 1,           // extra concurrent cameras per completed roll
+            maxConcurrentCap: 6,
+            speedMin: 2.0,             // cells per second
+            speedMax: 4.5,             // cells per second
+            speedScalePerRoll: 0.15,   // multiplier added per roll
+            collisionRadius: 0.62,     // cells; head-vs-camera distance for game over
+        };
+
+        const GRID_COLS = 24;
+        const GRID_ROWS = 16;
+        const CELL = 32; // logical px per cell
+        const FRAMES_PER_ROLL = 36;
+        const TICK_START = 130;       // ms between ticks
+        const TICK_MIN = 65;          // fastest
+        const SPEEDUP_PER_ROLL = 8;   // ms reduced per completed roll
+
+        // ====== ELEMENTS ======
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        const board = document.getElementById('board');
+        const startOverlay = document.getElementById('startOverlay');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const pauseOverlay = document.getElementById('pauseOverlay');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const rollsEl = document.getElementById('rolls');
+        const exposuresEl = document.getElementById('exposures');
+        const scoreEl = document.getElementById('score');
+        const meterFill = document.getElementById('meterFill');
+        const meterTicks = document.getElementById('meterTicks');
+        const finalRolls = document.getElementById('finalRolls');
+        const finalExp = document.getElementById('finalExp');
+        const finalScore = document.getElementById('finalScore');
+        const breakdownEl = document.getElementById('breakdown');
+        const legendEl = document.getElementById('legend');
+        const touchpad = document.getElementById('touchpad');
+
+        // ====== CANVAS SIZING (DPI-aware, responsive) ======
+        function sizeCanvas() {
+            const margin = 32;
+            const topUI = 220;   // approx HUD height + spacing
+            const maxW = window.innerWidth - margin;
+            const maxH = window.innerHeight - topUI;
+
+            const baseW = GRID_COLS * CELL;
+            const baseH = GRID_ROWS * CELL;
+            const scale = Math.min(maxW / baseW, maxH / baseH, 1);
+            const cssW = Math.floor(baseW * scale);
+            const cssH = Math.floor(baseH * scale);
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.width = baseW * dpr;
+            canvas.height = baseH * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        // ====== FILM STOCK IMAGES (with fallback) ======
+        const stockImages = new Map();
+        STOCKS.forEach(s => {
+            const img = new Image();
+            img.src = s.img;
+            img.onload = () => stockImages.set(s.id, img);
+            img.onerror = () => stockImages.set(s.id, null); // mark as failed
+        });
+
+        // ====== CAMERA IMAGES (with fallback) ======
+        // We keep an array of loaded images; if all fail, we draw a fallback icon.
+        const cameraImages = [];
+        CAMERA_IMAGES.forEach((src, idx) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => { cameraImages[idx] = img; };
+            img.onerror = () => { cameraImages[idx] = null; };
+        });
+
+        // Build legend (moving stocks get a → arrow next to them)
+        STOCKS.forEach(s => {
+            const row = document.createElement('div');
+            row.className = 'row';
+            const arrow = s.moving ? ' <span style="color:#fff;opacity:.55">→</span>' : '';
+            row.innerHTML = `<span class="swatch" style="background:${s.color}"></span><span><b>${s.name}</b> · ${s.points}pt${arrow}</span>`;
+            legendEl.appendChild(row);
+        });
+
+        // Build meter ticks (36 cells)
+        for (let i = 0; i < FRAMES_PER_ROLL; i++) {
+            const t = document.createElement('span');
+            meterTicks.appendChild(t);
+        }
+
+        // ====== GAME STATE ======
+        let snake;        // [{x, y, label?: stockObj}]
+        let dir;          // {x, y}
+        let nextDir;
+        let food;         // {x, y, stock, isMoving, vx?, vy?, rot?, rotSpeed?, bobPhase?}
+        let pendingGrowths; // queued growths from moving food caught between ticks
+        let score;
+        let exposures;    // current count within current roll (0..35)
+        let rolls;        // completed rolls
+        let totalExp;     // total exposures across rolls
+        let stockCounts;  // { stockId: count }
+        let tickMs;
+        let lastTick;
+        let lastFrame;    // timestamp of previous animation frame (for dt)
+        let gameTimeMs;   // total time spent unpaused since game start
+        let nextCameraSpawnAtMs; // when (in gameTimeMs) to spawn next camera
+        let cameras;      // [{x,y,vx,vy,imgIdx,rot,rotSpeed,age}]
+        let running;
+        let paused;
+        let rafId;
+
+        function resetState() {
+            const cx = Math.floor(GRID_COLS / 2);
+            const cy = Math.floor(GRID_ROWS / 2);
+            snake = [
+                { x: cx, y: cy },
+                { x: cx - 1, y: cy },
+                { x: cx - 2, y: cy },
+            ];
+            dir = { x: 1, y: 0 };
+            nextDir = { x: 1, y: 0 };
+            score = 0;
+            exposures = 0;
+            rolls = 0;
+            totalExp = 0;
+            stockCounts = {};
+            tickMs = TICK_START;
+            cameras = [];
+            gameTimeMs = 0;
+            nextCameraSpawnAtMs = CAMERAS_CFG.firstSpawnDelayMs;
+            lastFrame = 0;
+            pendingGrowths = [];
+            placeFood();
+            updateHUD();
+        }
+
+        // ====== FOOD ======
+        function pickStock() {
+            const totalWeight = STOCKS.reduce((sum, s) => sum + s.weight, 0);
+            let r = Math.random() * totalWeight;
+            for (const s of STOCKS) {
+                r -= s.weight;
+                if (r <= 0) return s;
+            }
+            return STOCKS[0];
+        }
+
+        function placeFood() {
+            const stock = pickStock();
+            if (stock.moving) {
+                spawnMovingFood(stock);
+            } else {
+                if (!spawnStaticFood(stock)) {
+                    // Board jam-packed — fall back to a moving stock if any exist
+                    const movers = STOCKS.filter(s => s.moving);
+                    if (movers.length) {
+                        spawnMovingFood(movers[Math.floor(Math.random() * movers.length)]);
+                    } else {
+                        // True full-board case with no moving stocks defined — end run.
+                        gameOver('full');
+                    }
+                }
+            }
+        }
+
+        function spawnStaticFood(stock) {
+            const occupied = new Set(snake.map(s => s.x + ',' + s.y));
+            const free = [];
+            for (let x = 0; x < GRID_COLS; x++) {
+                for (let y = 0; y < GRID_ROWS; y++) {
+                    if (!occupied.has(x + ',' + y)) free.push({ x, y });
+                }
+            }
+            if (!free.length) return false;
+            const cell = free[Math.floor(Math.random() * free.length)];
+            food = { x: cell.x, y: cell.y, stock, isMoving: false };
+            return true;
+        }
+
+        function spawnMovingFood(stock) {
+            const edge = Math.floor(Math.random() * 4); // 0:left 1:right 2:top 3:bottom
+            const baseSpeed = (stock.speed || 1.6) * (1 + rolls * MOVING_FOOD_SPEEDUP_PER_ROLL);
+            const drift = (Math.random() - 0.5) * 0.35; // small lateral angle, ±0.175 rad
+            const buffer = 1.2;
+            let x, y, baseAngle;
+            if (edge === 0) {              // from left, moving right
+                x = -buffer; y = Math.random() * (GRID_ROWS - 1) + 0.5;
+                baseAngle = 0;
+            } else if (edge === 1) {       // from right, moving left
+                x = GRID_COLS - 1 + buffer; y = Math.random() * (GRID_ROWS - 1) + 0.5;
+                baseAngle = Math.PI;
+            } else if (edge === 2) {       // from top, moving down
+                x = Math.random() * (GRID_COLS - 1) + 0.5; y = -buffer;
+                baseAngle = Math.PI / 2;
+            } else {                       // from bottom, moving up
+                x = Math.random() * (GRID_COLS - 1) + 0.5; y = GRID_ROWS - 1 + buffer;
+                baseAngle = -Math.PI / 2;
+            }
+            const angle = baseAngle + drift;
+            food = {
+                x, y,
+                stock,
+                isMoving: true,
+                vx: Math.cos(angle) * baseSpeed,
+                vy: Math.sin(angle) * baseSpeed,
+                rot: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 1.4, // rad/s gentle wobble
+                bobPhase: Math.random() * Math.PI * 2,
+            };
+        }
+
+        function updateMovingFood(dtMs) {
+            if (!food || !food.isMoving) return;
+            const dt = dtMs / 1000;
+            food.x += food.vx * dt;
+            food.y += food.vy * dt;
+            food.rot += food.rotSpeed * dt;
+
+            // Despawn if it has fully exited the field → respawn fresh food.
+            if (food.x < -2 || food.x > GRID_COLS + 1 || food.y < -2 || food.y > GRID_ROWS + 1) {
+                placeFood();
+                return;
+            }
+
+            // Continuous collision with snake head (only register once it's actually on the board).
+            if (food.x > -0.5 && food.x < GRID_COLS - 0.5 && food.y > -0.5 && food.y < GRID_ROWS - 0.5) {
+                const headCx = snake[0].x + 0.5;
+                const headCy = snake[0].y + 0.5;
+                const dx = (food.x + 0.5) - headCx;
+                const dy = (food.y + 0.5) - headCy;
+                const r = MOVING_FOOD_CATCH_RADIUS;
+                if (dx * dx + dy * dy < r * r) {
+                    onAteFood(food.stock);
+                    pendingGrowths.push(food.stock);
+                    placeFood();
+                }
+            }
+        }
+
+        // ====== CAMERAS ======
+        function currentSpawnInterval() {
+            return Math.max(
+                CAMERAS_CFG.spawnIntervalMinMs,
+                CAMERAS_CFG.spawnIntervalStartMs - rolls * CAMERAS_CFG.spawnSpeedupPerRoll
+            );
+        }
+
+        function currentMaxConcurrent() {
+            return Math.min(
+                CAMERAS_CFG.maxConcurrentCap,
+                CAMERAS_CFG.initialMax + rolls * CAMERAS_CFG.extraPerRoll
+            );
+        }
+
+        function spawnCamera() {
+            const edge = Math.floor(Math.random() * 4); // 0:left 1:right 2:top 3:bottom
+            const speedScale = 1 + rolls * CAMERAS_CFG.speedScalePerRoll;
+            const speed = (CAMERAS_CFG.speedMin + Math.random() * (CAMERAS_CFG.speedMax - CAMERAS_CFG.speedMin)) * speedScale;
+            const drift = (Math.random() - 0.5) * 0.5; // small lateral angle, ±0.25 rad
+
+            let x, y, baseAngle;
+            const buffer = 1.2; // start just off-screen
+            if (edge === 0) { // from left, moving right
+                x = -buffer; y = Math.random() * (GRID_ROWS - 1) + 0.5;
+                baseAngle = 0;
+            } else if (edge === 1) { // from right, moving left
+                x = GRID_COLS - 1 + buffer; y = Math.random() * (GRID_ROWS - 1) + 0.5;
+                baseAngle = Math.PI;
+            } else if (edge === 2) { // from top, moving down
+                x = Math.random() * (GRID_COLS - 1) + 0.5; y = -buffer;
+                baseAngle = Math.PI / 2;
+            } else { // from bottom, moving up
+                x = Math.random() * (GRID_COLS - 1) + 0.5; y = GRID_ROWS - 1 + buffer;
+                baseAngle = -Math.PI / 2;
+            }
+            const angle = baseAngle + drift;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            const imgIdx = cameraImages.length ? Math.floor(Math.random() * CAMERA_IMAGES.length) : 0;
+
+            cameras.push({
+                x, y, vx, vy,
+                imgIdx,
+                rot: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 1.6, // rad/s
+                age: 0,
+                bobPhase: Math.random() * Math.PI * 2,
+            });
+        }
+
+        function updateCameras(dtMs) {
+            const dt = dtMs / 1000;
+
+            // Spawn cadence
+            if (gameTimeMs >= nextCameraSpawnAtMs) {
+                if (cameras.length < currentMaxConcurrent()) spawnCamera();
+                nextCameraSpawnAtMs = gameTimeMs + currentSpawnInterval();
+            }
+
+            // Move + cull off-screen
+            const headCx = snake[0].x + 0.5;
+            const headCy = snake[0].y + 0.5;
+            const r = CAMERAS_CFG.collisionRadius;
+            const r2 = r * r;
+
+            for (let i = cameras.length - 1; i >= 0; i--) {
+                const c = cameras[i];
+                c.x += c.vx * dt;
+                c.y += c.vy * dt;
+                c.rot += c.rotSpeed * dt;
+                c.age += dtMs;
+
+                // Cull when fully off-screen on opposite side
+                if (c.x < -2 || c.x > GRID_COLS + 1 || c.y < -2 || c.y > GRID_ROWS + 1) {
+                    cameras.splice(i, 1);
+                    continue;
+                }
+
+                // Collision with snake head (only when camera is on-board enough to be a real threat)
+                if (c.x > -0.4 && c.x < GRID_COLS - 0.6 && c.y > -0.4 && c.y < GRID_ROWS - 0.6) {
+                    const dx = (c.x + 0.5) - headCx;
+                    const dy = (c.y + 0.5) - headCy;
+                    if (dx * dx + dy * dy < r2) {
+                        return gameOver('camera');
+                    }
+                }
+            }
+        }
+
+        // ====== INPUT ======
+        const keyMap = {
+            ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+            w: 'up', W: 'up', s: 'down', S: 'down', a: 'left', A: 'left', d: 'right', D: 'right',
+        };
+
+        function setDir(name) {
+            const map = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+            const v = map[name];
+            if (!v) return;
+            // Prevent immediate reverse
+            if (snake.length > 1 && v.x === -dir.x && v.y === -dir.y) return;
+            nextDir = v;
+        }
+
+        document.addEventListener('keydown', e => {
+            const name = keyMap[e.key];
+            if (name) {
+                e.preventDefault();
+                if (!running && !startOverlay.classList.contains('hidden')) startGame();
+                setDir(name);
+                return;
+            }
+            if (e.key === ' ' || e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                if (running) togglePause();
+            }
+            if (e.key === 'Enter') {
+                if (!startOverlay.classList.contains('hidden')) startGame();
+                else if (!gameOverOverlay.classList.contains('hidden')) startGame();
+            }
+        });
+
+        // Touchpad
+        touchpad.querySelectorAll('button').forEach(btn => {
+            const fire = e => {
+                e.preventDefault();
+                if (!running && !startOverlay.classList.contains('hidden')) startGame();
+                setDir(btn.dataset.dir);
+            };
+            btn.addEventListener('touchstart', fire, { passive: false });
+            btn.addEventListener('mousedown', fire);
+        });
+
+        // Swipe controls on the board
+        let touchStart = null;
+        board.addEventListener('touchstart', e => {
+            const t = e.changedTouches[0];
+            touchStart = { x: t.clientX, y: t.clientY };
+        }, { passive: true });
+        board.addEventListener('touchend', e => {
+            if (!touchStart) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - touchStart.x;
+            const dy = t.clientY - touchStart.y;
+            if (Math.abs(dx) < 20 && Math.abs(dy) < 20) { touchStart = null; return; }
+            if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 'right' : 'left');
+            else setDir(dy > 0 ? 'down' : 'up');
+            touchStart = null;
+        }, { passive: true });
+
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        resumeBtn.addEventListener('click', togglePause);
+
+        // ====== GAME LOOP ======
+        function startGame() {
+            resetState();
+            startOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+            pauseOverlay.classList.add('hidden');
+            running = true;
+            paused = false;
+            lastTick = performance.now();
+            lastFrame = 0;
+            cancelAnimationFrame(rafId);
+            loop(lastTick);
+        }
+
+        function togglePause() {
+            if (!running) return;
+            paused = !paused;
+            if (paused) {
+                pauseOverlay.classList.remove('hidden');
+            } else {
+                pauseOverlay.classList.add('hidden');
+                lastTick = performance.now();
+                lastFrame = 0; // reset dt so resume doesn't jump
+                loop(lastTick);
+            }
+        }
+
+        function loop(now) {
+            if (!running || paused) return;
+            // Per-frame delta (capped to avoid jumps after pause / tab hidden)
+            const dt = lastFrame ? Math.min(60, now - lastFrame) : 16;
+            lastFrame = now;
+            gameTimeMs += dt;
+
+            // Snake moves on a fixed tick
+            const elapsed = now - lastTick;
+            if (elapsed >= tickMs) {
+                lastTick = now;
+                step();
+            }
+
+            // Moving food drifts smoothly each frame; cameras too
+            if (running) updateMovingFood(dt);
+            if (running) updateCameras(dt);
+
+            draw();
+            if (running) rafId = requestAnimationFrame(loop);
+        }
+
+        function step() {
+            dir = nextDir;
+            const head = snake[0];
+            const newHead = { x: head.x + dir.x, y: head.y + dir.y };
+
+            // Wall collision
+            if (newHead.x < 0 || newHead.x >= GRID_COLS || newHead.y < 0 || newHead.y >= GRID_ROWS) {
+                return gameOver('wall');
+            }
+
+            // Did we land on a stationary food this tick?
+            const ateStatic = food && !food.isMoving && newHead.x === food.x && newHead.y === food.y;
+            // Will the snake grow on this tick? (either ate static, or there's a queued growth from a moving catch)
+            const willGrow = ateStatic || pendingGrowths.length > 0;
+
+            // Self collision: skip the tail cell from the check only if we aren't growing
+            const bodyCheck = willGrow ? snake : snake.slice(0, -1);
+            for (const seg of bodyCheck) {
+                if (seg.x === newHead.x && seg.y === newHead.y) return gameOver('self');
+            }
+
+            if (ateStatic) {
+                newHead.label = food.stock;
+                onAteFood(food.stock);
+                placeFood();
+            } else if (pendingGrowths.length > 0) {
+                newHead.label = pendingGrowths.shift();
+            }
+
+            snake.unshift(newHead);
+            if (!willGrow) snake.pop();
+        }
+
+        function onAteFood(stock) {
+            score += stock.points;
+            exposures += 1;
+            totalExp += 1;
+            stockCounts[stock.id] = (stockCounts[stock.id] || 0) + 1;
+            if (exposures >= FRAMES_PER_ROLL) {
+                exposures = 0;
+                rolls += 1;
+                tickMs = Math.max(TICK_MIN, TICK_START - rolls * SPEEDUP_PER_ROLL);
+                flashRoll();
+            }
+            updateHUD();
+        }
+
+        function updateHUD() {
+            rollsEl.textContent = String(rolls);
+            exposuresEl.textContent = String(exposures);
+            scoreEl.textContent = String(score);
+            meterFill.style.width = ((exposures / FRAMES_PER_ROLL) * 100).toFixed(1) + '%';
+        }
+
+        let flashUntil = 0;
+        function flashRoll() {
+            flashUntil = performance.now() + 600;
+        }
+
+        function gameOver(cause) {
+            running = false;
+            cancelAnimationFrame(rafId);
+            finalRolls.textContent = String(rolls);
+            finalExp.textContent = String(totalExp);
+            finalScore.textContent = String(score);
+            // Update game-over headline based on cause
+            const headline = document.querySelector('#gameOverOverlay h1');
+            if (headline) {
+                headline.textContent = cause === 'camera' ? 'CAUGHT ON DIGITAL' : 'FILM SNAPPED';
+            }
+
+            // Build breakdown
+            breakdownEl.innerHTML = '';
+            const totalAte = STOCKS.reduce((sum, s) => sum + (stockCounts[s.id] || 0), 0);
+            if (totalAte === 0) {
+                breakdownEl.innerHTML = '<span style="grid-column:1/-1;text-align:center;color:#666">no frames exposed</span>';
+            } else {
+                STOCKS.forEach(s => {
+                    const c = stockCounts[s.id] || 0;
+                    if (!c) return;
+                    const pts = c * s.points;
+                    const item = document.createElement('span');
+                    item.className = 'item';
+                    item.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:${s.color};border-radius:50%;margin-right:8px;vertical-align:middle"></span>${s.name}`;
+                    const count = document.createElement('span');
+                    count.className = 'count';
+                    count.textContent = '×' + c;
+                    const p = document.createElement('span');
+                    p.className = 'pts';
+                    p.textContent = pts + 'pt';
+                    breakdownEl.appendChild(item);
+                    breakdownEl.appendChild(count);
+                    breakdownEl.appendChild(p);
+                });
+            }
+
+            gameOverOverlay.classList.remove('hidden');
+        }
+
+        // ====== RENDERING ======
+        function draw() {
+            const W = GRID_COLS * CELL;
+            const H = GRID_ROWS * CELL;
+
+            // Background film base
+            ctx.fillStyle = '#0c0c0c';
+            ctx.fillRect(0, 0, W, H);
+
+            // Subtle film-grain dots
+            drawGrain(W, H);
+
+            // Roll-completion flash overlay
+            if (performance.now() < flashUntil) {
+                const t = (flashUntil - performance.now()) / 600;
+                ctx.fillStyle = `rgba(255,255,255,${0.18 * t})`;
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            drawFood();
+            drawSnake();
+            drawCameras();
+        }
+
+        function drawCameras() {
+            for (const c of cameras) {
+                const bob = Math.sin((performance.now() / 320) + c.bobPhase) * 2; // small vertical bob in px
+                const cx = (c.x + 0.5) * CELL;
+                const cy = (c.y + 0.5) * CELL + bob;
+                const size = CELL * 0.92;
+
+                ctx.save();
+                ctx.translate(cx, cy);
+
+                // Faint danger glow halo
+                const halo = ctx.createRadialGradient(0, 0, size * 0.15, 0, 0, size * 0.9);
+                halo.addColorStop(0, 'rgba(255, 60, 60, 0.35)');
+                halo.addColorStop(1, 'rgba(255, 60, 60, 0)');
+                ctx.fillStyle = halo;
+                ctx.fillRect(-size, -size, size * 2, size * 2);
+
+                ctx.rotate(c.rot * 0.2); // gentle rotation, not full spin
+
+                const img = cameraImages[c.imgIdx];
+                if (img) {
+                    ctx.drawImage(img, -size / 2, -size / 2, size, size);
+                } else {
+                    drawFallbackCamera(size);
+                }
+                ctx.restore();
+            }
+        }
+
+        function drawFallbackCamera(size) {
+            // Centered drawn digital camera. Coordinates are camera-local (origin at center).
+            const w = size * 0.92;
+            const h = size * 0.66;
+            const x = -w / 2;
+            const y = -h / 2;
+            const r = size * 0.06;
+
+            // Body (rounded rect)
+            ctx.fillStyle = '#1a1a1a';
+            roundRect(x, y, w, h, r); ctx.fill();
+            ctx.strokeStyle = '#3a3a3a';
+            ctx.lineWidth = 1;
+            roundRect(x, y, w, h, r); ctx.stroke();
+
+            // Top hump (where flash/viewfinder lives)
+            const hump = w * 0.34;
+            ctx.fillStyle = '#222';
+            roundRect(-hump / 2, y - size * 0.10, hump, size * 0.12, r * 0.8); ctx.fill();
+
+            // Lens
+            const lensR = size * 0.22;
+            ctx.fillStyle = '#0a0a0a';
+            ctx.beginPath(); ctx.arc(0, size * 0.02, lensR, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(0, size * 0.02, lensR, 0, Math.PI * 2); ctx.stroke();
+            // Inner glass
+            ctx.fillStyle = '#080808';
+            ctx.beginPath(); ctx.arc(0, size * 0.02, lensR * 0.62, 0, Math.PI * 2); ctx.fill();
+            // Catchlight
+            ctx.fillStyle = 'rgba(255,255,255,0.18)';
+            ctx.beginPath(); ctx.arc(-lensR * 0.28, size * 0.02 - lensR * 0.28, lensR * 0.18, 0, Math.PI * 2); ctx.fill();
+
+            // Flash (top-left small square, blinks)
+            const flashOn = ((performance.now() / 600) | 0) % 4 === 0;
+            ctx.fillStyle = flashOn ? '#ff3030' : '#3a0a0a';
+            ctx.fillRect(x + size * 0.08, y + size * 0.04, size * 0.10, size * 0.07);
+
+            // Shutter button hint (top-right small dot)
+            ctx.fillStyle = '#888';
+            ctx.beginPath(); ctx.arc(x + w - size * 0.10, y - size * 0.02, size * 0.04, 0, Math.PI * 2); ctx.fill();
+        }
+
+        function roundRect(x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        let grainCanvas = null;
+        function drawGrain(W, H) {
+            if (!grainCanvas) {
+                grainCanvas = document.createElement('canvas');
+                grainCanvas.width = W;
+                grainCanvas.height = H;
+                const gctx = grainCanvas.getContext('2d');
+                const id = gctx.createImageData(W, H);
+                for (let i = 0; i < id.data.length; i += 4) {
+                    const v = Math.random() < 0.04 ? Math.floor(Math.random() * 60) : 0;
+                    id.data[i] = id.data[i + 1] = id.data[i + 2] = v;
+                    id.data[i + 3] = v ? 60 : 0;
+                }
+                gctx.putImageData(id, 0, 0);
+            }
+            ctx.drawImage(grainCanvas, 0, 0);
+        }
+
+        function drawFood() {
+            if (!food) return;
+            if (food.isMoving) drawMovingFood();
+            else drawStaticFood();
+        }
+
+        function drawStaticFood() {
+            const { x, y, stock } = food;
+            const px = x * CELL;
+            const py = y * CELL;
+            const pad = 3;
+            const size = CELL - pad * 2;
+
+            // Subtle pulse
+            const t = performance.now() / 400;
+            const pulse = 1 + Math.sin(t) * 0.05;
+            ctx.save();
+            ctx.translate(px + CELL / 2, py + CELL / 2);
+            ctx.scale(pulse, pulse);
+            ctx.translate(-CELL / 2, -CELL / 2);
+
+            const img = stockImages.get(stock.id);
+            if (img) {
+                ctx.shadowColor = stock.color;
+                ctx.shadowBlur = 14;
+                ctx.drawImage(img, pad, pad, size, size);
+                ctx.shadowBlur = 0;
+            } else {
+                drawFallbackCanister(pad, pad, size, size, stock);
+            }
+            ctx.restore();
+        }
+
+        function drawMovingFood() {
+            const { stock } = food;
+            const bob = Math.sin((performance.now() / 280) + (food.bobPhase || 0)) * 2.5;
+            const cx = (food.x + 0.5) * CELL;
+            const cy = (food.y + 0.5) * CELL + bob;
+            const size = CELL * 0.94;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            // Inviting glow in the stock's color (different from cameras' red glow)
+            const halo = ctx.createRadialGradient(0, 0, size * 0.10, 0, 0, size * 0.95);
+            halo.addColorStop(0, hexToRgba(stock.color, 0.45));
+            halo.addColorStop(1, hexToRgba(stock.color, 0));
+            ctx.fillStyle = halo;
+            ctx.fillRect(-size, -size, size * 2, size * 2);
+
+            // Direction-of-travel indicator: small arrow ghost behind it
+            const speedMag = Math.hypot(food.vx, food.vy) || 1;
+            const ax = -food.vx / speedMag;
+            const ay = -food.vy / speedMag;
+            ctx.fillStyle = hexToRgba(stock.color, 0.18);
+            for (let i = 1; i <= 3; i++) {
+                const trailR = size * (0.36 - i * 0.06);
+                ctx.beginPath();
+                ctx.arc(ax * size * 0.30 * i, ay * size * 0.30 * i, trailR, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Gentle wobble (capped)
+            ctx.rotate(Math.sin((food.rot || 0)) * 0.18);
+
+            const pad = 3;
+            const renderSize = size - pad * 2;
+            const img = stockImages.get(stock.id);
+            if (img) {
+                ctx.shadowColor = stock.color;
+                ctx.shadowBlur = 16;
+                ctx.drawImage(img, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
+                ctx.shadowBlur = 0;
+            } else {
+                drawFallbackCanister(-renderSize / 2, -renderSize / 2, renderSize, renderSize, stock);
+            }
+            ctx.restore();
+        }
+
+        function hexToRgba(hex, alpha) {
+            const h = hex.replace('#', '');
+            const r = parseInt(h.length === 3 ? h[0] + h[0] : h.slice(0, 2), 16);
+            const g = parseInt(h.length === 3 ? h[1] + h[1] : h.slice(2, 4), 16);
+            const b = parseInt(h.length === 3 ? h[2] + h[2] : h.slice(4, 6), 16);
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
+
+        function drawFallbackCanister(x, y, w, h, stock) {
+            // Film canister look: outer dark circle, colored band, label
+            const cx = x + w / 2;
+            const cy = y + h / 2;
+            const r = Math.min(w, h) / 2 - 1;
+
+            // Outer body
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+
+            // Color ring
+            ctx.strokeStyle = stock.color;
+            ctx.lineWidth = Math.max(2, r * 0.18);
+            ctx.beginPath(); ctx.arc(cx, cy, r - ctx.lineWidth / 2, 0, Math.PI * 2); ctx.stroke();
+
+            // Inner disc
+            ctx.fillStyle = '#0c0c0c';
+            ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2); ctx.fill();
+
+            // Label letter
+            ctx.fillStyle = stock.color;
+            ctx.font = `900 ${Math.floor(r * 0.7)}px 'stratos', monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const letter = stock.name[0];
+            ctx.fillText(letter, cx, cy + 1);
+
+            // Tiny points indicator (top-right dot scaled by points)
+            ctx.fillStyle = '#fff';
+            ctx.font = `700 ${Math.floor(r * 0.35)}px 'Lucida Console', monospace`;
+            ctx.fillText(stock.points + 'P', cx, cy + r * 0.85);
+        }
+
+        function drawSnake() {
+            // Draw each segment as a frame of 35mm film with sprocket holes.
+            for (let i = snake.length - 1; i >= 0; i--) {
+                const seg = snake[i];
+                const isHead = i === 0;
+                const px = seg.x * CELL;
+                const py = seg.y * CELL;
+                drawFilmFrame(px, py, CELL, seg, isHead);
+            }
+        }
+
+        function drawFilmFrame(x, y, size, seg, isHead) {
+            const inset = 0;
+            // Decide orientation by whether snake here is moving horizontally vs vertically
+            // For simplicity always draw horizontally-oriented frames (top & bottom sprockets).
+            ctx.fillStyle = '#0d0d0d';
+            ctx.fillRect(x + inset, y + inset, size - inset * 2, size - inset * 2);
+
+            // Outer film color band (white edge of film stock)
+            ctx.fillStyle = isHead ? '#ffffff' : '#e0e0e0';
+            ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
+
+            // Frame area (the actual exposure)
+            const frameInset = Math.floor(size * 0.18);
+            const frameX = x + frameInset / 2 + 1;
+            const frameY = y + frameInset;
+            const frameW = size - frameInset - 2;
+            const frameH = size - frameInset * 2;
+
+            // If labeled (i.e. eaten food), use that stock color; else dark frame
+            if (seg.label) {
+                ctx.fillStyle = seg.label.color;
+                ctx.fillRect(frameX, frameY, frameW, frameH);
+                // Darken slightly
+                ctx.fillStyle = 'rgba(0,0,0,0.35)';
+                ctx.fillRect(frameX, frameY, frameW, frameH);
+                // Tiny letter watermark
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.font = `900 ${Math.floor(size * 0.45)}px 'stratos', monospace`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(seg.label.name[0], frameX + frameW / 2, frameY + frameH / 2 + 1);
+            } else {
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(frameX, frameY, frameW, frameH);
+            }
+
+            // Sprocket holes (top and bottom rows)
+            ctx.fillStyle = '#0a0a0a';
+            const holeW = Math.max(3, Math.floor(size * 0.14));
+            const holeH = Math.max(3, Math.floor(size * 0.10));
+            const margin = Math.floor(size * 0.04);
+            // top row: 2 holes
+            ctx.fillRect(x + size * 0.20 - holeW / 2, y + margin + 1, holeW, holeH);
+            ctx.fillRect(x + size * 0.80 - holeW / 2, y + margin + 1, holeW, holeH);
+            // bottom row: 2 holes
+            ctx.fillRect(x + size * 0.20 - holeW / 2, y + size - margin - holeH - 1, holeW, holeH);
+            ctx.fillRect(x + size * 0.80 - holeW / 2, y + size - margin - holeH - 1, holeW, holeH);
+
+            // Head detail: a small lens/aperture circle in the corner
+            if (isHead) {
+                const cx = x + size - size * 0.22;
+                const cy = y + size * 0.22;
+                const r = size * 0.10;
+                ctx.fillStyle = '#000';
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ff3d00';
+                ctx.beginPath(); ctx.arc(cx, cy, r * 0.5, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        // ====== INIT ======
+        sizeCanvas();
+        window.addEventListener('resize', () => {
+            sizeCanvas();
+            // Re-init grain texture for new size
+            grainCanvas = null;
+        });
+
+        resetState();
+        draw();
+
+        // Pause when tab hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && running && !paused) togglePause();
+        });
+    })();
+    </script>
+</body>
+</html>
